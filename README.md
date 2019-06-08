@@ -33,3 +33,30 @@ dokku6.code4sa.org | SUCCESS => {
 }
 ...
 ```
+
+### Run an arbitrary command on just the dokkus
+
+Run the following, note we're using `dokkus` referring to the group in `hosts`, and not `all` this time.
+
+```
+ansible dokkus -i hosts -u ubuntu -a "echo hello"
+```
+
+The output should look something like
+
+```
+dokku5.code4sa.org | CHANGED | rc=0 >>
+hello
+
+dokku8.code4sa.org | CHANGED | rc=0 >>
+hello
+
+dokku7.code4sa.org | CHANGED | rc=0 >>
+hello
+
+dokku4.code4sa.org | CHANGED | rc=0 >>
+hello
+
+dokku6.code4sa.org | CHANGED | rc=0 >>
+hello
+```
