@@ -8,3 +8,8 @@
       command: file state=link /usr/share/zoneinfo/UTC /etc/localtime
     - name: Set up a unique hostname
       hostname: name={{ inventory_hostname }}
+    - name: Set up unattended-upgrades
+      apt:
+        update_cache: yes
+        name: unattended-upgrades
+        state: present
