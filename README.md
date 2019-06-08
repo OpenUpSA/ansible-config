@@ -1,6 +1,19 @@
 Ansible configuration management for OpenUp
 ===========================================
 
+Set up a new dokku server
+-------------------------
+
+After creating the server,
+
+1. Add the hostname to the `hosts`
+2. Run the server setup playbook against just the new server:
+
+```
+ansible-playbook --limit dokku9.code4sa.org --inventory hosts -u ubuntu dokku-server.yml
+```
+
+
 Familiarising yourself with Ansible
 -----------------------------------
 
@@ -59,4 +72,33 @@ hello
 
 dokku6.code4sa.org | CHANGED | rc=0 >>
 hello
+```
+
+### Checking what a playbook would do using `--check`
+
+Run with `--check`
+
+```
+ansible-playbook --limit dokku9.code4sa.org --inventory hosts -u ubuntu --check dokku-server.yml
+```
+
+Note how it says skipped around each step
+
+```
+PLAY [dokkus] ******************************************************************
+
+TASK [Gathering Facts] *********************************************************
+The authenticity of host 'dokku9.code4sa.org (18.200.13.154)' can't be established.
+ECDSA key fingerprint is SHA256:Dgs79LzpwVgd/q+vlXqsnlOfZTpEGHUBekNCyruTBh8.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+ok: [dokku9.code4sa.org]
+
+TASK [Set the timezone for the server to be UTC] *******************************
+skipping: [dokku9.code4sa.org]
+
+TASK [Set up a unique hostname] ************************************************
+changed: [dokku9.code4sa.org]
+
+PLAY RECAP *********************************************************************
+dokku9.code4sa.org         : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
 ```

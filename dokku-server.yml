@@ -1,0 +1,10 @@
+---
+- hosts: dokkus
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Set the timezone for the server to be UTC
+      command: file state=link /usr/share/zoneinfo/UTC /etc/localtime
+    - name: Set up a unique hostname
+      hostname: name={{ inventory_hostname }}
