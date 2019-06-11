@@ -1,5 +1,14 @@
+EXPERIMENTAL - not the default yet
+
 Ansible configuration management for OpenUp
 ===========================================
+
+Setting up your controller (probably your work laptop)
+------------------------------------------------------
+
+```
+ansible-galaxy install dokku_bot.ansible_dokku
+```
 
 Set up a new dokku server
 -------------------------
