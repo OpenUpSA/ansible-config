@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
-{% if ssmtp.aliases is defined %}
-{% for item in ssmtp.aliases %}
+{% if ssmtp_aliases is defined %}
+{% for item in ssmtp_aliases %}
 {{ item }}
 {% endfor %}
 {% endif %}

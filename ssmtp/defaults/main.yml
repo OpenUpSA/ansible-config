@@ -1,15 +1,13 @@
 ---
-ssmtp:
-  root: "root@localhost"
-  hostname: "{{ ansible_hostname }}"
-  rewrite_domain: "localhost"
-  mailhub: "smtp.sendgrid.net:587"
-  FromLineOverride: "YES"
-  AuthUser: ""
-  AuthPass: ""
-  UseTLS: "YES"
-  UseSTARTTLS: "YES"
-  AuthMethod: "LOGIN"
-  aliases: []
-crond:
-  MAILTO: "root@localhost"
+ssmtp_root: "root@localhost"
+ssmtp_hostname: "{{ ansible_hostname }}"
+ssmtp_rewrite_domain: "localhost"
+ssmtp_mailhub: "smtp.sendgrid.net:587"
+ssmtp_FromLineOverride: "YES"
+ssmtp_AuthUser: ""
+ssmtp_AuthPass: ""
+ssmtp_UseTLS: "YES"
+ssmtp_UseSTARTTLS: "YES"
+ssmtp_AuthMethod: "LOGIN"
+ssmtp_aliases: []
+crond_MAILTO: "root@localhost"

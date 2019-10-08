@@ -13,24 +13,22 @@ Role Variables
 --------------
 
 ```
-ssmtp:
-  root: Default user that receives all outgoing email, default - "root@localhost"
-  hostname: Full hostname of the machine , default - "{{ ansible_hostname }}"
-  rewrite_domain: Domain where the mail appears to come from, default "localhost"
-  mailhub: Default "smtp.sendgrid.net:587"
-  FromLineOverride: Email 'From header's can override the default domain? default - "NO"
-  AuthUser: Username for smtp server, default - ""
-  AuthPass: Password for smtp server, default - ""
-  AuthMethod: Authentication method, default - "LOGIN"
-  UseTLS: Whether to use TLS, default - "YES"
-  UseSTARTTLS: Whether to use Start TLS, required for sendgrid - default "YES"
-  aliases: List of UNIX user aliases, default - "[]"
-crond:
-  MAILTO: Email address to notify after job exit, default -  "root@localhost"
+
+ssmtp_root: Default user that receives all outgoing email, default - "root@localhost"
+ssmtp_hostname: Full hostname of the machine , default - "{{ ansible_hostname }}"
+ssmtp_rewrite_domain: Domain where the mail appears to come from, default "localhost"
+ssmtp_mailhub: Default "smtp.sendgrid.net:587"
+ssmtp_FromLineOverride: Email 'From header's can override the default domain? default - "NO"
+ssmtp_AuthUser: Username for smtp server, default - ""
+ssmtp_AuthPass: Password for smtp server, default - ""
+ssmtp_AuthMethod: Authentication method, default - "LOGIN"
+ssmtp_UseTLS: Whether to use TLS, default - "YES"
+ssmtp_UseSTARTTLS: Whether to use Start TLS, required for sendgrid - default "YES"
+ssmtp_aliases: List of UNIX user aliases, default - "[]"
+crond_MAILTO: Email address to notify after job exit, default -  "root@localhost"
+
 ```
 ------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
