@@ -1,16 +1,11 @@
-Role Name
-=========
-
 Ansible role to setup ssmtp mail transfer agent for Ubuntu Bionic (18.04 LTS) and configure crond to notify operator via email after a job is run.
 
-Requirements
-------------
+Requirements  
 
 1. Privileged (root) access to the host system.
 2. Host system with Ubuntu Bionic installed.
 
 Role Variables
---------------
 
 ```
 
@@ -23,15 +18,13 @@ ssmtp_AuthUser: Username for smtp server, default - ""
 ssmtp_AuthPass: Password for smtp server, default - ""
 ssmtp_AuthMethod: Authentication method, default - "LOGIN"
 ssmtp_UseTLS: Whether to use TLS, default - "YES"
-ssmtp_UseSTARTTLS: Whether to use Start TLS, required for sendgrid - default "YES"
+ssmtp_UseSTARTTLS: Whether to use Start TLS, required for SendGrid - default "YES"
 ssmtp_aliases: List of UNIX user aliases, default - "[]"
 crond_MAILTO: Email address to notify after job exit, default -  "root@localhost"
 
 ```
-------------
 
 Example Playbook
-----------------
 
 ```
 - hosts: "{{ hosts | default('localhost') }}"
@@ -41,3 +34,7 @@ Example Playbook
   roles:
   - role: ssmtp
 ```
+
+Example Usage
+
+`ansible-playbook ssmtp.yml -e "hosts=localhost smtp_AuthUser=myverysecretuser smtp_AuthPass=myverysecretpassword"`
