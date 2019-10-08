@@ -1,0 +1,15 @@
+---
+ssmtp:
+  root: "root@localhost"
+  hostname: "{{ ansible_hostname }}"
+  rewrite_domain: "localhost"
+  mailhub: "smtp.sendgrid.net:587"
+  FromLineOverride: "YES"
+  AuthUser: ""
+  AuthPass: ""
+  UseTLS: "YES"
+  UseSTARTTLS: "YES"
+  AuthMethod: "LOGIN"
+  aliases: []
+crond:
+  MAILTO: "root@localhost"

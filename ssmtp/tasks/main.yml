@@ -1,0 +1,41 @@
+---
+- name: Install ssmtp
+  apt:
+    name: ssmtp
+    update_cache: yes
+  tags: install 
+
+- name: "Configure /etc/ssmtp/ssmtp.conf"
+  template:
+    owner: root
+    group: mail
+    mode: 0640
+    src: "templates/ssmtp.conf"
+    dest: "/etc/ssmtp/ssmtp.conf"
+  tags: configure
+
+- name: "Set mailing aliases"
+  template:
+    owner: root
+    group: mail
+    mode: 0640
+    src: "templates/revaliases"
+    dest: "/etc/ssmtp/revaliases"
+  tags: configure
+
+- name: "Create directory for cron.service override"
+  file:
+    path: /etc/systemd/system/cron.service.d
+    state: directory
+  tags: configure, systemd
+  
+- name: "Set global MAILTO,MAILFROM for cron.service"
+  template:
+    owner: root
+    group: root
+    mode: 0640
+    src: templates/override.conf
+    dest: /etc/systemd/system/cron.service.d/override.conf
+  notify:
+    - restart_crond
+  tags: configure, systemd
