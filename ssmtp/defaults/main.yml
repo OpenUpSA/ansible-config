@@ -1,7 +1,7 @@
 ---
-ssmtp_root: "root@localhost"
+ssmtp_root: "klimlinas@gmail.com"
 ssmtp_hostname: "{{ ansible_hostname }}"
-ssmtp_rewrite_domain: "localhost"
+ssmtp_rewrite_domain: ""
 ssmtp_mailhub: "smtp.sendgrid.net:587"
 ssmtp_FromLineOverride: "YES"
 ssmtp_AuthUser: ""
@@ -9,5 +9,7 @@ ssmtp_AuthPass: ""
 ssmtp_UseTLS: "YES"
 ssmtp_UseSTARTTLS: "YES"
 ssmtp_AuthMethod: "LOGIN"
-ssmtp_aliases: []
-crond_MAILTO: "root@localhost"
+ssmtp_aliases:
+- root:klimlinas@gmail.com:smtp.sendgrid.net:587
+- linas:klimlinas@gmail.com:smtp.sendgrid.net:587
+crond_MAILTO: "klimlinas@gmail.com"
