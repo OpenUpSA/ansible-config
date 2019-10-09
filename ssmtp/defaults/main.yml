@@ -1,7 +1,7 @@
 ---
 ssmtp_root: "root@localhost"
-ssmtp_hostname: "{{ ansible_hostname }}"
-ssmtp_rewrite_domain: "localhost"
+ssmtp_hostname: "{{ inventory_hostname }}"
+ssmtp_rewrite_domain: ""
 ssmtp_mailhub: "smtp.sendgrid.net:587"
 ssmtp_FromLineOverride: "YES"
 ssmtp_AuthUser: ""
@@ -9,5 +9,7 @@ ssmtp_AuthPass: ""
 ssmtp_UseTLS: "YES"
 ssmtp_UseSTARTTLS: "YES"
 ssmtp_AuthMethod: "LOGIN"
-ssmtp_aliases: []
+ssmtp_aliases:
+  - "root:jd@openup.or.za:smtp.sendgrid.net:587"
+  - "ubuntu:jd@openup.or.za:smtp.sendgrid.net:587"
 crond_MAILTO: "root@localhost"
