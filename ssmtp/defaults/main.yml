@@ -11,5 +11,5 @@ ssmtp_UseSTARTTLS: "YES"
 ssmtp_AuthMethod: "LOGIN"
 ssmtp_aliases:
 - root:klimlinas@gmail.com:smtp.sendgrid.net:587
-- linas:klimlinas@gmail.com:smtp.sendgrid.net:587
+- ubuntu:klimlinas@gmail.com:smtp.sendgrid.net:587
 crond_MAILTO: "klimlinas@gmail.com"
