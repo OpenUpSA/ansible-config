@@ -16,7 +16,7 @@
 
 # allows you to map a local user to a specific ‘From:’ address on outbound mail and to route that mail through a specific mailhub. But it will not rewrite the ‘To:’ address according to the local user who should receive the mail.
 # https://possiblelossofprecision.net/?p=591
-- name: "Set mailing aliases"
+- name: "Set mailing reverse aliases"
   template:
     owner: root
     group: mail
