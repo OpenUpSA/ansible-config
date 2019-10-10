@@ -1,0 +1,32 @@
+---
+- name: Install ssmtp
+  apt:
+    name: ssmtp
+    update_cache: yes
+  tags: install
+
+- name: "Configure /etc/ssmtp/ssmtp.conf"
+  template:
+    owner: root
+    group: mail
+    mode: 0640
+    src: "templates/ssmtp.conf"
+    dest: "/etc/ssmtp/ssmtp.conf"
+  tags: configure
+
+# allows you to map a local user to a specific ‘From:’ address on outbound mail and to route that mail through a specific mailhub. But it will not rewrite the ‘To:’ address according to the local user who should receive the mail.
+# https://possiblelossofprecision.net/?p=591
+- name: "Set mailing reverse aliases"
+  template:
+    owner: root
+    group: mail
+    mode: 0640
+    src: "templates/revaliases"
+    dest: "/etc/ssmtp/revaliases"
+  tags: configure
+
+- user:
+    name: ubuntu
+    shell: /bin/bash
+    groups: mail
+    append: yes

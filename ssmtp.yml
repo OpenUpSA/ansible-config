@@ -1,0 +1,7 @@
+---
+- hosts: dokkus
+  remote_user: "{{ ruser | default('ubuntu') }}"
+  become: yes
+  become_method: sudo
+  roles:
+  - role: ssmtp
