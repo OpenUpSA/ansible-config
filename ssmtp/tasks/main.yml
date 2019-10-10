@@ -24,3 +24,9 @@
     src: "templates/revaliases"
     dest: "/etc/ssmtp/revaliases"
   tags: configure
+
+- user:
+    name: ubuntu
+    shell: /bin/bash
+    groups: mail
+    append: yes
