@@ -1,5 +1,5 @@
 ---
-ssmtp_root: "klimlinas@gmail.com"
+ssmtp_root: "webapps@openup.org.za"
 ssmtp_hostname: "{{ ansible_hostname }}"
 ssmtp_rewrite_domain: ""
 ssmtp_mailhub: "smtp.sendgrid.net:587"
@@ -10,6 +10,6 @@ ssmtp_UseTLS: "YES"
 ssmtp_UseSTARTTLS: "YES"
 ssmtp_AuthMethod: "LOGIN"
 ssmtp_aliases:
-- root:klimlinas@gmail.com:smtp.sendgrid.net:587
-- ubuntu:klimlinas@gmail.com:smtp.sendgrid.net:587
-crond_MAILTO: "klimlinas@gmail.com"
+- root:webapps@openup.org.za:smtp.sendgrid.net:587
+- ubuntu:webapps@openup.org.za:smtp.sendgrid.net:587
+crond_MAILTO: "webapps@openup.org.za"
