@@ -10,6 +10,13 @@ Setting up your controller (probably your work laptop)
 ansible-galaxy install dokku_bot.ansible_dokku
 ```
 
+Ensuring admins have access to a server
+---------------------------------------
+
+```
+ansible-playbook --limit hetzner1.openup.org.za --inventory hosts.yml users.yml
+```
+
 Set up a new dokku server
 -------------------------
 
