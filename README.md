@@ -20,6 +20,9 @@ Ensuring admins have access to a server
 ansible-playbook --limit hetzner1.openup.org.za --inventory hosts.yml users.yml
 ```
 
+If you're not an admin on the server yet, authenticate with the initial superuser
+credentials, e.g. `--user root --ask-pass`
+
 ### Add new admins
 
 1. Add their key to the `files` directory
