@@ -1,6 +1,8 @@
 - hosts: all
+  become: yes
+  become_method: sudo
   vars:
-    users:
+    all_hosts_admins:
       - jdb
       - adi
       - lunga
@@ -14,13 +16,13 @@
       user:
         name: "{{ item }}"
         groups: "admin,www-data"
-      with_items: "{{ users }}"
+      with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
     - name: "Add authorized keys"
       authorized_key:
         user: "{{ item }}"
         key: "{{ lookup('file', 'files/'+ item + '.key.pub') }}"
-      with_items: "{{ users }}"
+      with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
     - name: "Allow admin users to sudo without a password"
       lineinfile:
