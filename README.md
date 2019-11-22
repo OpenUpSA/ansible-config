@@ -1,7 +1,9 @@
 EXPERIMENTAL - not the default yet
 
+
 Ansible configuration management for OpenUp
 ===========================================
+
 
 Setting up your controller (probably your work laptop)
 ------------------------------------------------------
@@ -9,6 +11,31 @@ Setting up your controller (probably your work laptop)
 ```
 ansible-galaxy install dokku_bot.ansible_dokku
 ```
+
+
+Ensuring admins have access to a server
+---------------------------------------
+
+```
+ansible-playbook --limit hetzner1.openup.org.za --inventory hosts.yml users.yml
+```
+
+If you're not an admin on the server yet, authenticate with the initial superuser
+credentials, e.g. `--user root --ask-pass`
+
+### Add new admins
+
+1. Add their key to the `files` directory
+2. Add them to the correct user list
+
+### Adding an admin that should be on all hosts
+
+Add them to `all_hosts_admins` in `users.yml`
+
+### Adding an admin for only specific hosts
+
+Add them to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
+
 
 Set up a new dokku server
 -------------------------
@@ -55,6 +82,7 @@ dokku6.code4sa.org | SUCCESS => {
 }
 ...
 ```
+
 
 ### Run an arbitrary command on just the dokkus
 
