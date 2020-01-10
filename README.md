@@ -37,18 +37,28 @@ Add them to `all_hosts_admins` in `users.yml`
 Add them to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
 
 
-Set up a new dokku server
--------------------------
+Install dokku
+-------------
 
 After creating the server,
 
-1. Add the hostname to the `hosts`
+1. Add the hostname to the `dokku` group
 2. Run the server setup playbook against just the new server:
 
 ```
-ansible-playbook --limit dokku9.code4sa.org --inventory hosts -u ubuntu dokku-server.yml
+ansible-playbook --limit dokku9.code4sa.org --inventory hosts.yml -u ubuntu dokku-server.yml
 ```
 
+Configure cron to email output for error alerts
+-----------------------------------------------
+
+Emails sent by the root, ubuntu and dokku users will be configured to "come from" webapps@openup.org.za.
+
+Add `MAILTO=webapps@openup.org.za` at the top of the `crontab -e` file as one of those users. Mails from other users usually end up in spam because it's not setting a `From` header properly.
+
+```
+ansible-playbook --limit hetzner1.openup.org.za --inventory hosts.yml ssmtp.yml -e "ssmtp_AuthUser=apikey ssmtp_AuthPass=...secret-api-key..."
+```
 
 Familiarising yourself with Ansible
 -----------------------------------
@@ -60,7 +70,7 @@ Not in the network `ping` command sense, just an ansible command that checks tha
 In this repo, run
 
 ```
-ansible all -i hosts -m ping -u ubuntu
+ansible all -i hosts.yml -m ping -u ubuntu
 ```
 
 The result should look something like the following for all hosts:
@@ -86,10 +96,10 @@ dokku6.code4sa.org | SUCCESS => {
 
 ### Run an arbitrary command on just the dokkus
 
-Run the following, note we're using `dokkus` referring to the group in `hosts`, and not `all` this time.
+Run the following, note we're using `dokkus` referring to the group in `hosts.yml`, and not `all` this time.
 
 ```
-ansible dokkus -i hosts -u ubuntu -a "echo hello"
+ansible dokkus -i hosts.yml -u ubuntu -a "echo hello"
 ```
 
 The output should look something like
@@ -116,7 +126,7 @@ hello
 Run with `--check`
 
 ```
-ansible-playbook --limit dokku9.code4sa.org --inventory hosts -u ubuntu --check dokku-server.yml
+ansible-playbook --limit dokku9.code4sa.org --inventory hosts.yml -u ubuntu --check dokku-server.yml
 ```
 
 Note how it says skipped around each step
