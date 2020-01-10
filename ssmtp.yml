@@ -1,6 +1,5 @@
 ---
-- hosts: dokkus
-  remote_user: "{{ ruser | default('ubuntu') }}"
+- hosts: all
   become: yes
   become_method: sudo
   roles:

@@ -1,7 +1,7 @@
 ---
 ssmtp_root: "webapps@openup.org.za"
 ssmtp_hostname: "{{ ansible_hostname }}"
-ssmtp_rewrite_domain: ""
+ssmtp_rewrite_domain: "{{ ansible_hostname }}"
 ssmtp_mailhub: "smtp.sendgrid.net:587"
 ssmtp_FromLineOverride: "NO"
 ssmtp_AuthUser: ""
@@ -12,4 +12,5 @@ ssmtp_AuthMethod: "LOGIN"
 ssmtp_aliases:
 - root:webapps@openup.org.za:smtp.sendgrid.net:587
 - ubuntu:webapps@openup.org.za:smtp.sendgrid.net:587
+- dokku:webapps@openup.org.za:smtp.sendgrid.net:587
 crond_MAILTO: "webapps@openup.org.za"
