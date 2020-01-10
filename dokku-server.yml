@@ -1,11 +1,18 @@
 ---
 - hosts: dokkus
-  remote_user: ubuntu
   become: yes
   become_method: sudo
   pre_tasks:
-    - name: Set the timezone for the server to be UTC
-      command: file state=link /usr/share/zoneinfo/UTC /etc/localtime
+    - name: Set timezone to UTC
+      timezone:
+        name: UTC
+      register: timezone
+    - name: restart crond if timezone changes
+      service:
+        name: crond
+        state: restarted
+        enabled: yes
+      when: timezone.changed
     - name: Set up a unique hostname
       hostname: name={{ inventory_hostname }}
     - name: Set up unattended-upgrades
