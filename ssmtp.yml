@@ -1,5 +1,9 @@
 ---
-- hosts: all
+- hosts:
+    - treasury1.openup.org.za
+    - dokku8.code4sa.org
+    - dokku9.code4sa.org
+    - hetzner1.openup.org.za
   become: yes
   become_method: sudo
   roles:

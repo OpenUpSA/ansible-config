@@ -46,7 +46,7 @@ After creating the server,
 2. Run the server setup playbook against just the new server:
 
 ```
-ansible-playbook --limit dokku9.code4sa.org --inventory hosts.yml -u ubuntu dokku-server.yml
+ansible-playbook --limit dokku9.code4sa.org --inventory hosts.yml dokku-server.yml
 ```
 
 Configure cron to email output for error alerts
@@ -57,7 +57,7 @@ Emails sent by the root, ubuntu and dokku users will be configured to "come from
 Add `MAILTO=webapps@openup.org.za` at the top of the `crontab -e` file as one of those users. Mails from other users usually end up in spam because it's not setting a `From` header properly.
 
 ```
-ansible-playbook --limit hetzner1.openup.org.za --inventory hosts.yml ssmtp.yml -e "ssmtp_AuthUser=apikey ssmtp_AuthPass=...secret-api-key..."
+ansible-playbook --inventory hosts.yml ssmtp.yml -e "ssmtp_AuthUser=apikey ssmtp_AuthPass=...secret-api-key..."
 ```
 
 Familiarising yourself with Ansible
@@ -70,7 +70,7 @@ Not in the network `ping` command sense, just an ansible command that checks tha
 In this repo, run
 
 ```
-ansible all -i hosts.yml -m ping -u ubuntu
+ansible all -i hosts.yml -m ping
 ```
 
 The result should look something like the following for all hosts:
@@ -99,7 +99,7 @@ dokku6.code4sa.org | SUCCESS => {
 Run the following, note we're using `dokkus` referring to the group in `hosts.yml`, and not `all` this time.
 
 ```
-ansible dokkus -i hosts.yml -u ubuntu -a "echo hello"
+ansible dokkus -i hosts.yml -a "echo hello"
 ```
 
 The output should look something like
@@ -126,7 +126,7 @@ hello
 Run with `--check`
 
 ```
-ansible-playbook --limit dokku9.code4sa.org --inventory hosts.yml -u ubuntu --check dokku-server.yml
+ansible-playbook --limit dokku9.code4sa.org --inventory hosts.yml --check dokku-server.yml
 ```
 
 Note how it says skipped around each step
