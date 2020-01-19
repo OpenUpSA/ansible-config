@@ -1,0 +1,73 @@
+---
+- hosts:
+    - treasury3.openup.org.za
+  vars:
+    app_domain: sandbox-data.vulekamali.gov.za
+    ckan_datastore_postgres_read_user: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/CKAN_DATASTORE_POSTGRES_READ subkey=username')}}"
+    ckan_datastore_postgres_read_password: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/CKAN_DATASTORE_POSTGRES_READ')}}"
+    ckan_datastore_postgres_write_user: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/CKAN_DATASTORE_POSTGRES_WRITE subkey=username')}}"
+    ckan_datastore_postgres_write_password: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/CKAN_DATASTORE_POSTGRES_WRITE')}}"
+    ckan_postgres_user: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/CKAN_POSTGRES subkey=username')}}"
+    ckan_postgres_password: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/CKAN_POSTGRES')}}"
+  tasks:
+    - name: Install dokku-redis
+      dokku_plugins:
+        - name: redis
+          url: https://github.com/dokku/dokku-redis.git
+
+    - name: Create datastore-redis instance
+      dokku_service_create:
+        name: vulekamali-datastore
+        service: redis
+
+    - name: Create database roles and databases
+
+    - name: dokku apps:create datastore-sandbox
+      dokku_app:
+        app: datastore-sandbox
+
+    - name: dokku domains:add datastore-sandbox {{ app_domain }}
+      dokku_domains:
+        app: datastore-sandbox
+        domains:
+          - "{{ app_domain }}"
+
+    - name: dokku config:set KEY=VALUE...
+      dokku_config:
+        app: datastore-sandbox
+        config:
+          CKAN___BEAKER__SESSION__SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/BEAKER_SESSION_SECRET')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/AWS subkey=ACCESS_KEY_ID')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/AWS')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_BUCKET_NAME: 'vulekamali-datastore-sandbox'
+          CKAN___CKANEXT__S3FILESTORE__HOST_NAME: 'http://s3-eu-west-1.amazonaws.com/vulekamali-datastore-sandbox'
+          CKAN___CKANEXT__S3FILESTORE__REGION_NAME: 'eu-west-1'
+          CKAN___CKANEXT__S3FILESTORE__SIGNATURE_VERSION: 's3v4'
+          CKAN_DATASTORE_READ_URL: 'postgres://{{ ckan_datastore_read_user }}:{{ ckan_datastore_read_password }}@prod-db.vulekamali.gov.za:5432/datastore_default_sandbox'
+          CKAN_DATASTORE_WRITE_URL: 'postgres://{{ ckan_datastore_write_user }}:{{ ckan_datastore_write_password }}@prod-db.vulekamali.gov.za:5432/datastore_default_sandbox'
+          CKAN_SQLALCHEMY_URL: 'postgresql://{{ ckan_postgres_user }}:{{ ckan_postgres_password }}@prod-db.vulekamali.gov.za:5432/ckan_default_sandbox'
+          CKAN_INI: '/ckan.ini'
+          CKAN_SITE_URL: 'https://{{ app_domain }}/'
+          CKAN_SMTP_MAIL_FROM: 'info@vulekamali.gov.za'
+          CKAN_SMTP_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/SMTP')}}"
+          CKAN_SMTP_SERVER: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/SMTP subkey=hostname')}}"
+          CKAN_SMTP_USER: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/SMTP subkey=username')}}"
+          CKAN_SOLR_URL: 'http://solr.vulekamali.gov.za:8983/solr/ckan-sandbox'
+          CKAN_SSO_LOGOUT_URL: 'https://sandbox.vulekamali.gov.za/accounts/logout'
+          CKAN_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/datastore/sandbox/SSO_SECRET')}}"
+          CKAN_SSO_URL: 'https://sandbox.vulekamali.gov.za/ckan/sso'
+          DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
+
+    - name: Configure HTTP cache
+
+    - name: Link app to redis
+      dokku_service_link:
+        app: "{{ app-name }}"
+        name: "{{ app-name }}"
+        service: redis
+
+    - name: Deploy app
+    - name: Run database migrations
+    - name: Create TLS certificate
+    - name: Configure TLS certificate renewal
+    - name: Set up uptime monitoring
