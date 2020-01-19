@@ -45,6 +45,14 @@
         login_host: "{{ postgres_hostname }}"
         name: "{{ ckan_datastore_postgres_database }}"
 
+    - name: "Database {{ ckan_postgres_database }} exists"
+      postgresql_db:
+        ssl_mode: require
+        login_user: "{{ postgres_superuser_user }}"
+        login_password: "{{ postgres_superuser_password }}"
+        login_host: "{{ postgres_hostname }}"
+        name: "{{ ckan_postgres_database }}"
+
     - name: "Database user {{ ckan_datastore_postgres_read_user }} exists"
       postgresql_user:
         ssl_mode: require
@@ -54,6 +62,30 @@
         db: "{{ ckan_datastore_postgres_database }}"
         name: "{{ ckan_datastore_postgres_read_user }}"
         password: "{{ ckan_datastore_postgres_read_password }}"
+        priv: "ALL"
+        state: present
+
+    - name: "Database user {{ ckan_datastore_postgres_write_user }} exists"
+      postgresql_user:
+        ssl_mode: require
+        login_user: "{{ postgres_superuser_user }}"
+        login_password: "{{ postgres_superuser_password }}"
+        login_host: "{{ postgres_hostname }}"
+        db: "{{ ckan_datastore_postgres_database }}"
+        name: "{{ ckan_datastore_postgres_write_user }}"
+        password: "{{ ckan_datastore_postgres_write_password }}"
+        priv: "ALL"
+        state: present
+
+    - name: "Database user {{ ckan_postgres_user }} exists"
+      postgresql_user:
+        ssl_mode: require
+        login_user: "{{ postgres_superuser_user }}"
+        login_password: "{{ postgres_superuser_password }}"
+        login_host: "{{ postgres_hostname }}"
+        db: "{{ ckan_postgres_database }}"
+        name: "{{ ckan_postgres_user }}"
+        password: "{{ ckan_postgres_password }}"
         priv: "ALL"
         state: present
 
