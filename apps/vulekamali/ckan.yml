@@ -1,6 +1,16 @@
 ---
 - hosts:
     - treasury3.openup.org.za
+  become: yes
+  become_method: sudo
+
+  roles:
+   - role: dokku_bot.ansible_dokku
+     vars:
+       dokku_plugins:
+         - name: redis
+           url: https://github.com/dokku/dokku-redis.git
+
   vars:
     app_name: vulekamali-ckan-sandbox
     app_domain: sandbox-data.vulekamali.gov.za
@@ -16,10 +26,6 @@
     ckan_postgres_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES subkey=username')}}"
     ckan_postgres_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES')}}"
   tasks:
-    - name: dokku-redis plugin installed
-      dokku_plugins:
-        - name: redis
-          url: https://github.com/dokku/dokku-redis.git
 
     - name: "Redis instance {{ app_name }} exists"
       dokku_service_create:
@@ -78,7 +84,7 @@
           CKAN_SSO_URL: 'https://sandbox.vulekamali.gov.za/ckan/sso'
           DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
 
-    - name: HTTP cache configured
+    # - name: HTTP cache configured
 
     - name: "Redis instance {{ app_name }} linked to dokku app {{ app_name }}"
       dokku_service_link:
@@ -86,8 +92,8 @@
         name: "{{ app_name }}"
         service: redis
 
-    - name: App code installed
-    - name: Database initialised
-    - name: TLS certificate created
-    - name: TLS certificate autorenewal set up
-    - name: Uptime monitoring configured to check site is running
+    # - name: App code installed
+    # - name: Database initialised
+    # - name: TLS certificate created
+    # - name: TLS certificate autorenewal set up
+    # - name: Uptime monitoring configured to check site is running
