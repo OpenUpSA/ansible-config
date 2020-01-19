@@ -93,12 +93,6 @@
       dokku_app:
         app: "{{ app_name }}"
 
-    - name: "Domain {{ app_domain }} proxied to dokku app {{ app_name }}"
-      dokku_domains:
-        app: "{{ app_name }}"
-        domains:
-          - "{{ app_domain }}"
-
     - name: "Dokku app {{ app_name }} config is set"
       dokku_config:
         app: "{{ app_name }}"
