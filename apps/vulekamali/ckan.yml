@@ -5,13 +5,12 @@
   become_method: sudo
 
   roles:
-   - role: dokku_bot.ansible_dokku
-     vars:
-       dokku_plugins:
-         - name: redis
-           url: https://github.com/dokku/dokku-redis.git
+   - dokku_bot.ansible_dokku
 
   vars:
+    dokku_plugins:
+      - name: redis
+        url: https://github.com/dokku/dokku-redis.git
     app_name: vulekamali-ckan-sandbox
     app_domain: sandbox-data.vulekamali.gov.za
     postgres_hostname: prod-db.vulekamali.gov.za
