@@ -149,3 +149,16 @@ changed: [dokku9.code4sa.org]
 PLAY RECAP *********************************************************************
 dokku9.code4sa.org         : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
 ```
+
+Best Practises
+==============
+
+Prefer declarative style over imperative
+----------------------------------------
+
+Prefer approaches that only make a change if needed. The `state: present` style
+works this way: tasks that support this will only create something if it doesn't
+exist, and will check its existence beforehand.
+
+Name tasks accordingly, e.g _"Redis instance exists"_ instead of _"Create redis instance"
+because it won't be creating it if it already exists.
