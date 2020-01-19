@@ -1,4 +1,6 @@
 ---
+
+
 - hosts:
     - treasury3.openup.org.za
   become: yes
@@ -8,9 +10,6 @@
    - dokku_bot.ansible_dokku
 
   vars:
-    dokku_plugins:
-      - name: redis
-        url: https://github.com/dokku/dokku-redis.git
     app_name: vulekamali-ckan-sandbox
     app_domain: sandbox-data.vulekamali.gov.za
     postgres_hostname: prod-db.vulekamali.gov.za
@@ -24,6 +23,7 @@
     ckan_postgres_database: ckan_default_sandbox
     ckan_postgres_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES subkey=username')}}"
     ckan_postgres_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES')}}"
+
   tasks:
 
     - name: "Redis instance {{ app_name }} exists"
@@ -31,20 +31,30 @@
         name: "{{ app_name }}"
         service: redis
 
-    - name: Database "{{ ckan_datastore_database }}" exists
-      postgresql_db:
-        name: "{{ ckan_datastore_database }}"
+    - name: Install postgres client for managing databases
+      apt: name={{ item }} state=present
+      with_items:
+        - libpq-dev
+        - python3-psycopg2
 
-    - name: "Database user {{ ckan_datastore_postgres_read_user }} exists"
-      postgresql_user:
-        ssl_mode: verify-full
+    - name: "Database {{ ckan_datastore_postgres_database }} exists"
+      postgresql_db:
+        ssl_mode: require
         login_user: "{{ postgres_superuser_user }}"
         login_password: "{{ postgres_superuser_password }}"
         login_host: "{{ postgres_hostname }}"
-        db: "{{ ckan_datastore_database }}"
+        name: "{{ ckan_datastore_postgres_database }}"
+
+    - name: "Database user {{ ckan_datastore_postgres_read_user }} exists"
+      postgresql_user:
+        ssl_mode: require
+        login_user: "{{ postgres_superuser_user }}"
+        login_password: "{{ postgres_superuser_password }}"
+        login_host: "{{ postgres_hostname }}"
+        db: "{{ ckan_datastore_postgres_database }}"
         name: "{{ ckan_datastore_postgres_read_user }}"
         password: "{{ ckan_datastore_postgres_read_password }}"
-        priv: "CONNECT/{{ ckan_datastore_database }}:ALL"
+        priv: "ALL"
         state: present
 
     - name: "Dokku app {{ app_name }} exists"
