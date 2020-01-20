@@ -120,6 +120,12 @@
           DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
 
     # - name: HTTP cache configured
+    - name: Add nginx config directory
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+
 
     - name: "Redis instance {{ app_name }} linked to dokku app {{ app_name }}"
       dokku_service_link:
