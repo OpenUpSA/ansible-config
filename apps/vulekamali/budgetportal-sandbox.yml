@@ -60,7 +60,7 @@
           DISABLE_COLLECTSTATIC: 1
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/DJANGO_SECRET_KEY')}}"
           CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/CKAN_API_KEY')}}"
-          CKAN_URL:
+          CKAN_URL: https://sandbox-data.vulekamali.gov.za
           DATABASE_URL: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
           EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/SMTP')}}"
           DISCOURSE_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/SSO_SECRET')}}"
