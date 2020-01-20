@@ -56,20 +56,20 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          DJANGO_DEBUG: false
-          DISABLE_COLLECTSTATIC: 1
+          DJANGO_DEBUG: "false"
+          DISABLE_COLLECTSTATIC: "1"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/DJANGO_SECRET_KEY')}}"
-          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/CKAN_API_KEY')}}"
-          CKAN_URL: https://sandbox-data.vulekamali.gov.za
+          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/CKAN_USER', subkey='api-key')}}"
+          CKAN_URL: "https://sandbox-data.vulekamali.gov.za"
           DATABASE_URL: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
           EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/SMTP')}}"
           DISCOURSE_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/SSO_SECRET')}}"
           RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/RECAPTCHA')}}"
-          SENTRY_DSN: ...
+          SENTRY_DSN: "https://acd93673a56a48939bef31fc9ad92f2c@sentry.io/1888207"
           DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS subkey=ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS')}}"
-          AWS_STORAGE_BUCKET_NAME: sandbox-media.vulekamali.gov.za
-          SOLR_URL: https://solr.vulekamali.gov.za:8983/solr/budetportal-sandbox
-          CKAN_SSO_URL: https://sandbox-data.vulekamali.gov.za/user/login
-          ACCOUNT_LOGOUT_REDIRECT_URL: https://sandbox.vulekamali.gov.za/
+          AWS_STORAGE_BUCKET_NAME: "sandbox-media.vulekamali.gov.za"
+          SOLR_URL: "https://solr.vulekamali.gov.za:8983/solr/budetportal-sandbox"
+          CKAN_SSO_URL: "https://sandbox-data.vulekamali.gov.za/user/login"
+          ACCOUNT_LOGOUT_REDIRECT_URL: "https://sandbox.vulekamali.gov.za/"
