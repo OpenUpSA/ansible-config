@@ -57,7 +57,7 @@ ansible-playbook --limit dokku9.code4sa.org dokku-server.yml
 Installing apps
 ---------------
 
-Before installing apps, ensure your OpenUp passwordstore is up to date, e.g.
+Before installing apps, ensure your copy of the [OpenUp secret store](https://github.com/OpenUpSA/secret_store) is up to date, e.g.
 
     pass git pull
 

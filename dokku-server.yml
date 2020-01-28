@@ -2,16 +2,30 @@
 - hosts: dokkus
   become: yes
 
+  vars:
+
   pre_tasks:
+    - name: "generate dokku_users"
+      set_fact:
+       dokku_users: "{{ dokku_users|default([]) + [{'name': item, 'username': item,  'ssh_key': lookup('file', 'files/'+ item + '.key.pub')}] }}"
+      with_items: "{{ all_hosts_admins + host_extra_admins }}"
+
+    - name: "debug"
+      debug:
+        msg: "{{ dokku_users }}"
+
     - name: Set the timezone for the server to be UTC
       command: file state=link /usr/share/zoneinfo/UTC /etc/localtime
+
     - name: Set up a unique hostname
       hostname: name={{ inventory_hostname }}
+
     - name: Set up unattended-upgrades
       apt:
         update_cache: yes
         name: unattended-upgrades
         state: present
+
     - name: Generate SSH keys
       shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
       args:
@@ -19,11 +33,9 @@
 
   roles:
    - role: dokku_bot.ansible_dokku
-     set_fact:
-       dokku_users: "{{ dokku_users|default([]) + [{name: item, username: item,  ssh_key: lookup('file', 'files/'+ item + '.key.pub')}] }}"
-       with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
   tasks:
+
     - name: "Default packages are installed"
       apt:
         pkg:
