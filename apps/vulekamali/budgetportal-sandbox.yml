@@ -2,7 +2,7 @@
 
 
 - hosts:
-    - treasury3.openup.org.za
+    - hetzner1.openup.org.za
   become: yes
   become_method: sudo
 
@@ -48,18 +48,18 @@
         priv: "ALL"
         state: present
 
-    - name: "Dokku app {{ app_name }} exists"
+    - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
 
-    - name: "Dokku app {{ app_name }} config is set"
+    - name: "Dokku app config is set"
       dokku_config:
         app: "{{ app_name }}"
         config:
           DJANGO_DEBUG: "false"
           DISABLE_COLLECTSTATIC: "1"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/DJANGO_SECRET_KEY')}}"
-          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/CKAN_USER', subkey='api-key')}}"
+          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/CKAN_USER', subkey='API_KEY')}}"
           CKAN_URL: "https://sandbox-data.vulekamali.gov.za"
           DATABASE_URL: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
           EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/sandbox/SMTP')}}"
@@ -70,6 +70,6 @@
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS subkey=ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS')}}"
           AWS_STORAGE_BUCKET_NAME: "sandbox-media.vulekamali.gov.za"
-          SOLR_URL: "https://solr.vulekamali.gov.za:8983/solr/budetportal-sandbox"
+          SOLR_URL: "http://solr:8983/solr/budetportal-sandbox"
           CKAN_SSO_URL: "https://sandbox-data.vulekamali.gov.za/user/login"
           ACCOUNT_LOGOUT_REDIRECT_URL: "https://sandbox.vulekamali.gov.za/"

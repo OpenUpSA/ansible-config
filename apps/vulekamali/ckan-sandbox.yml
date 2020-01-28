@@ -2,7 +2,7 @@
 
 
 - hosts:
-    - treasury3.openup.org.za
+    - hetzner1.openup.org.za
   become: yes
   become_method: sudo
 
@@ -89,11 +89,11 @@
         priv: "ALL"
         state: present
 
-    - name: "Dokku app {{ app_name }} exists"
+    - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
 
-    - name: "Dokku app {{ app_name }} config is set"
+    - name: "Dokku app config is set"
       dokku_config:
         app: "{{ app_name }}"
         config:
@@ -113,11 +113,12 @@
           CKAN_SMTP_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP')}}"
           CKAN_SMTP_SERVER: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP subkey=hostname')}}"
           CKAN_SMTP_USER: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP subkey=username')}}"
-          CKAN_SOLR_URL: 'http://solr.vulekamali.gov.za:8983/solr/ckan-sandbox'
+          CKAN_SOLR_URL: 'http://solr:8983/solr/ckan-sandbox'
           CKAN_SSO_LOGOUT_URL: 'https://sandbox.vulekamali.gov.za/accounts/logout'
           CKAN_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SSO_SECRET')}}"
           CKAN_SSO_URL: 'https://sandbox.vulekamali.gov.za/ckan/sso'
           DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
+          CKAN_SATREASURY_BUILD_TRIGGER_ENABLED: "FALSE"
 
     # - name: HTTP cache configured
     - name: Add nginx config directory
@@ -125,13 +126,9 @@
         path: "/home/dokku/{{ app_name }}/nginx.conf.d"
         state: directory
         mode: '0755'
+        owner: dokku
+        group: dokku
 
-
-    - name: "Redis instance {{ app_name }} linked to dokku app {{ app_name }}"
-      dokku_service_link:
-        app: "{{ app_name }}"
-        name: "{{ app_name }}"
-        service: redis
 
     # - name: App code installed
     # - name: Database initialised
