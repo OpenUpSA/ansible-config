@@ -9,7 +9,7 @@ Setting up your controller (probably your work laptop)
 ------------------------------------------------------
 
 ```
-ansible-galaxy install dokku_bot.ansible_dokku
+ansible-galaxy install dokku_bot.ansible_dokku,v2020.1.6
 ```
 
 
@@ -22,6 +22,11 @@ ansible-playbook --limit hetzner1.openup.org.za users.yml
 
 If you're not an admin on the server yet, authenticate with the initial superuser
 credentials, e.g. `--user root --ask-pass`
+
+Or you might need to specify an SSH key file for the initial non-root admin user:
+
+    ansible-playbook --limit dokku123-aws.openup.org.za --user=ubuntu --become --key-file ~/.ssh/Bob.pem users.yml
+
 
 ### Add new admins
 
