@@ -5,9 +5,14 @@
   roles:
    - dokku_bot.ansible_dokku
 
+
   vars:
     app_name: pmg
     app_domain: staging.pmg.openup.org.za
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
     postgres_hostname: postgresql94-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
     postgres_database: pmg
     postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
