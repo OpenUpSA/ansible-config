@@ -54,6 +54,19 @@ After creating the server,
 ansible-playbook --limit dokku9.code4sa.org dokku-server.yml
 ```
 
+Installing apps
+---------------
+
+Before installing apps, ensure your OpenUp passwordstore is up to date, e.g.
+
+    pass git pull
+
+
+### PMG
+
+    ansible-playbook apps/pmg.yml --start-at-task "Dokku app exists"
+
+
 Configure cron to email output for error alerts
 -----------------------------------------------
 

@@ -1,0 +1,44 @@
+---
+- hosts:
+    - pmg4-aws.openup.org.za
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+
+  vars:
+    app_name: pmg
+    app_domain: sandbox.pmg.org.za
+    postgres_hostname: postgresql94-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_database: pmg
+    postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
+    postgres_password: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES')}}"
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          API_URL: http://localhost/
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS subkey=ACCESS_KEY_ID')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS')}}"
+          SQLALCHEMY_DATABASE_URI: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
+          DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
+          ES_SERVER: http://ec2-52-19-68-36.eu-west-1.compute.amazonaws.com:9200
+          FLASK_ENV: production
+          FLASK_SECRET_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/FLASK_SECRET_KEY')}}"
+          FRONTEND_HOST: https://sandbox.pmg.org.za/
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
