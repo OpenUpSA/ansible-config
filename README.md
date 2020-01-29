@@ -5,8 +5,9 @@ Ansible allows us to repeatably deploy configuration to servers
 with little or no manual steps. It should make it almost trivial
 to set up a new server and move existing apps to it.
 
-[Best practises](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
-[Video](https://www.youtube.com/watch?v=5BhAJ4mEfZ8)
+| [Best practises](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
+| [Video](https://www.youtube.com/watch?v=5BhAJ4mEfZ8)
+|
 
 Avoid having one gigantic playbook that does everything. Rather have slightly
 more granular playbooks. The arrangement we're trying at the moment is
