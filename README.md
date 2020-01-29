@@ -1,6 +1,38 @@
 Ansible configuration management for OpenUp
 ===========================================
 
+Ansible allows us to repeatably deploy configuration to servers
+with little or no manual steps. It should make it almost trivial
+to set up a new server and move existing apps to it.
+
+[Best practises](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
+[Video](https://www.youtube.com/watch?v=5BhAJ4mEfZ8)
+
+Avoid having one gigantic playbook that does everything. Rather have slightly
+more granular playbooks. The arrangement we're trying at the moment is
+
+- Set up users and groups - the first playbook we run on a new server
+- Set up dokku - the second playbook we run on a new app server
+- Apps - playbooks that install specific apps on one or more servers for one or more environments
+
+
+### Roles
+
+Roles are standardised configurations that can be applied to multiple servers.
+e.g. we might have a Database server role, a Web server role. Right now we just
+have a dokku server role.
+
+
+### Playbooks
+
+Playbooks deploy roles to specific servers.
+
+We're also using a playbook per app to deploy that app to the right servers
+with the right config for each environment needed.
+
+
+### Conflict
+
 Once something is managed by ansible, it should only be managed by ansible.
 Otherwise someone will come and override your manual change on the server
 when they run a playbook.
