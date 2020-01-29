@@ -10,12 +10,10 @@
        dokku_users: "{{ dokku_users|default([]) + [{'name': item, 'username': item,  'ssh_key': lookup('file', 'files/'+ item + '.key.pub')}] }}"
       with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
-    - name: "debug"
-      debug:
-        msg: "{{ dokku_users }}"
-
-    - name: Set the timezone for the server to be UTC
-      command: file state=link /usr/share/zoneinfo/UTC /etc/localtime
+    - name: Set timezone to UTC
+      timezone:
+        name: UTC
+      register: timezone
 
     - name: Set up a unique hostname
       hostname: name={{ inventory_hostname }}
