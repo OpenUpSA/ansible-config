@@ -8,13 +8,13 @@
 
   vars:
     app_name: pmg
-    app_domain: staging.pmg.openup.org.za
+    app_domain: pmg.org.za
     dokku_daemon_install: false # We install this using a dedicated playbook
     dokku_plugins:
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
-    postgres_hostname: postgresql94-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
     postgres_database: pmg
+    postgres_hostname: postgresql94-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
     postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
     postgres_password: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES')}}"
 
@@ -28,7 +28,6 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          API_URL: "http://api-internal.{{ app_domain }}:5000/"
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS subkey=ACCESS_KEY_ID') }}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS') }}"
           DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'

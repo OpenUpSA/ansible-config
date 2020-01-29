@@ -1,8 +1,23 @@
-EXPERIMENTAL - not the default yet
-
-
 Ansible configuration management for OpenUp
 ===========================================
+
+Once something is managed by ansible, it should only be managed by ansible.
+Otherwise someone will come and override your manual change on the server
+when they run a playbook.
+
+If you can't get ansible to do what you need and manually change something,
+it's best to update this table to make it clear that ansible is not maintaining
+that service on that server any more.
+
+See the playbook for what it does and doesn't do for you.
+
+| Server | Service | Managed by Ansible yet | Notes |
+|--------|---------|------------------------|-------|
+| hetzner1.openup.org.za | operating system users | yes | except `ubuntu` |
+| pmg4-aws.openup.org.za | dokku installation | no | Initially installed using ansible but it's not clear whether running the dokku-server play will try to upgrade dokku which needs all apps stopped and rebuilt. |
+| pmg4-aws.openup.org.za | operating system users | yes ||
+| pmg4-aws.openup.org.za | dokku installation | yes ||
+| pmg4-aws.openup.org.za | Dokku app: pmg | yes |   |
 
 
 Setting up your controller (probably your work laptop)
