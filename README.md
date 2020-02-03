@@ -64,9 +64,24 @@ ansible-galaxy install dokku_bot.ansible_dokku,v2020.1.6
 Ensuring admins have access to a server
 ---------------------------------------
 
-```
-ansible-playbook --limit hetzner1.openup.org.za users.yml
-```
+### Add new admins to ansible's inventory
+
+1. Add their key to the `files` directory
+2. Add them to the correct user list
+
+### Adding an admin that should be on all hosts
+
+Add them to `all_hosts_admins` in `users.yml` and run
+
+### Adding an admin for only specific hosts
+
+Add them to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
+
+### Run the playbooks to add them to the right servers
+
+Add their operating system users
+
+    ansible-playbook --limit hetzner1.openup.org.za users.yml
 
 If you're not an admin on the server yet, authenticate with the initial superuser
 credentials, e.g. `--user root --ask-pass`
@@ -75,19 +90,9 @@ Or you might need to specify an SSH key file for the initial non-root admin user
 
     ansible-playbook --limit dokku123-aws.openup.org.za --user=ubuntu --become --key-file ~/.ssh/Bob.pem users.yml
 
+Allow them to ssh as dokku for deployments
 
-### Add new admins
-
-1. Add their key to the `files` directory
-2. Add them to the correct user list
-
-### Adding an admin that should be on all hosts
-
-Add them to `all_hosts_admins` in `users.yml`
-
-### Adding an admin for only specific hosts
-
-Add them to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
+    ansible-playbook --limit pmg4-aws.openup.org.za dokku-server.yml --tags dokku-ssh-keys
 
 
 Install dokku
