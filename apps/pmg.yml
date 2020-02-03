@@ -60,6 +60,7 @@
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
+          - "www.{{ app_domain }}"
           - "api.{{ app_domain }}"
 
     - name: "Your dokku git remote"
