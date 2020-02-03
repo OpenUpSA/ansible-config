@@ -40,7 +40,7 @@
           MAX_SOUNDCLOUD_BATCH: "50"
           RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA') }}"
           RECAPTCHA_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA subkey=PUBLIC_KEY') }}"
-          RUN_PERIODIC_TASKS: "false"
+          RUN_PERIODIC_TASKS: "true"
           SECURITY_PASSWORD_SALT: "{{ lookup('passwordstore', 'apps/pmg/prod/SECURITY_PASSWORD_SALT') }}"
           SENDGRID_API_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/SENDGRID_API_KEY') }}"
           SENTRY_DSN: https://15f79f6945ff4d4f8ac103e6a9c2f26d@sentry.io/1489874
