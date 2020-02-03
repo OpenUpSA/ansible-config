@@ -62,6 +62,7 @@
           - "{{ app_domain }}"
           - "www.{{ app_domain }}"
           - "api.{{ app_domain }}"
+          - "bills.{{ app_domain }}"
 
     - name: "Your dokku git remote"
       debug:
