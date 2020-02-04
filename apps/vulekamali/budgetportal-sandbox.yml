@@ -73,3 +73,19 @@
           SOLR_URL: "http://solr:8983/solr/budetportal-sandbox"
           CKAN_SSO_URL: "https://sandbox-data.vulekamali.gov.za/user/login"
           ACCOUNT_LOGOUT_REDIRECT_URL: "https://sandbox.vulekamali.gov.za/"
+          ROBOTS_DENY_ALL: "true"
+
+    - name: Upload file size in configured
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
