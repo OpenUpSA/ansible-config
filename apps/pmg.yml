@@ -1,0 +1,69 @@
+---
+- hosts:
+    - pmg4-aws.openup.org.za
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+
+
+  vars:
+    app_name: pmg
+    app_domain: pmg.org.za
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+    postgres_database: pmg
+    postgres_hostname: postgresql94-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
+    postgres_password: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES')}}"
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS subkey=ACCESS_KEY_ID') }}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS') }}"
+          DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
+          ES_SERVER: http://ec2-52-19-68-36.eu-west-1.compute.amazonaws.com:9200
+          FLASK_ENV: production
+          FLASK_SECRET_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/FLASK_SECRET_KEY') }}"
+          FRONTEND_HOST: "https://{{ app_domain }}/"
+          SERVER_NAME: "{{ app_domain }}"
+          MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/pmg/prod/MAIL_PASSWORD') }}"
+          MAX_SOUNDCLOUD_BATCH: "50"
+          RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA') }}"
+          RECAPTCHA_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA subkey=PUBLIC_KEY') }}"
+          RUN_PERIODIC_TASKS: "true"
+          SECURITY_PASSWORD_SALT: "{{ lookup('passwordstore', 'apps/pmg/prod/SECURITY_PASSWORD_SALT') }}"
+          SENDGRID_API_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/SENDGRID_API_KEY') }}"
+          SENTRY_DSN: https://15f79f6945ff4d4f8ac103e6a9c2f26d@sentry.io/1489874
+          SESSION_COOKIE_DOMAIN: "{{ app_domain }}"
+          SHARPSPRING_API_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/SHARPSPRING_API subkey=KEY') }}"
+          SHARPSPRING_API_SECRET: "{{ lookup('passwordstore', 'apps/pmg/prod/SHARPSPRING_API') }}"
+          SOUNDCLOUD_APP_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD_APP_KEY subkey=ID') }}"
+          SOUNDCLOUD_APP_KEY_SECRET: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD_APP_KEY') }}"
+          SOUNDCLOUD_PASSWORD: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD') }}"
+          SOUNDCLOUD_PERIOD_MINUTES: "5"
+          SOUNDCLOUD_USERNAME: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD subkey=username') }}"
+          SQLALCHEMY_DATABASE_URI: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
+
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+          - "www.{{ app_domain }}"
+          - "api.{{ app_domain }}"
+          - "bills.{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"

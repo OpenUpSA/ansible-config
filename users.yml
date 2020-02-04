@@ -1,30 +1,32 @@
 - hosts: all
   become: yes
   become_method: sudo
-  vars:
-    all_hosts_admins:
-      - jdb
-      - adi
-      - lunga
   tasks:
-    - name: Ensure group "admin" exists
+    - name: "Group admin exists"
       group:
         name: admin
         state: present
 
-    - name: "Create user accounts and add users to groups"
+    # https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user
+    - name: "Group dropbox exists"
+      group:
+        name: docker
+        state: present
+
+    - name: "Admin users exist and are configured"
       user:
         name: "{{ item }}"
-        groups: "admin,www-data"
+        groups: "admin,www-data,docker"
+        shell: /bin/bash
       with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
-    - name: "Add authorized keys"
+    - name: "Admin users can SSH to their accounts"
       authorized_key:
         user: "{{ item }}"
         key: "{{ lookup('file', 'files/'+ item + '.key.pub') }}"
       with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
-    - name: "Allow admin users to sudo without a password"
+    - name: "Admin users can use sudo without password"
       lineinfile:
         dest: "/etc/sudoers" # path: in version 2.3
         state: "present"
