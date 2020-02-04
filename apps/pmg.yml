@@ -67,3 +67,18 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: Upload file size is configured
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
