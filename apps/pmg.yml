@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - pmg4-aws.openup.org.za
+    - pmg
   become: yes
   roles:
    - dokku_bot.ansible_dokku
