@@ -63,7 +63,7 @@
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS')}}"
           AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
-          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/CKAN_USER', subkey='api-key')}}"
+          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/CKAN_USER subkey=api-key')}}"
           CKAN_SSO_URL: "https://{{ ckan_domain }}/user/login"
           CKAN_URL: "https://{{ ckan_domain }}"
           COMMENTS_ENABLED: "{{ comments_enabled }}"
