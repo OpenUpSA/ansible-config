@@ -17,6 +17,13 @@ more granular playbooks. The arrangement we're trying at the moment is
 - Apps - playbooks that install specific apps on one or more servers for one or more environments
 
 
+### Inventory
+
+Default inventory is `sandbox`.
+
+Specify the inventory file to use e.g. `--inventory inventory/prod.yml`
+
+
 ### Roles
 
 Roles are standardised configurations that can be applied to multiple servers.
@@ -67,15 +74,9 @@ Ensuring admins have access to a server
 ### Add new admins to ansible's inventory
 
 1. Add their key to the `files` directory
-2. Add them to the correct user list
-
-### Adding an admin that should be on all hosts
-
-Add them to `all_hosts_admins` in `users.yml` and run
-
-### Adding an admin for only specific hosts
-
-Add them to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
+2. Add them to the correct user list:
+  - An admin that should be on all hosts should be added to `all_hosts_admins` in `users.yml` and run
+  - An admin for only specific hosts should be added to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
 
 ### Run the playbooks to add them to the right servers
 
