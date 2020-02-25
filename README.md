@@ -17,6 +17,13 @@ more granular playbooks. The arrangement we're trying at the moment is
 - Apps - playbooks that install specific apps on one or more servers for one or more environments
 
 
+### Inventory
+
+Default inventory is `sandbox`.
+
+Specify the inventory file to use e.g. `--inventory inventory/prod.yml`
+
+
 ### Roles
 
 Roles are standardised configurations that can be applied to multiple servers.
