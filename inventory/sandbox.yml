@@ -1,7 +1,9 @@
 all:
   hosts:
+    writeinpublic-test.pa.org.za:
+      host_extra_admins:
+        - delenamalan
   children:
-
     "vulekamali":
       hosts:
         hetzner1.openup.org.za:
