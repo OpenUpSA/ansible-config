@@ -1,5 +1,12 @@
 ---
 
+- name: Test for docker
+  hosts: writeinputlic-test
+  tasks:
+    - name: Test for docker
+      shell: docker info
+      register: docker_exists
+
 - name: Ensure Docker is installed
   hosts: writeinputlic-test
   become: yes
@@ -9,7 +16,8 @@
       - dean
   roles:
     # ansible-galaxy install geerlingguy.docker
-    - geerlingguy.docker
+    - role: geerlingguy.docker
+      when: docker_exists.rc == 1
 
 - name: Ensure Docker Python library is installed
   hosts: all
@@ -22,7 +30,8 @@
         state: latest
   roles:
     # ansible-galaxy install geerlingguy.pip
-    - geerlingguy.pip
+    - role: geerlingguy.pip
+      when: docker_exists.rc == 1
 
 #- name: Ensure correct ports are open
 #  hosts: all
@@ -67,6 +76,9 @@
         name: caddy
         state: started
         image: abiosoft/caddy:1.0.3-no-stats
+        pull: yes
+        recreate: yes
+        keep_volumes: yes
         ports:
           - 80:2015
           - 443:2015
@@ -100,13 +112,14 @@
 #        state: directory
 #        mode: 0755
 
+# Shouldn't be needed once image is pulled from container registry
     - name: Writeinpublic repo exists
       git:
         repo: https://github.com/dnk8n/writeinpublic.git
         dest: /home/dean/src/writeinpublic
         version: local_devops
 
-    - name: Writeinpublic image exists
+    - name: Writeinpublic image exists and is the correct version
       docker_image:
         build:
           path: /home/dean/src/writeinpublic
@@ -115,12 +128,32 @@
         tag: latest
         state: present
         source: build
+        force_source: yes
 
 #    - name: "Run Write in Public tests and write out coverage analysis"
 
+#    - name: "Compile all the available Write in public translations"
+
+    - name: Local Settings are present and owned by 1000:1000 (container user uid:gid)
+      become: yes
+      file:
+        path: /home/dean/local_settings.py
+        owner: "1000"
+        group: "1000"
+        mode: "0600"
+
+    - name: App directory to be used as shared volume exists and is owned by 1000:1000 (container user uid:gid)
+      become: yes
+      file:
+        path: /home/dean/share
+        state: directory
+        owner: "1000"
+        group: "1000"
+        mode: "0755"
+
     - name: Run migrations
       docker_container:
-        user: "1000"
+        user: "1000:1000"
         name: writeinpublic-migrations
         state: started
         image: openup/writeinpublic:latest
@@ -129,23 +162,11 @@
         auto_remove: yes
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
-          - /home/dean/src/writeinpublic/share:/app/share
-
-#    - name: "Compile all the available Write in public translations"
-
-    - name: Local Settings are present
-      stat:
-        path: /home/dean/local_settings.py
-
-    - name: App directory to be used as shared volume exists
-      file:
-        path: /home/dean/src/writeinpublic/share
-        state: directory
-        mode: 0755
+          - /home/dean/share:/app/share
 
     - name: Load Fixtures
       docker_container:
-        user: "1000"
+        user: "1000:1000"
         name: writeinpublic-fixtures
         state: started
         image: openup/writeinpublic:latest
@@ -154,13 +175,16 @@
         auto_remove: yes
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
-          - /home/dean/src/writeinpublic/share:/app/share
+          - /home/dean/share:/app/share
 
     - name: Writeinpublic container is started - writeinpublic
       docker_container:
-        user: "1000"
+        user: "1000:1000"
         name: writeinpublic
+        hostname: writeinpublic
         state: started
+        recreate: yes
+        keep_volumes: yes
         image: openup/writeinpublic:latest
         working_dir: /app
         command: ./manage.py runserver 0.0.0.0:8000 # Change this to production server like gunicorn
@@ -170,13 +194,15 @@
 #          - name: writeinpublic
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
-          - /home/dean/src/writeinpublic/share:/app/share
+          - /home/dean/share:/app/share
 
     - name: Writeinpublic container is started - writeinpublic_celery_worker
       docker_container:
-        user: "1000"
+        user: "1000:1000"
         name: writeinpublic-celery_worker
         state: started
+        recreate: yes
+        keep_volumes: yes
         image: openup/writeinpublic:latest
         working_dir: /app
         command: celery -A writeit worker
@@ -186,13 +212,15 @@
 #          - name: writeinpublic
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
-          - /home/dean/src/writeinpublic/share:/app/share
+          - /home/dean/share:/app/share
 
     - name: Writeinpublic container is started - writeinpublic_celery_beat
       docker_container:
-        user: "1000"
+        user: "1000:1000"
         name: writeinpublic-celery_beat
         state: started
+        recreate: yes
+        keep_volumes: yes
         image: openup/writeinpublic:latest
         command: celery -A writeit beat
         restart_policy: unless-stopped
@@ -201,7 +229,7 @@
 #          - name: writeinpublic
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
-          - /home/dean/src/writeinpublic/share:/app/share
+          - /home/dean/share:/app/share
 
     - name: Ensure only necessary containers added to network
       docker_network:
