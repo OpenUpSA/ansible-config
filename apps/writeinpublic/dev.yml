@@ -1,0 +1,213 @@
+---
+
+- name: Ensure Docker is installed
+  hosts: writeinputlic-test
+  become: yes
+  vars:
+    docker_package_state: latest
+    docker_users:
+      - dean
+  roles:
+    # ansible-galaxy install geerlingguy.docker
+    - geerlingguy.docker
+
+- name: Ensure Docker Python library is installed
+  hosts: all
+  become: yes
+  vars:
+    pip_executable: pip3
+    pip_package: python3-pip
+    pip_install_packages:
+      - name: docker
+        state: latest
+  roles:
+    # ansible-galaxy install geerlingguy.pip
+    - geerlingguy.pip
+
+#- name: Ensure correct ports are open
+#  hosts: all
+#  vars:
+#    firewall_state: started
+#    firewall_enabled_at_boot: true
+#    firewall_allowed_tcp_ports:
+#      - 22
+#      - 80
+#      - 443
+#    firewall_allowed_udp_ports: []
+#    firewall_disable_ufw: true
+#    firewall_enable_ipv6: false
+#  roles:
+#    # ansible-galaxy install geerlingguy.firewall
+#    - geerlingguy.firewall
+
+- name: Manage Deployment
+  hosts: writeinputlic-test
+  become: no
+  tasks:
+    - name: Write-in-Public Network exists
+      docker_network:
+        name: writeinpublic
+        state: present
+
+    - name: Caddyfile directory exists
+      file:
+        path: /home/dean/.caddy
+        state: directory
+        mode: 0755
+
+    - name: Caddyfile exists
+      template:
+        src: Caddyfile
+        dest: /home/dean/.caddy/Caddyfile
+        mode: 0644
+
+    - name: Caddy container exists
+      docker_container:
+        user: root
+        name: caddy
+        state: started
+        image: abiosoft/caddy:1.0.3-no-stats
+        ports:
+          - 80:2015
+          - 443:2015
+# Uncomment when ssl is enabled
+#          - 80:80
+#          - 443:443
+        restart_policy: unless-stopped
+        env:
+          ACME_AGREE: "true"
+#        networks_cli_compatible: yes
+#        networks:
+#          - name: writeinpublic
+        volumes:
+          - /home/dean/.caddy/Caddyfile:/etc/Caddyfile
+          - /home/dean/.caddy/.caddy:/root/.caddy
+          - /home/dean/.caddy/logs:/var/log/caddy
+
+#    - name: "Openup Elasticsearch 0.90.13 container exists"
+#      docker_container:
+#    - networks_cli_compatible: yes
+
+    #        name: caddy
+#        state: present
+#        image: openup/elasticsearch-0.90:latest
+
+#    - name: "Postgres container exists"
+
+#    - name: Src dir exists
+#      file:
+#        path: /home/dean/src
+#        state: directory
+#        mode: 0755
+
+    - name: Writeinpublic repo exists
+      git:
+        repo: https://github.com/dnk8n/writeinpublic.git
+        dest: /home/dean/src/writeinpublic
+        version: local_devops
+
+    - name: Writeinpublic image exists
+      docker_image:
+        build:
+          path: /home/dean/src/writeinpublic
+          pull: yes
+        name: openup/writeinpublic
+        tag: latest
+        state: present
+        source: build
+
+#    - name: "Run Write in Public tests and write out coverage analysis"
+
+    - name: Run migrations
+      docker_container:
+        user: "1000"
+        name: writeinpublic-migrations
+        state: started
+        image: openup/writeinpublic:latest
+        working_dir: /app
+        command: ./manage.py migrate
+        auto_remove: yes
+        volumes:
+          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+          - /home/dean/src/writeinpublic/share:/app/share
+
+#    - name: "Compile all the available Write in public translations"
+
+    - name: Local Settings are present
+      stat:
+        path: /home/dean/local_settings.py
+
+    - name: App directory to be used as shared volume exists
+      file:
+        path: /home/dean/src/writeinpublic/share
+        state: directory
+        mode: 0755
+
+    - name: Load Fixtures
+      docker_container:
+        user: "1000"
+        name: writeinpublic-fixtures
+        state: started
+        image: openup/writeinpublic:latest
+        working_dir: /app
+        command: ./manage.py loaddata example_data.yaml
+        auto_remove: yes
+        volumes:
+          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+          - /home/dean/src/writeinpublic/share:/app/share
+
+    - name: Writeinpublic container is started - writeinpublic
+      docker_container:
+        user: "1000"
+        name: writeinpublic
+        state: started
+        image: openup/writeinpublic:latest
+        working_dir: /app
+        command: ./manage.py runserver 0.0.0.0:8000 # Change this to production server like gunicorn
+        restart_policy: unless-stopped
+#        networks_cli_compatible: yes
+#        networks:
+#          - name: writeinpublic
+        volumes:
+          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+          - /home/dean/src/writeinpublic/share:/app/share
+
+    - name: Writeinpublic container is started - writeinpublic_celery_worker
+      docker_container:
+        user: "1000"
+        name: writeinpublic-celery_worker
+        state: started
+        image: openup/writeinpublic:latest
+        working_dir: /app
+        command: celery -A writeit worker
+        restart_policy: unless-stopped
+#        networks_cli_compatible: yes
+#        networks:
+#          - name: writeinpublic
+        volumes:
+          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+          - /home/dean/src/writeinpublic/share:/app/share
+
+    - name: Writeinpublic container is started - writeinpublic_celery_beat
+      docker_container:
+        user: "1000"
+        name: writeinpublic-celery_beat
+        state: started
+        image: openup/writeinpublic:latest
+        command: celery -A writeit beat
+        restart_policy: unless-stopped
+#        networks_cli_compatible: yes
+#        networks:
+#          - name: writeinpublic
+        volumes:
+          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+          - /home/dean/src/writeinpublic/share:/app/share
+
+    - name: Ensure only necessary containers added to network
+      docker_network:
+        name: network_one
+        connected:
+          - caddy
+          - writeinpublic
+          - writeinpublic-celery_worker
+          - writeinpublic-celery_beat

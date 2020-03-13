@@ -1,0 +1,8 @@
+writeinpublic-test.pa.org.za {
+    tls off
+    log /var/log/caddy/writeinpublic-test.pa.org-access.log
+    errors /var/log/caddy/writeinpublic-test.pa.org-error.log
+    proxy / writeinpublic:8000 {
+        transparent
+    }
+}
