@@ -58,59 +58,9 @@
         name: writeinpublic
         state: present
 
-    - name: Caddyfile directory exists
-      file:
-        path: /home/dean/.caddy
-        state: directory
-        mode: 0755
-
-    - name: Caddyfile exists
-      template:
-        src: Caddyfile
-        dest: /home/dean/.caddy/Caddyfile
-        mode: 0644
-
-    - name: Caddy container exists
-      docker_container:
-        user: root
-        name: caddy
-        state: started
-        image: abiosoft/caddy:1.0.3-no-stats
-        pull: yes
-        recreate: yes
-        keep_volumes: yes
-        ports:
-          - 80:2015
-          - 443:2015
-# Uncomment when ssl is enabled
-#          - 80:80
-#          - 443:443
-        restart_policy: unless-stopped
-        env:
-          ACME_AGREE: "true"
-#        networks_cli_compatible: yes
-#        networks:
-#          - name: writeinpublic
-        volumes:
-          - /home/dean/.caddy/Caddyfile:/etc/Caddyfile
-          - /home/dean/.caddy/.caddy:/root/.caddy
-          - /home/dean/.caddy/logs:/var/log/caddy
-
 #    - name: "Openup Elasticsearch 0.90.13 container exists"
 #      docker_container:
-#    - networks_cli_compatible: yes
-
-    #        name: caddy
-#        state: present
 #        image: openup/elasticsearch-0.90:latest
-
-#    - name: "Postgres container exists"
-
-#    - name: Src dir exists
-#      file:
-#        path: /home/dean/src
-#        state: directory
-#        mode: 0755
 
 # Shouldn't be needed once image is pulled from container registry
     - name: Writeinpublic repo exists
@@ -159,10 +109,34 @@
         image: openup/writeinpublic:latest
         working_dir: /app
         command: ./manage.py migrate
-        auto_remove: yes
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
+        detach: false
+      register: migrations
+
+#    - name: Show all output for migrations
+#      debug: var=migrations
+#
+#    - name: Show stdout for migrations
+#      debug: msg="{{ migrations.stdout }}"
+#
+#    - name: Show stderr for migrations
+#      debug: msg="{{ migrations.stderr }}"
+#
+#    - name: Show stdout lines for migrations
+#      debug: msg="{{ migrations.stdout_lines }}"
+#
+#    - name: Show stderr lines for migrations
+#      debug: msg="{{ migrations.stderr_lines }}"
+    - name: Show output for migrations
+      debug:
+        msg: "{{ migrations.ansible_facts.docker_container.Output }}"
+
+    - name: Remove the migrations container
+      docker_container:
+        state: absent
+        name: writeinpublic-migrations
 
     - name: Load Fixtures
       docker_container:
@@ -172,10 +146,34 @@
         image: openup/writeinpublic:latest
         working_dir: /app
         command: ./manage.py loaddata example_data.yaml
-        auto_remove: yes
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
+        detach: false
+      register: fixtures
+
+#    - name: Show all output for fixtures
+#      debug: var=fixtures
+#
+#    - name: Show stdout for fixtures
+#      debug: msg="{{ fixtures.stdout }}"
+#
+#    - name: Show stderr for fixtures
+#      debug: msg="{{ fixtures.stderr }}"
+#
+#    - name: Show stdout lines for fixtures
+#      debug: msg="{{ fixtures.stdout_lines }}"
+#
+#    - name: Show stderr lines for fixtures
+#      debug: msg="{{ fixtures.stderr_lines }}"
+    - name: Show output for fixtures
+      debug:
+        msg: "{{ fixtures.ansible_facts.docker_container.Output }}"
+
+    - name: Remove the fixtures container
+      docker_container:
+        state: absent
+        name: writeinpublic-fixtures
 
     - name: Writeinpublic container is started - writeinpublic
       docker_container:
@@ -189,9 +187,6 @@
         working_dir: /app
         command: ./manage.py runserver 0.0.0.0:8000 # Change this to production server like gunicorn
         restart_policy: unless-stopped
-#        networks_cli_compatible: yes
-#        networks:
-#          - name: writeinpublic
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
@@ -207,9 +202,6 @@
         working_dir: /app
         command: celery -A writeit worker
         restart_policy: unless-stopped
-#        networks_cli_compatible: yes
-#        networks:
-#          - name: writeinpublic
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
@@ -224,12 +216,41 @@
         image: openup/writeinpublic:latest
         command: celery -A writeit beat
         restart_policy: unless-stopped
-#        networks_cli_compatible: yes
-#        networks:
-#          - name: writeinpublic
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
+
+    - name: Caddyfile directory exists
+      file:
+        path: /home/dean/.caddy
+        state: directory
+        mode: 0755
+
+    - name: Caddyfile exists
+      template:
+        src: Caddyfile
+        dest: /home/dean/.caddy/Caddyfile
+        mode: 0644
+
+    - name: Caddy container exists
+      docker_container:
+        user: root
+        name: caddy
+        state: started
+        image: abiosoft/caddy:1.0.3-no-stats
+        pull: yes
+        recreate: yes
+        keep_volumes: yes
+        ports:
+          - 80:80
+          - 443:443
+        restart_policy: unless-stopped
+        env:
+          ACME_AGREE: "true"
+        volumes:
+          - /home/dean/.caddy/Caddyfile:/etc/Caddyfile
+          - /home/dean/.caddy/.caddy:/root/.caddy
+          - /home/dean/.caddy/logs:/var/log/caddy
 
     - name: Ensure only necessary containers added to network
       docker_network:
