@@ -1,14 +1,14 @@
 ---
 
 - name: Test for docker
-  hosts: writeinputlic-test
+  hosts: writeinpublic-test
   tasks:
     - name: Test for docker
       shell: docker info
       register: docker_exists
 
 - name: Ensure Docker is installed
-  hosts: writeinputlic-test
+  hosts: writeinpublic-test
   become: yes
   vars:
     docker_package_state: latest
@@ -50,7 +50,7 @@
 #    - geerlingguy.firewall
 
 - name: Manage Deployment
-  hosts: writeinputlic-test
+  hosts: writeinpublic-test
   become: no
   tasks:
     - name: Write-in-Public Network exists
