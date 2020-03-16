@@ -113,6 +113,7 @@
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
         detach: false
+      ignore_errors: yes
       register: migrations
 
     - name: Show output for migrations
@@ -124,28 +125,53 @@
         state: absent
         name: writeinpublic-migrations
 
-    - name: Load Fixtures
+    - name: Run collectstatic
       docker_container:
         user: "1000:1000"
-        name: writeinpublic-fixtures
+        name: writeinpublic-collectstatic
         state: started
         image: openup/writeinpublic:latest
         working_dir: /app
-        command: ./manage.py loaddata example_data.yaml
+        command: ./manage.py collectstatic --noinput
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
         detach: false
-      register: fixtures
+      ignore_errors: yes
+      register: collectstatic
 
-    - name: Show output for fixtures
+    - name: Show output for collectstatic
       debug:
-        msg: "{{ fixtures.ansible_facts.docker_container.Output }}"
+        msg: "{{ collectstatic.ansible_facts.docker_container.Output }}"
 
-    - name: Remove the fixtures container
+    - name: Remove the collectstatic container
       docker_container:
         state: absent
-        name: writeinpublic-fixtures
+        name: writeinpublic-collectstatic
+
+#    - name: Load Fixtures
+#      docker_container:
+#        user: "1000:1000"
+#        name: writeinpublic-fixtures
+#        state: started
+#        image: openup/writeinpublic:latest
+#        working_dir: /app
+#        command: ./manage.py loaddata example_data.yaml
+#        volumes:
+#          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+#          - /home/dean/share:/app/share
+#        detach: false
+#      ignore_errors: yes
+#      register: fixtures
+#
+#    - name: Show output for fixtures
+#      debug:
+#        msg: "{{ fixtures.ansible_facts.docker_container.Output }}"
+#
+#    - name: Remove the fixtures container
+#      docker_container:
+#        state: absent
+#        name: writeinpublic-fixtures
 
     - name: Writeinpublic container is started - writeinpublic
       docker_container:
@@ -157,7 +183,9 @@
         keep_volumes: yes
         image: openup/writeinpublic:latest
         working_dir: /app
-        command: ./manage.py runserver 0.0.0.0:8000 # Change this to production server like gunicorn
+#        # Devserver command
+#        command: ./manage.py runserver 0.0.0.0:8000
+        command: gunicorn -b 0.0.0.0:8000 writeit.wsgi
         restart_policy: unless-stopped
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
@@ -191,6 +219,18 @@
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
+
+    - name: Postfix server container is started
+      docker_container:
+        name: postfix
+        hostname: postfix
+        image: mailu/postfix:1.7
+        recreate: yes
+        restart_policy: unless-stopped
+        volumes:
+          - /a/b:/c
+        env:
+          A: "B"
 
     - name: Caddyfile directory exists
       file:
