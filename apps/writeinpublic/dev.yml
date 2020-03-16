@@ -115,20 +115,6 @@
         detach: false
       register: migrations
 
-#    - name: Show all output for migrations
-#      debug: var=migrations
-#
-#    - name: Show stdout for migrations
-#      debug: msg="{{ migrations.stdout }}"
-#
-#    - name: Show stderr for migrations
-#      debug: msg="{{ migrations.stderr }}"
-#
-#    - name: Show stdout lines for migrations
-#      debug: msg="{{ migrations.stdout_lines }}"
-#
-#    - name: Show stderr lines for migrations
-#      debug: msg="{{ migrations.stderr_lines }}"
     - name: Show output for migrations
       debug:
         msg: "{{ migrations.ansible_facts.docker_container.Output }}"
@@ -152,20 +138,6 @@
         detach: false
       register: fixtures
 
-#    - name: Show all output for fixtures
-#      debug: var=fixtures
-#
-#    - name: Show stdout for fixtures
-#      debug: msg="{{ fixtures.stdout }}"
-#
-#    - name: Show stderr for fixtures
-#      debug: msg="{{ fixtures.stderr }}"
-#
-#    - name: Show stdout lines for fixtures
-#      debug: msg="{{ fixtures.stdout_lines }}"
-#
-#    - name: Show stderr lines for fixtures
-#      debug: msg="{{ fixtures.stderr_lines }}"
     - name: Show output for fixtures
       debug:
         msg: "{{ fixtures.ansible_facts.docker_container.Output }}"
