@@ -8,17 +8,18 @@ all:
       hosts:
         hetzner1.openup.org.za:
       vars:
-        env_name: sandbox
         app_domain: sandbox.vulekamali.gov.za
-        postgres_database: budgetportal_sandbox
-        robots_deny_all: "true"
         ckan_domain: sandbox-data.vulekamali.gov.za
-        aws_storage_bucket_name: sandbox-media.vulekamali.gov.za
         comments_enabled: "false"
-        solr_ur: "http://solr:8983/solr/budetportal-sandbox"
-        sentry_dsn: "https://acd93673a56a48939bef31fc9ad92f2c@sentry.io/1888207"
         default_from_email: "sandbox@vulekamali.gov.za"
         discourse_sso_url: "should-be-disabled"
+        env_name: sandbox
+        gunicorn_workers_arg: ""
+        media_hostname: media.sandbox.vulekamali.gov.za
+        postgres_database: budgetportal_sandbox
+        robots_deny_all: "true"
+        sentry_dsn: "https://acd93673a56a48939bef31fc9ad92f2c@sentry.io/1888207"
+        solr_url: "http://solr:8983/solr/budgetportal-sandbox"
 
   vars:
     all_hosts_admins:

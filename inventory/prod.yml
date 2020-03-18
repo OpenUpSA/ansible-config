@@ -31,17 +31,17 @@ all:
         treasury4.openup.org.za:
           gunicorn_workers_arg: "--workers 2"
       vars:
-        env_name: prod
         app_domain: vulekamali.gov.za
-        postgres_database: budgetportal
-        robots_deny_all: "false"
         ckan_domain: data.vulekamali.gov.za
-        aws_storage_bucket_name: media.vulekamali.gov.za
         comments_enabled: "true"
-        solr_url: "http://solr.vulekamali.gov.za:8983/solr/budgetportal"
-        sentry_dsn: "https://5999094b0e214151bdfef41a5ad513c2@sentry.io/1730285"
         default_from_email: "info@vulekamali.gov.za"
         discourse_sso_url: "https://discussions.vulekamali.gov.za/session/sso_login"
+        env_name: prod
+        media_hostname: media.vulekamali.gov.za
+        postgres_database: budgetportal
+        robots_deny_all: "false"
+        sentry_dsn: "https://5999094b0e214151bdfef41a5ad513c2@sentry.io/1730285"
+        solr_url: "http://solr.vulekamali.gov.za:8983/solr/budgetportal"
 
   vars:
     all_hosts_admins:
