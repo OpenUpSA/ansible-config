@@ -101,6 +101,14 @@
         group: "1000"
         mode: "0755"
 
+    - name: RabbitMQ server container is started
+      docker_container:
+        name: rabbitmq
+        hostname: rabbitmq
+        image: rabbitmq:3.8.3
+        recreate: yes
+        restart_policy: unless-stopped
+
     - name: Run migrations
       docker_container:
         user: "1000:1000"
@@ -202,6 +210,8 @@
         working_dir: /app
         command: celery -A writeit worker
         restart_policy: unless-stopped
+        env:
+          CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
@@ -216,6 +226,8 @@
         image: openup/writeinpublic:latest
         command: celery -A writeit beat
         restart_policy: unless-stopped
+        env:
+          CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
@@ -227,10 +239,10 @@
         image: mailu/postfix:1.7
         recreate: yes
         restart_policy: unless-stopped
-        volumes:
-          - /a/b:/c
-        env:
-          A: "B"
+#        volumes:
+#          - /a/b:/c
+#        env:
+#          A: "B"
 
     - name: Caddyfile directory exists
       file:
@@ -272,3 +284,4 @@
           - writeinpublic
           - writeinpublic-celery_worker
           - writeinpublic-celery_beat
+          - rabbitmq
