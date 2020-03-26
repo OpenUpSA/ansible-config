@@ -83,6 +83,7 @@
           ROBOTS_DENY_ALL: "{{ robots_deny_all }}"
           SENTRY_DSN: "{{ sentry_dsn }}"
           SOLR_URL: "{{ solr_url }}"
+          TAG_MANAGER_ID: "{{ tag_manager_id }}"
 
     - name: "Dokku app domains are configured"
       dokku_domains:
