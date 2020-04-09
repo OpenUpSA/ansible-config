@@ -261,7 +261,7 @@
         user: root
         name: caddy
         state: started
-        image: abiosoft/caddy:1.0.3-no-stats
+        image: caddy/caddy:v2.0.0-beta.15-alpine
         pull: yes
         recreate: yes
         keep_volumes: yes
@@ -271,10 +271,13 @@
         restart_policy: unless-stopped
         env:
           ACME_AGREE: "true"
+          XDG_DATA_HOME: "/root/.local/share"
         volumes:
-          - /home/dean/.caddy/Caddyfile:/etc/Caddyfile
-          - /home/dean/.caddy/.caddy:/root/.caddy
-          - /home/dean/.caddy/logs:/var/log/caddy
+          - /home/dean/.caddy/Caddyfile:/etc/caddy/Caddyfile
+          - /home/dean/.caddy/data:/data
+          - /home/dean/.caddy/config:/config
+          - /home/dean/.caddy/share/.local:/root/.local/share
+          - /home/dean/.caddy/share/usr:/usr/share/caddy
 
     - name: Ensure only necessary containers added to network
       docker_network:

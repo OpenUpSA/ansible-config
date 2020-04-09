@@ -1,7 +1,12 @@
-writeinpublic-test.pa.org.za {
-    log /var/log/caddy/writeinpublic-test.pa.org-access.log
-    errors /var/log/caddy/writeinpublic-test.pa.org-error.log
-    proxy / writeinpublic:8000 {
-        transparent
+writeinpublic-test.pa.org.za writeinpublic-test-site1.pa.org.za writeinpublic-test-site2.pa.org.za {
+    log {
+        format json
+    }
+    reverse_proxy * writeinpublic:8000 {
+        header_up Host {http.request.host}
+        header_up X-Real-IP {http.request.remote.host}
+        header_up X-Forwarded-For {http.request.remote.host}
+        header_up X-Forwarded-Port {http.request.port}
+        header_up X-Forwarded-Proto {http.request.scheme}
     }
 }
