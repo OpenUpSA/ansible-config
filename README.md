@@ -115,6 +115,9 @@ Before installing apps, ensure your copy of the [OpenUp secret store](https://gi
 
     pass git pull
 
+If OpenUp's secret store is not in the default location, you can specify its
+location using the environment variable `PASSWORD_STORE_DIR`.
+
 
 ### PMG
 
