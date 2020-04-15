@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - gazettes-ansible-test-openup.org.za
+    - gazettes-aleph-web
   become: yes
   roles:
    - dokku_bot.ansible_dokku

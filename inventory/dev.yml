@@ -1,6 +1,9 @@
 all:
   hosts:
   children:
+    gazettes-aleph-web:
+      hosts:
+        gazettes-aleph-test-openup.org.za:
     dokkus:
       hosts:
         writeinpublic-test.pa.org.za:
