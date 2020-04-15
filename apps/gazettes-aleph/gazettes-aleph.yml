@@ -3,7 +3,7 @@
     - gazettes-aleph-web
   become: yes
   roles:
-   - dokku_bot.ansible_dokku
+    - dokku_bot.ansible_dokku
 
   vars:
     app_name: "gazettes-aleph"
