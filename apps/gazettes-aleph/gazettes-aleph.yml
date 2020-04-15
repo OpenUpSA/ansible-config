@@ -59,8 +59,6 @@
           MAIL_HOST: "smtp.sendgrid.net"
           MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL')}}"
           MAIL_USERNAME: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL subkey=username')}}"
-          NEW_RELIC_APP_NAME: "Aleph"
-          NEW_RELIC_LICENSE_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/NEW_RELIC_LICENSE_KEY')}}"
           NO_VHOST: 0
           POLYGLOT_DATA_PATH: "/opt/aleph/data"
           TESSDATA_PREFIX: "/usr/share/tesseract-ocr"
