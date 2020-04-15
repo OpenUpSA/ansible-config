@@ -52,8 +52,6 @@
           DOKKU_LETSENCRYPT_EMAIL: "webapps@code4sa.org"
           FACEBOOK_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK subkey=oauth-key')}}"
           FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK subkey=oauth-secret')}}"
-          # Should this be dynamic?
-          GIT_REV: "533c1161f2e008c4b98efb1f38b8a1b38ac5208e"
           GOOGLE_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE subkey=oauth-key')}}"
           GOOGLE_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE subkey=oauth-secret')}}"
           MAIL_ADMIN: "jd@code4sa.org,greg@code4sa.org"
