@@ -6,8 +6,7 @@
    - dokku_bot.ansible_dokku
 
   vars:
-    app_name: "gazettes-aleph-{{ env_name }}"
-    app_domain: "{{ inventory_hostname }}"
+    app_name: "gazettes-aleph"
     dokku_daemon_install: false # We install this using a dedicated playbook
     dokku_plugins:
       - name: letsencrypt

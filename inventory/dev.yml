@@ -4,6 +4,8 @@ all:
     gazettes-aleph-web:
       hosts:
         gazettes-aleph-test-openup.org.za:
+      vars:
+        app_domain: gazettes-aleph-test-openup.org.za
     dokkus:
       hosts:
         writeinpublic-test.pa.org.za:
