@@ -14,8 +14,6 @@
       - name: elasticsearch
         url: https://github.com/dokku/dokku-elasticsearch.git
     postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
-    postgres_superuser_user: "{{ lookup('passwordstore', 'core/aleph/POSTGRES_SUPERUSER subkey=username')}}"
-    postgres_superuser_password: "{{ lookup('passwordstore', 'core/aleph/POSTGRES_SUPERUSER')}}"
     postgres_user: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES subkey=username')}}"
     postgres_password: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES')}}"
 
