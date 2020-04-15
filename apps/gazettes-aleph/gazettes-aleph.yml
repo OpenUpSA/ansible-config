@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - gazettes-aleph-web
+    - gazettes_aleph_web
   become: yes
   roles:
     - dokku_bot.ansible_dokku
@@ -14,6 +14,7 @@
       - name: elasticsearch
         url: https://github.com/dokku/dokku-elasticsearch.git
     postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_database: aleph
     postgres_user: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES subkey=username')}}"
     postgres_password: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES')}}"
 
@@ -22,6 +23,14 @@
       dokku_app:
         app: "{{ app_name }}"
 
+    - name: "set vm.max_map_count to 262144 in sysctl"
+      sysctl: "name={{ item.key }} value={{ item.value }}"
+      with_items:
+        - key: "vm.max_map_count"
+          value: "262144"
+
+    # TODO: Get the following vars exported properly so that the correct image is used
+    # TODO: The following shell command is not idempotent
     - name: "Dokku elasticsearch"
       vars:
         ELASTICSEARCH_IMAGE: "openup/elasticsearch-0.90"
@@ -51,7 +60,7 @@
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@code4sa.org"
           FACEBOOK_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH subkey=key')}}"
-          FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH)}}"
+          FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH')}}"
           GOOGLE_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH subkey=key')}}"
           GOOGLE_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH')}}"
           MAIL_ADMIN: "jd@code4sa.org,greg@code4sa.org"
@@ -59,7 +68,7 @@
           MAIL_HOST: "smtp.sendgrid.net"
           MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL')}}"
           MAIL_USERNAME: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL subkey=username')}}"
-          NO_VHOST: 0
+          NO_VHOST: "0"
           POLYGLOT_DATA_PATH: "/opt/aleph/data"
           TESSDATA_PREFIX: "/usr/share/tesseract-ocr"
           ZA_GAZETTE_ARCHIVE_URI: "https://archive.opengazettes.org.za/"

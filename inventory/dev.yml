@@ -1,11 +1,12 @@
 all:
   hosts:
   children:
-    gazettes-aleph-web:
+    gazettes_aleph_web:
       hosts:
-        gazettes-aleph-test-openup.org.za:
+        gazettes-aleph-test.openup.org.za:
       vars:
-        app_domain: gazettes-aleph-test-openup.org.za
+        app_domain: gazettes-aleph-test.openup.org.za
+        env_name: prod
     dokkus:
       hosts:
         writeinpublic-test.pa.org.za:
