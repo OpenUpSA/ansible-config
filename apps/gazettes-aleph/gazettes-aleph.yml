@@ -1,0 +1,111 @@
+---
+- hosts:
+    - gazettes-ansible-test-openup.org.za
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+
+  vars:
+    app_name: "gazettes-aleph-{{ env_name }}"
+    app_domain: "{{ inventory_hostname }}"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+      - name: elasticsearch
+        url: https://github.com/dokku/dokku-elasticsearch.git
+    postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_superuser_user: "{{ lookup('passwordstore', 'core/aleph/POSTGRES_SUPERUSER subkey=username')}}"
+    postgres_superuser_password: "{{ lookup('passwordstore', 'core/aleph/POSTGRES_SUPERUSER')}}"
+    postgres_user: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES subkey=username')}}"
+    postgres_password: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES')}}"
+
+  tasks:
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Dokku elasticsearch"
+      vars:
+        ELASTICSEARCH_IMAGE: "openup/elasticsearch-0.90"
+        ELASTICSEARCH_IMAGE_VERSION: "latest"
+      shell: "dokku elasticsearch:create openup-es"  # Is there a way to do this using dokku plugin?
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          ALEPH_APP_NAME: "{{ app_name }}"
+          ALEPH_APP_TITLE: "Open Gazettes South Africa"
+          ALEPH_APP_URL: "https://search.opengazettes.org.za"
+          ALEPH_ARCHIVE_BUCKET: "code4sa-aleph"
+          ALEPH_ARCHIVE_TYPE: "s3"
+          ALEPH_BROKER_URI: "sqs://sqs.eu-west-1.amazonaws.com/567304594100/"
+          ALEPH_DATABASE_URI: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          # This should be an unexposed docker container on an internal docker network, make sure all systems that need access are attached to network
+          ALEPH_ELASTICSEARCH_URI: "http://openup-es:9200/"
+          ALEPH_FAVICON: "http://code4sa.org/favicon.ico"
+          ALEPH_LOGO: "https://opengazettes.org.za/img/icon-openbook.png"
+          ALEPH_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH subkey=oauth-key')}}"
+          ALEPH_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH subkey=oauth-secret')}}"
+          ALEPH_SECRET_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH subkey=secret-key')}}"
+          ALEPH_URL_SCHEME: "https"
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS')}}"
+          C_FORCE_ROOT: true
+          DOKKU_APP_RESTORE: 1
+          DOKKU_APP_TYPE: dockerfile
+          DOKKU_DOCKERFILE_CMD: "CMD gunicorn --workers 1 --worker-class gevent --timeout 600 --max-requests 3000 --max-requests-jitter 100 --log-file - --access-logfile - aleph.manage:app"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@code4sa.org"
+          DOKKU_NGINX_PORT: 80
+          DOKKU_PROXY_PORT: 80
+          DOKKU_PROXY_PORT_MAP: "http:80:5000 https:443:5000"
+          DOKKU_PROXY_SSL_PORT: "443"
+          FACEBOOK_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK subkey=oauth-key')}}"
+          FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK subkey=oauth-secret')}}"
+          # Should this be dynamic?
+          GIT_REV: "533c1161f2e008c4b98efb1f38b8a1b38ac5208e"
+          GOOGLE_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE subkey=oauth-key')}}"
+          GOOGLE_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE subkey=oauth-secret')}}"
+          MAIL_ADMIN: "jd@code4sa.org,greg@code4sa.org"
+          MAIL_FROM: "info@code4sa.org"
+          MAIL_HOST: "smtp.sendgrid.net"
+          MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL subkey=password')}}"
+          MAIL_USERNAME: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL subkey=username')}}"
+          NEW_RELIC_APP_NAME: "Aleph"
+          NEW_RELIC_LICENSE_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/NEW_RELIC_LICENSE_KEY')}}"
+          NO_VHOST: 0
+          POLYGLOT_DATA_PATH: "/opt/aleph/data"
+          TESSDATA_PREFIX: "/usr/share/tesseract-ocr"
+          ZA_GAZETTE_ARCHIVE_URI: "https://archive.opengazettes.org.za/"
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+
+    - name: Upload file size is configured
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
