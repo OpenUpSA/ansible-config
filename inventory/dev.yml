@@ -1,0 +1,14 @@
+all:
+  hosts:
+  children:
+    dokkus:
+      hosts:
+        writeinpublic-test.pa.org.za:
+        gazettes-aleph-test-openup.org.za:
+  vars:
+    all_hosts_admins:
+      - jdb
+      - adi
+      - lunga
+      - dean
+    host_extra_admins: [] # Empty default - override this on specific hosts.

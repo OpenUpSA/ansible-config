@@ -24,7 +24,6 @@ all:
           host_extra_admins:
             - zac
             - delenamalan
-        gazettes-ansible-test-openup.org.za:
 
     "vulekamali":
       hosts:
