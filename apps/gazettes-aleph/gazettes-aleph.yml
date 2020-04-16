@@ -29,14 +29,6 @@
         - key: "vm.max_map_count"
           value: "262144"
 
-    # TODO: Get the following vars exported properly so that the correct image is used
-    # TODO: The following shell command is not idempotent
-    - name: "Dokku elasticsearch"
-      vars:
-        ELASTICSEARCH_IMAGE: "openup/elasticsearch-0.90"
-        ELASTICSEARCH_IMAGE_VERSION: "latest"
-      shell: "dokku elasticsearch:create openup-es"  # Is there a way to do this using dokku plugin?
-
     - name: "Dokku app config is set"
       dokku_config:
         app: "{{ app_name }}"
@@ -49,7 +41,7 @@
           ALEPH_BROKER_URI: "sqs://sqs.eu-west-1.amazonaws.com/567304594100/"
           ALEPH_DATABASE_URI: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
           # This should be an unexposed docker container on an internal docker network, make sure all systems that need access are attached to network
-          ALEPH_ELASTICSEARCH_URI: "http://openup-es:9200/"
+          ALEPH_ELASTICSEARCH_URI: "http://docker1.code4sa.org:9200/"
           ALEPH_FAVICON: "http://code4sa.org/favicon.ico"
           ALEPH_LOGO: "https://opengazettes.org.za/img/icon-openbook.png"
           ALEPH_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH_OAUTH subkey=key')}}"
