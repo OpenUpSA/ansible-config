@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - pmg4-aws.openup.org.za
+    - pmg
   become: yes
   roles:
    - dokku_bot.ansible_dokku
@@ -8,7 +8,7 @@
 
   vars:
     app_name: pmg
-    app_domain: pmg.org.za
+    app_domain: sandbox-pmg.org.za
     dokku_daemon_install: false # We install this using a dedicated playbook
     dokku_plugins:
       - name: letsencrypt
@@ -40,7 +40,7 @@
           MAX_SOUNDCLOUD_BATCH: "50"
           RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA') }}"
           RECAPTCHA_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA subkey=PUBLIC_KEY') }}"
-          RUN_PERIODIC_TASKS: "true"
+          RUN_PERIODIC_TASKS: "false"
           SECURITY_PASSWORD_SALT: "{{ lookup('passwordstore', 'apps/pmg/prod/SECURITY_PASSWORD_SALT') }}"
           SENDGRID_API_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/SENDGRID_API_KEY') }}"
           SENTRY_DSN: https://15f79f6945ff4d4f8ac103e6a9c2f26d@sentry.io/1489874
@@ -54,7 +54,6 @@
           SOUNDCLOUD_USERNAME: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD subkey=username') }}"
           SQLALCHEMY_DATABASE_URI: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
 
-
     - name: "Dokku app domains are configured"
       dokku_domains:
         app: "{{ app_name }}"
@@ -67,6 +66,12 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
 
     - name: Upload file size is configured
       copy:
