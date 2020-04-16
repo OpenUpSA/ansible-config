@@ -1,20 +1,21 @@
 all:
   hosts:
-  children:
-    gazettes_aleph_web:
-      hosts:
-        gazettes-aleph-test.openup.org.za:
-      vars:
-        app_domain: gazettes-aleph-test.openup.org.za
-        env_name: prod
-    dokkus:
-      hosts:
-        writeinpublic-test.pa.org.za:
-        gazettes-aleph-test-openup.org.za:
   vars:
+    env_name: dev
     all_hosts_admins:
       - jdb
       - adi
       - lunga
       - dean
     host_extra_admins: [] # Empty default - override this on specific hosts.
+
+  children:
+    gazettes_aleph_web:
+      hosts:
+        dokku9.code4sa.org:
+      vars:
+        app_domain: gazettes-aleph-test.openup.org.za
+    dokkus:
+      hosts:
+        writeinpublic-test.pa.org.za:
+        gazettes-aleph-test-openup.org.za:
