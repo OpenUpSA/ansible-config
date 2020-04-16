@@ -29,7 +29,7 @@
         config:
           ALEPH_APP_NAME: "{{ app_name }}"
           ALEPH_APP_TITLE: "Open Gazettes South Africa"
-          ALEPH_APP_URL: "{{ app_domain }}"
+          ALEPH_APP_URL: "https://{{ app_domain }}/"
           ALEPH_ARCHIVE_BUCKET: "code4sa-aleph"
           ALEPH_ARCHIVE_TYPE: "s3"
           ALEPH_BROKER_URI: "sqs://sqs.eu-west-1.amazonaws.com/567304594100/"
