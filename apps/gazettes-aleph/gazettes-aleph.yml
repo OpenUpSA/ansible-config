@@ -31,9 +31,9 @@
           ALEPH_ARCHIVE_BUCKET: "code4sa-aleph"
           ALEPH_ARCHIVE_TYPE: "s3"
           ALEPH_BROKER_URI: "sqs://sqs.eu-west-1.amazonaws.com/567304594100/"
-          ALEPH_DATABASE_URI: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
-          # This should be an unexposed docker container on an internal docker network, make sure all systems that need access are attached to network
-          ALEPH_ELASTICSEARCH_URI: "http://docker1.code4sa.org:9200/"
+#          Commenting out for now, because postgres is likely to be moved. Set this manually in Dokku config
+#          ALEPH_DATABASE_URI: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          ALEPH_ELASTICSEARCH_URI: "http://dokku-elasticsearchgazettes-aleph:9200"
           ALEPH_FAVICON: "http://code4sa.org/favicon.ico"
           ALEPH_LOGO: "https://opengazettes.org.za/img/icon-openbook.png"
           ALEPH_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH_OAUTH subkey=key')}}"
