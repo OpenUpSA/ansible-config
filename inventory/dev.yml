@@ -12,7 +12,7 @@ all:
   children:
     gazettes_aleph_web:
       hosts:
-        dokku9.code4sa.org:
+        hetzner1.openup.org.za:
       vars:
         app_domain: gazettes-aleph-test.openup.org.za
     dokkus:
