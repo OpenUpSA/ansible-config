@@ -22,7 +22,6 @@ all:
         treasury4.openup.org.za:
         hetzner1.openup.org.za:
           host_extra_admins:
-            - zac
             - delenamalan
 
     "vulekamali":
@@ -36,7 +35,6 @@ all:
         comments_enabled: "true"
         default_from_email: "info@vulekamali.gov.za"
         discourse_sso_url: "https://discussions.vulekamali.gov.za/session/sso_login"
-        env_name: prod
         media_hostname: media.vulekamali.gov.za
         postgres_database: budgetportal
         robots_deny_all: "false"
@@ -45,6 +43,7 @@ all:
         tag_manager_id: "GTM-PLNL56L"
 
   vars:
+    env_name: prod
     all_hosts_admins:
       - jdb
       - adi
