@@ -11,8 +11,6 @@
     dokku_plugins:
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
-      - name: elasticsearch
-        url: https://github.com/dokku/dokku-elasticsearch.git
     postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
     postgres_database: aleph
     postgres_user: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/POSTGRES subkey=username')}}"
