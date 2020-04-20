@@ -10,7 +10,7 @@ all:
     host_extra_admins: [] # Empty default - override this on specific hosts.
 
   children:
-    gazettes_aleph_web:
+    gazettes_aleph:
       hosts:
         hetzner1.openup.org.za:
       vars:

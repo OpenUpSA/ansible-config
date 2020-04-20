@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - gazettes_aleph_web
+    - gazettes_aleph
   become: yes
   roles:
     - dokku_bot.ansible_dokku

@@ -1,5 +1,13 @@
 all:
   hosts:
+  vars:
+    env_name: prod
+    all_hosts_admins:
+      - jdb
+      - adi
+      - lunga
+      - dean
+    host_extra_admins: [] # Empty default - override this on specific hosts.
   children:
     elasticsearch:
       hosts:
@@ -44,10 +52,8 @@ all:
         solr_url: "http://solr.vulekamali.gov.za:8983/solr/budgetportal"
         tag_manager_id: "GTM-PLNL56L"
 
-  vars:
-    all_hosts_admins:
-      - jdb
-      - adi
-      - lunga
-      - dean
-    host_extra_admins: [] # Empty default - override this on specific hosts.
+    gazettes_aleph:
+      hosts:
+        hetzner1.openup.org.za:
+      vars:
+        app_domain: search.opengazettes.org.za
