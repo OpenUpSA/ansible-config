@@ -98,6 +98,8 @@
     - name: "App nginx directory exists"
       file:
         path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        owner: dokku
+        group: dokku
         state: directory
         mode: '0755'
 
