@@ -7,7 +7,7 @@
 
   vars:
     instance_name: "gazettes-aleph-{{ env_name }}"
-    app_name: "{{ instance_name }}-web"
+    app_name: "{{ instance_name }}-worker"
     dokku_daemon_install: false # We install this using a dedicated playbook
     dokku_plugins:
       - name: letsencrypt
@@ -22,7 +22,7 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          ALEPH_APP_NAME: "{{ app_name }}"
+          ALEPH_APP_NAME: "{{ instance_name }}"
           ALEPH_APP_TITLE: "Open Gazettes South Africa"
           ALEPH_APP_URL: "https://{{ app_domain }}/"
           ALEPH_ARCHIVE_BUCKET: "code4sa-aleph"
@@ -36,11 +36,14 @@
           ALEPH_URL_SCHEME: "https"
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS')}}"
-          DOKKU_LETSENCRYPT_EMAIL: "webapps@code4sa.org"
+          CELERY_CONCURRENCY: "1"
+          CELERYD_MAX_TASKS_PER_CHILD: "20"
+          CELERY_RDBSIG: "1"
           FACEBOOK_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH subkey=key')}}"
           FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH')}}"
           GOOGLE_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH subkey=key')}}"
           GOOGLE_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH')}}"
+          LOGLEVEL: "DEBUG"
           MAIL_ADMIN: "jd@code4sa.org,greg@code4sa.org"
           MAIL_FROM: "info@code4sa.org"
           MAIL_HOST: "smtp.sendgrid.net"
@@ -51,35 +54,6 @@
           TESSDATA_PREFIX: "/usr/share/tesseract-ocr"
           ZA_GAZETTE_ARCHIVE_URI: "https://archive.opengazettes.org.za/"
 
-    - name: "Dokku app domains are configured"
-      dokku_domains:
-        app: "{{ app_name }}"
-        domains:
-          - "{{ app_domain }}"
-
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
-
-    - name: "App nginx directory exists"
-      file:
-        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
-        owner: dokku
-        group: dokku
-        state: directory
-        mode: '0755'
-
-    - name: Upload file size is configured
-      copy:
-        content: "client_max_body_size 100M;"
-        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
-        owner: dokku
-        group: dokku
-        mode: "0644"
-      register: nginx
-
-    - name: Nginx is reloaded
-      service:
-        name: nginx
-        state: reloaded
-      when: nginx.changed
