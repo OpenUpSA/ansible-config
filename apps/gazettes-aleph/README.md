@@ -30,41 +30,32 @@ ________________________________________________
    5. `docker tag elasticsearch:1 dokku/elasticsearch-1:latest`
    6. `dokku config:set elasticsearch-1 ES_MIN_MEM=2g ES_MAX_MEM=4g`
    7. `dokku docker-options:add elasticsearch-1 deploy,run "-v /var/elasticsearch-1/data:/usr/share/elasticsearch/data"`
-`  8. `dokku tags:deploy elasticsearch-1 latest`
+   8. `dokku tags:deploy elasticsearch-1 latest`
    9. `dokku docker-options:add gazettes-aleph-prod-web deploy,run --link elasticsearch-1.web.1:elasticsearch`
    10. `dokku docker-options:add gazettes-aleph-prod-worker deploy,run --link elasticsearch-1.web.1:elasticsearch`
    11. `dokku config:set gazettes-aleph-prod-web ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
    12. `dokku config:set gazettes-aleph-prod-worker ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
 
-4. Create Postgres database:
-   1.
-   ```shell script
-   export DATABASE_IMAGE=postgres
-   export DATABASE_IMAGE_VERSION=9.6.17
-   dokku postgres:create gazettes-aleph
-   ```   
-   2. Link apps to databases:
+4. Create and link Postgres database:
+      - `dokku postgres:create gazettes-aleph --image postgres --image-version 9.6.17`   
       - `dokku postgres:link gazettes-aleph gazettes-aleph-prod-web`
       - `dokku postgres:link gazettes-aleph gazettes-aleph-prod-worker`
       - `dokku config:unset gazettes-aleph-prod-web DATABASE_URL`
       - `dokku config:unset gazettes-aleph-prod-worker DATABASE_URL`
-      - `dokku config:set gazettes-aleph-prod-web ...`
-      - `dokku config:set gazettes-aleph-prod-worker ...`
+      - `dokku config:set gazettes-aleph-prod-web ALEPH_DATABASE_URI=...`
+      - `dokku config:set gazettes-aleph-prod-worker ALEPH_DATABASE_URI=...`
         
         Note, you can see what to paste in place of `...` by looking at the output of the link commands.
-        In format: `ALEPH_DATABASE_URI=postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
+        In format: `postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
 
 5. Deploy to each of `web` and `workers` by pushing master to dokku remote
    - `git push dokku master`
 
 6. Dump and restore Postgres Database
-
-```shell script
-dokku postgres:import gazettes-aleph < /path/to/dump.postgrescustom
-```
+   - `dokku postgres:import gazettes-aleph < /path/to/dump.postgrescustom`
 
 7. Index Elasticsearch:
-   First enter gazettes-aleph-worker `dokku enter gazettes-aleph-prod-worker`, then
+   First enter gazettes-aleph-worker `dokku enter gazettes-aleph-prod-worker`, then:
    - `aleph installdata`
    - `aleph resetindex`
    - `aleph index`
