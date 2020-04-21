@@ -31,10 +31,10 @@ ________________________________________________
    6. `dokku config:set elasticsearch-1 ES_MIN_MEM=2g ES_MAX_MEM=4g`
    7. `dokku docker-options:add elasticsearch-1 deploy,run -v /var/elasticsearch-1/data:/elasticsearch/data
 `  8. `dokku tags:deploy elasticsearch-1 latest`
-   9. `dokku docker-options:add gazettes-aleph-prod-web deploy,run --link elasticsearch-1.web.1`
-   10. `dokku docker-options:add gazettes-aleph-prod-worker deploy,run --link elasticsearch-1.web.1`
-   11. `dokku config:set gazettes-aleph-prod-web ALEPH_ELASTICSEARCH_URI=http://elasticsearch-1.web.1:9200/`
-   12. `dokku config:set gazettes-aleph-prod-worker ALEPH_ELASTICSEARCH_URI=http://elasticsearch-1.web.1:9200/`
+   9. `dokku docker-options:add gazettes-aleph-prod-web deploy,run --link elasticsearch-1.web.1:elasticsearch`
+   10. `dokku docker-options:add gazettes-aleph-prod-worker deploy,run --link elasticsearch-1.web.1:elasticsearch`
+   11. `dokku config:set gazettes-aleph-prod-web ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
+   12. `dokku config:set gazettes-aleph-prod-worker ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
 
 4. Create Postgres database:
    1.
@@ -48,8 +48,11 @@ ________________________________________________
       - `dokku postgres:link gazettes-aleph gazettes-aleph-prod-worker`
       - `dokku config:unset gazettes-aleph-prod-web DATABASE_URL`
       - `dokku config:unset gazettes-aleph-prod-worker DATABASE_URL`
-      - `dokku config:set gazettes-aleph-prod-web ALEPH_DATABASE_URI=postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
-      - `dokku config:set gazettes-aleph-prod-worker ALEPH_DATABASE_URI=postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
+      - `dokku config:set gazettes-aleph-prod-web ...`
+      - `dokku config:set gazettes-aleph-prod-worker ...`
+        
+        Note, you can see what to paste in place of `...` by looking at the output of the link commands.
+        In format: `ALEPH_DATABASE_URI=postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
 
 5. Deploy web and workers by pushing master to dokku remote
    - `git push dokku master`
