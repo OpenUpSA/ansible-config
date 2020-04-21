@@ -22,7 +22,7 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          ALEPH_APP_NAME: "{{ app_name }}"
+          ALEPH_APP_NAME: "{{ instance_name }}"
           ALEPH_APP_TITLE: "Open Gazettes South Africa"
           ALEPH_APP_URL: "https://{{ app_domain }}/"
           ALEPH_ARCHIVE_BUCKET: "code4sa-aleph"
