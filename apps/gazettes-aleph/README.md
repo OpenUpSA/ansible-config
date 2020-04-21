@@ -29,7 +29,7 @@ ________________________________________________
    4. `docker pull elasticsearch:1`
    5. `docker tag elasticsearch:1 dokku/elasticsearch-1:latest`
    6. `dokku config:set elasticsearch-1 ES_MIN_MEM=2g ES_MAX_MEM=4g`
-   7. `dokku docker-options:add elasticsearch-1 deploy,run -v /var/elasticsearch-1/data:/elasticsearch/data
+   7. `dokku docker-options:add elasticsearch-1 deploy,run "-v /var/elasticsearch-1/data:/usr/share/elasticsearch/data"`
 `  8. `dokku tags:deploy elasticsearch-1 latest`
    9. `dokku docker-options:add gazettes-aleph-prod-web deploy,run --link elasticsearch-1.web.1:elasticsearch`
    10. `dokku docker-options:add gazettes-aleph-prod-worker deploy,run --link elasticsearch-1.web.1:elasticsearch`
