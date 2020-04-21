@@ -54,7 +54,7 @@ ________________________________________________
         Note, you can see what to paste in place of `...` by looking at the output of the link commands.
         In format: `ALEPH_DATABASE_URI=postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
 
-5. Deploy web and workers by pushing master to dokku remote
+5. Deploy to each of `web` and `workers` by pushing master to dokku remote
    - `git push dokku master`
 
 6. Dump and restore Postgres Database
@@ -64,23 +64,23 @@ dokku postgres:import gazettes-aleph < /path/to/dump.postgrescustom
 ```
 
 7. Index Elasticsearch:
+   First enter gazettes-aleph-worker `dokku enter gazettes-aleph-prod-worker`, then
    - `aleph installdata`
    - `aleph resetindex`
    - `aleph index`
 
 
 
-Get a shell in the container of a Dokku app:
-```shell script
-dokku --rm run gazettes-aleph-dev bash
-```
+Tips and tricks:
 
-To restart dokku app:
+To connect tp postgres DB:
+  - `dokku postgres:connect gazettes-aleph`
 
-```shell script
-dokku ps:restart gazettes-aleph-dev-worker
-```
+To restart dokku app, e.g:
+  - `dokku ps:restart gazettes-aleph-prod-worker`
 
-To view worker logs: `dokku logs gazettes-aleph-dev-worker -t`
+To view web logs:
+ - `dokku logs gazettes-aleph-prod-web -t`
 
-To view celery logs: `tail -f less /var/log/aleph/celery.log`
+To view celery logs (worker):
+  - `tail -f less /var/log/aleph/celery.log`
