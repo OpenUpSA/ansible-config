@@ -10,11 +10,15 @@ ________________________________________________
    ```shell script
    ansible-playbook -i inventory/prod.yml apps/gazettes-aleph/gazettes-aleph-worker.yml --start-at-task "Dokku app exists"
    ```
+   - gazettes-aleph-beat
+   ```shell script
+   ansible-playbook -i inventory/prod.yml apps/gazettes-aleph/gazettes-aleph-beat.yml --start-at-task "Dokku app exists"
+   ```
    In each case copy dokku remote url to respective repos (see `Your dokku git remote` output of ansible playbooks)
    e.g.:
      - `git remote add dokku dokku@hetzner1.openup.org.za:gazettes-aleph-prod-web` to `OpenUpSA/gazettes-aleph-dokku`
      - `git remote add dokku dokku@hetzner1.openup.org.za:gazettes-aleph-prod-worker` to `OpenUpSA/gazettes-aleph-dokku-worker`
-
+     - `git remote add dokku dokku@hetzner1.openup.org.za:gazettes-aleph-prod-beat` to `Code4SA/aleph-dokku-beat`
 2. ssh into instance where docker containers are going to be located
    - `dokku checks:disable gazettes-aleph-prod-worker`
    - `dokku proxy:disable gazettes-aleph-prod-worker`
@@ -48,7 +52,7 @@ ________________________________________________
         Note, you can see what to paste in place of `...` by looking at the output of the link commands.
         In format: `postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
 
-5. Deploy to each of `web` and `workers` by pushing master to dokku remote
+5. Deploy to each of `web`, `workers` and `beat` by pushing master to dokku remote
    - `git push dokku master`
 
 6. Dump and restore Postgres Database
