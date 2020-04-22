@@ -60,6 +60,23 @@ ________________________________________________
    - `aleph resetindex`
    - `aleph index`
 
+8. Setup backups:
+   Relevant commands:
+   ```shell script
+    postgres:backup-auth <service> <aws-access-key-id> <aws-secret-access-key>...   sets up authentication for backups on the Postgres service
+    postgres:backup-deauth <service>                                                removes backup authentication for the Postgres service
+    postgres:backup-schedule-cat <service>                                          cat the contents of the configured backup cronfile for the service
+    postgres:backup-schedule <service> <schedule> <bucket-name>...                  schedules a backup of the Postgres service
+    postgres:backup <service> <bucket-name> [-u|--use-iam-optional]                 creates a backup of the Postgres service to an existing s3 bucket
+    postgres:backup-set-encryption <service> <passphrase>                           sets encryption for all future backups of Postgres service
+    postgres:backup-unschedule <service>                                            unschedules the backup of the Postgres service
+    postgres:backup-unset-encryption <service>                                      unsets encryption for future backups of the Postgres service
+    ```
+    Follow in this order (use other commands as applicable depending on use):
+    - `dokku postgres:backup-set-encryption gazettes-aleph ...` to ensure that what gets sent to S3 is encrypted. Passphrase was saved to shared keystore managed by pass (under `apps/aleph/gazettes-aleph/prod/DOKKU_POSTGRES_BACKUP_ENCRYPTION`)
+    - `dokku postgres:backup-auth gazettes-aleph ...`, to authenticate same IAM user as in application. `gazettes-aleph-postgres-backups` s3 bucket was created which this user has access to
+    - `dokku postgres:backup gazettes-aleph gazettes-aleph-postgres-backups` to test if manual backup is successful.
+    - `dokku postgres:backup-schedule gazettes-aleph "0 23 * * *" gazettes-aleph-postgres-backups` to setup a daily schedule that happens at 11pm UTC
 
 
 Tips and tricks:
