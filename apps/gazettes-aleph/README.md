@@ -27,8 +27,8 @@ ________________________________________________
    Do similar for beat
    - `dokku checks:disable gazettes-aleph-prod-beat`
    - `dokku proxy:disable gazettes-aleph-prod-beat`
-   - `dokku docker-options:add gazettes-aleph-prod-beat deploy,run "-v /var/log/aleph-prod:/var/log"`
-   - `dokku docker-options:add gazettes-aleph-prod-beat deploy,run "-v /var/lib/aleph-prod:/opt/aleph/data"`
+   - `dokku docker-options:add gazettes-aleph-prod-beat deploy,run "-v /var/log/aleph-beat-prod:/var/log"`
+   - `dokku docker-options:add gazettes-aleph-prod-beat deploy,run "-v /var/lib/aleph-beat-prod:/opt/aleph/data"`
 
 
 3. Create Elasticsearch:1 app, [follow these docs](https://github.com/OpenUpSA/elasticsearch-0.90) for procedure,
