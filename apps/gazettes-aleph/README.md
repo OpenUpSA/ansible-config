@@ -24,6 +24,12 @@ ________________________________________________
    - `dokku proxy:disable gazettes-aleph-prod-worker`
    - `dokku docker-options:add gazettes-aleph-prod-worker deploy,run "-v /var/log/aleph-prod:/var/log"`
    - `dokku docker-options:add gazettes-aleph-prod-worker deploy,run "-v /var/lib/aleph-prod:/opt/aleph/data"`
+   Do similar for beat
+   - `dokku checks:disable gazettes-aleph-prod-beat`
+   - `dokku proxy:disable gazettes-aleph-prod-beat`
+   - `dokku docker-options:add gazettes-aleph-prod-beat deploy,run "-v /var/log/aleph-prod:/var/log"`
+   - `dokku docker-options:add gazettes-aleph-prod-beat deploy,run "-v /var/lib/aleph-prod:/opt/aleph/data"`
+
 
 3. Create Elasticsearch:1 app, [follow these docs](https://github.com/OpenUpSA/elasticsearch-0.90) for procedure,
    except sub in version 1 for 0.9. To summarize:
@@ -37,17 +43,22 @@ ________________________________________________
    8. `dokku tags:deploy elasticsearch-1 latest`
    9. `dokku docker-options:add gazettes-aleph-prod-web deploy,run --link elasticsearch-1.web.1:elasticsearch`
    10. `dokku docker-options:add gazettes-aleph-prod-worker deploy,run --link elasticsearch-1.web.1:elasticsearch`
+   11. `dokku docker-options:add gazettes-aleph-prod-beat deploy,run --link elasticsearch-1.web.1:elasticsearch`
    11. `dokku config:set gazettes-aleph-prod-web ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
    12. `dokku config:set gazettes-aleph-prod-worker ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
+   12. `dokku config:set gazettes-aleph-prod-beat ALEPH_ELASTICSEARCH_URI=http://elasticsearch:9200/`
 
 4. Create and link Postgres database:
       - `dokku postgres:create gazettes-aleph --image postgres --image-version 9.6.17`   
       - `dokku postgres:link gazettes-aleph gazettes-aleph-prod-web`
       - `dokku postgres:link gazettes-aleph gazettes-aleph-prod-worker`
+      - `dokku postgres:link gazettes-aleph gazettes-aleph-prod-beat`
       - `dokku config:unset gazettes-aleph-prod-web DATABASE_URL`
       - `dokku config:unset gazettes-aleph-prod-worker DATABASE_URL`
+      - `dokku config:unset gazettes-aleph-prod-beat DATABASE_URL`
       - `dokku config:set gazettes-aleph-prod-web ALEPH_DATABASE_URI=...`
       - `dokku config:set gazettes-aleph-prod-worker ALEPH_DATABASE_URI=...`
+      - `dokku config:set gazettes-aleph-prod-beat ALEPH_DATABASE_URI=...`
         
         Note, you can see what to paste in place of `...` by looking at the output of the link commands.
         In format: `postgres://aleph:***@dokku-postgres-gazettes-aleph:5432/gazettes_aleph`
