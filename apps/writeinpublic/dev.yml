@@ -1,11 +1,22 @@
 ---
 
-- name: Test for docker
-  hosts: writeinpublic-test
-  tasks:
-    - name: Test for docker
-      shell: docker info
-      register: docker_exists
+- name: Ensure firewall set up correctly
+  hosts: all
+  become: yes
+  vars:
+    firewall_state: started
+    firewall_enabled_at_boot: true
+    firewall_allowed_tcp_ports:
+      - 22
+      - 25
+      - 80
+      - 443
+    firewall_allowed_udp_ports: []
+    firewall_disable_ufw: true
+    firewall_enable_ipv6: false
+  roles:
+    # ansible-galaxy install geerlingguy.firewall
+    - geerlingguy.firewall
 
 - name: Ensure Docker is installed
   hosts: writeinpublic-test
@@ -17,7 +28,6 @@
   roles:
     # ansible-galaxy install geerlingguy.docker
     - role: geerlingguy.docker
-      when: docker_exists.rc == 1
 
 - name: Ensure Docker Python library is installed
   hosts: all
@@ -31,23 +41,6 @@
   roles:
     # ansible-galaxy install geerlingguy.pip
     - role: geerlingguy.pip
-      when: docker_exists.rc == 1
-
-#- name: Ensure correct ports are open
-#  hosts: all
-#  vars:
-#    firewall_state: started
-#    firewall_enabled_at_boot: true
-#    firewall_allowed_tcp_ports:
-#      - 22
-#      - 80
-#      - 443
-#    firewall_allowed_udp_ports: []
-#    firewall_disable_ufw: true
-#    firewall_enable_ipv6: false
-#  roles:
-#    # ansible-galaxy install geerlingguy.firewall
-#    - geerlingguy.firewall
 
 - name: Manage Deployment
   hosts: writeinpublic-test
@@ -231,18 +224,6 @@
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
-
-    - name: Postfix server container is started
-      docker_container:
-        name: postfix
-        hostname: postfix
-        image: mailu/postfix:1.7
-        recreate: yes
-        restart_policy: unless-stopped
-#        volumes:
-#          - /a/b:/c
-#        env:
-#          A: "B"
 
     - name: Caddyfile directory exists
       file:
