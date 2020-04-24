@@ -1,17 +1,13 @@
-writeinpublic-test.pa.org.za south-africa-assembly.writeinpublic-test.pa.org.za south-africa-committees.writeinpublic-test.pa.org.za {
-    log {
-        format json
-    }
-    reverse_proxy * writeinpublic:8000 {
-        header_up Host {http.request.host}
-        header_up X-Real-IP {http.request.remote.host}
-        header_up X-Forwarded-For {http.request.remote.host}
-        header_up X-Forwarded-Port {http.request.port}
-        header_up X-Forwarded-Proto {http.request.scheme}
-    }
-}
-
-writeinpublic.pa.org.za:80 south-africa-assembly.writeinpublic.pa.org.za:80 south-africa-committees.writeinpublic.pa.org.za:80 {
+writeinpublic-test.pa.org.za,
+south-africa-assembly.writeinpublic-test.pa.org.za,
+south-africa-committees.writeinpublic-test.pa.org.za,
+south-africa-staging.writeinpublic-test.pa.org.za,
+south-africa-committees-staging.writeinpublic-test.pa.org.za,
+writeinpublic.pa.org.za:80,
+south-africa-assembly.writeinpublic.pa.org.za:80,
+south-africa-committees.writeinpublic.pa.org.za:80,
+south-africa-staging.writeinpublic.pa.org.za:80,
+south-africa-committees-staging.writeinpublic.pa.org.za:80 {
     log {
         format json
     }
