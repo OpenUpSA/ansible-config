@@ -181,7 +181,6 @@
         hostname: writeinpublic
         state: started
         recreate: yes
-        keep_volumes: yes
         image: openup/writeinpublic:latest
         working_dir: /app
 #        # Devserver command
@@ -198,7 +197,6 @@
         name: writeinpublic-celery_worker
         state: started
         recreate: yes
-        keep_volumes: yes
         image: openup/writeinpublic:latest
         working_dir: /app
         command: celery -A writeit worker
@@ -215,7 +213,6 @@
         name: writeinpublic-celery_beat
         state: started
         recreate: yes
-        keep_volumes: yes
         image: openup/writeinpublic:latest
         command: celery -A writeit beat
         restart_policy: unless-stopped
@@ -245,7 +242,6 @@
         image: caddy/caddy:v2.0.0-beta.15-alpine
         pull: yes
         recreate: yes
-        keep_volumes: yes
         ports:
           - 80:80
           - 443:443
