@@ -10,12 +10,5 @@ all:
     host_extra_admins: [] # Empty default - override this on specific hosts.
 
   children:
-    gazettes_aleph:
-      hosts:
-        hetzner1.openup.org.za:
-      vars:
-        app_domain: gazettes-aleph-test.openup.org.za
     dokkus:
-      hosts:
-        writeinpublic-test.pa.org.za:
-        gazettes-aleph-test-openup.org.za:
+      hosts: {}
