@@ -39,6 +39,7 @@
           CELERY_CONCURRENCY: "4"
           CELERYD_MAX_TASKS_PER_CHILD: "20"
           CELERY_RDBSIG: "1"
+          DOKKU_DOCKERFILE_START_CMD: "celery -A aleph.queue beat -s /var/run/celerybeat-schedule"
           FACEBOOK_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH subkey=key')}}"
           FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH')}}"
           GOOGLE_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH subkey=key')}}"
