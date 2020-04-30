@@ -42,11 +42,29 @@
     # ansible-galaxy install geerlingguy.pip
     - role: geerlingguy.pip
 
+- name: Ensure email is configured
+  tags:
+    - email
+  hosts: writeinpublic-test
+  become: yes
+  vars:
+    update_apt_cache: yes
+    support_email_recipients:
+      - deankayton@gmail.com
+    email_scripts_dir: "/home/dean/src/email/scripts"
+    email_inbox_dir: "/home/dean/src/email/inbox"
+    handle_incoming_email_script: "{{ email_scripts_dir }}/handle_incoming_email"
+    incoming_email_host: "{{ ansible_host }}"
+  roles:
+    - email
+
 - name: Manage Deployment
   hosts: writeinpublic-test
   become: no
   tasks:
     - name: Write-in-Public Network exists
+      tags:
+        - deployment
       docker_network:
         name: writeinpublic
         state: present
@@ -57,12 +75,16 @@
 
 # Shouldn't be needed once image is pulled from container registry
     - name: Writeinpublic repo exists
+      tags:
+        - deployment
       git:
         repo: https://github.com/dnk8n/writeinpublic.git
         dest: /home/dean/src/writeinpublic
         version: local_devops
 
     - name: Writeinpublic image exists and is the correct version
+      tags:
+        - deployment
       docker_image:
         build:
           path: /home/dean/src/writeinpublic
@@ -78,6 +100,8 @@
 #    - name: "Compile all the available Write in public translations"
 
     - name: Local Settings are present and owned by 1000:1000 (container user uid:gid)
+      tags:
+        - deployment
       become: yes
       file:
         path: /home/dean/local_settings.py
@@ -86,6 +110,8 @@
         mode: "0600"
 
     - name: App directory to be used as shared volume exists and is owned by 1000:1000 (container user uid:gid)
+      tags:
+        - deployment
       become: yes
       file:
         path: /home/dean/share
@@ -95,6 +121,8 @@
         mode: "0755"
 
     - name: RabbitMQ server container is started
+      tags:
+        - deployment
       docker_container:
         name: rabbitmq
         hostname: rabbitmq
@@ -103,6 +131,8 @@
         restart_policy: unless-stopped
 
     - name: Run migrations
+      tags:
+        - deployment
       docker_container:
         user: "1000:1000"
         name: writeinpublic-migrations
@@ -118,15 +148,21 @@
       register: migrations
 
     - name: Show output for migrations
+      tags:
+        - deployment
       debug:
         msg: "{{ migrations.ansible_facts.docker_container.Output }}"
 
     - name: Remove the migrations container
+      tags:
+        - deployment
       docker_container:
         state: absent
         name: writeinpublic-migrations
 
     - name: Run collectstatic
+      tags:
+        - deployment
       docker_container:
         user: "1000:1000"
         name: writeinpublic-collectstatic
@@ -142,10 +178,14 @@
       register: collectstatic
 
     - name: Show output for collectstatic
+      tags:
+        - deployment
       debug:
         msg: "{{ collectstatic.ansible_facts.docker_container.Output }}"
 
     - name: Remove the collectstatic container
+      tags:
+        - deployment
       docker_container:
         state: absent
         name: writeinpublic-collectstatic
@@ -175,6 +215,8 @@
 #        name: writeinpublic-fixtures
 
     - name: Writeinpublic container is started - writeinpublic
+      tags:
+        - deployment
       docker_container:
         user: "1000:1000"
         name: writeinpublic
@@ -187,11 +229,16 @@
 #        command: ./manage.py runserver 0.0.0.0:8000
         command: gunicorn -b 0.0.0.0:8000 writeit.wsgi
         restart_policy: unless-stopped
+        env:
+          BROKER_URL: "amqp://guest:guest@rabbitmq//"
+          CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
 
     - name: Writeinpublic container is started - writeinpublic_celery_worker
+      tags:
+        - deployment
       docker_container:
         user: "1000:1000"
         name: writeinpublic-celery_worker
@@ -202,12 +249,15 @@
         command: celery -A writeit worker
         restart_policy: unless-stopped
         env:
+          BROKER_URL: "amqp://guest:guest@rabbitmq//"
           CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
 
     - name: Writeinpublic container is started - writeinpublic_celery_beat
+      tags:
+        - deployment
       docker_container:
         user: "1000:1000"
         name: writeinpublic-celery_beat
@@ -217,24 +267,31 @@
         command: celery -A writeit beat
         restart_policy: unless-stopped
         env:
+          BROKER_URL: "amqp://guest:guest@rabbitmq//"
           CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
 
     - name: Caddyfile directory exists
+      tags:
+        - deployment
       file:
         path: /home/dean/.caddy
         state: directory
         mode: 0755
 
     - name: Caddyfile exists
+      tags:
+        - deployment
       template:
         src: Caddyfile
         dest: /home/dean/.caddy/Caddyfile
         mode: 0644
 
     - name: Caddy container exists
+      tags:
+        - deployment
       docker_container:
         user: root
         name: caddy
@@ -257,6 +314,8 @@
           - /home/dean/.caddy/share/usr:/usr/share/caddy
 
     - name: Ensure only necessary containers added to network
+      tags:
+        - deployment
       docker_network:
         name: network_one
         connected:
