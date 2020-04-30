@@ -1,0 +1,85 @@
+---
+- hosts:
+    - gazettes_aleph
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+
+  vars:
+    instance_name: "gazettes-aleph-{{ env_name }}"
+    app_name: "{{ instance_name }}-web"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          ALEPH_APP_NAME: "{{ instance_name }}"
+          ALEPH_APP_TITLE: "Open Gazettes South Africa"
+          ALEPH_APP_URL: "https://{{ app_domain }}/"
+          ALEPH_ARCHIVE_BUCKET: "code4sa-aleph"
+          ALEPH_ARCHIVE_TYPE: "s3"
+          ALEPH_BROKER_URI: "sqs://sqs.eu-west-1.amazonaws.com/567304594100/"
+          ALEPH_FAVICON: "http://code4sa.org/favicon.ico"
+          ALEPH_LOGO: "https://opengazettes.org.za/img/icon-openbook.png"
+          ALEPH_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH_OAUTH subkey=key')}}"
+          ALEPH_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH_OAUTH')}}"
+          ALEPH_SECRET_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/ALEPH')}}"
+          ALEPH_URL_SCHEME: "https"
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/AWS')}}"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@code4sa.org"
+          FACEBOOK_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH subkey=key')}}"
+          FACEBOOK_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/FACEBOOK_OAUTH')}}"
+          GOOGLE_OAUTH_KEY: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH subkey=key')}}"
+          GOOGLE_OAUTH_SECRET: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/GOOGLE_OAUTH')}}"
+          MAIL_ADMIN: "jd@code4sa.org,greg@code4sa.org"
+          MAIL_FROM: "info@code4sa.org"
+          MAIL_HOST: "smtp.sendgrid.net"
+          MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL')}}"
+          MAIL_USERNAME: "{{ lookup('passwordstore', 'apps/aleph/gazettes-aleph/{{ env_name }}/MAIL subkey=username')}}"
+          NO_VHOST: "0"
+          POLYGLOT_DATA_PATH: "/opt/aleph/data"
+          TESSDATA_PREFIX: "/usr/share/tesseract-ocr"
+          ZA_GAZETTE_ARCHIVE_URI: "https://archive.opengazettes.org.za/"
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        owner: dokku
+        group: dokku
+        state: directory
+        mode: '0755'
+
+    - name: Upload file size is configured
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
