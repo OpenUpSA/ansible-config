@@ -51,9 +51,9 @@
     update_apt_cache: yes
     support_email_recipients:
       - deankayton@gmail.com
-    email_scripts_dir: "/home/dean/src/email/scripts"
-    email_inbox_dir: "/home/dean/src/email/inbox"
-    handle_incoming_email_script: "{{ email_scripts_dir }}/handle_incoming_email"
+    email_dir: "/home/dean/src/email"
+    email_pipe_file: "{{ email_dir }}/email-pipe"
+    handle_incoming_email_script: "{{ email_dir }}/handle_incoming_email"
     incoming_email_host: "{{ ansible_host }}"
   roles:
     - email
@@ -127,7 +127,6 @@
         name: rabbitmq
         hostname: rabbitmq
         image: rabbitmq:3.8.3
-        recreate: yes
         restart_policy: unless-stopped
 
     - name: Run migrations
@@ -222,11 +221,8 @@
         name: writeinpublic
         hostname: writeinpublic
         state: started
-        recreate: yes
         image: openup/writeinpublic:latest
         working_dir: /app
-#        # Devserver command
-#        command: ./manage.py runserver 0.0.0.0:8000
         command: gunicorn -b 0.0.0.0:8000 writeit.wsgi
         restart_policy: unless-stopped
         env:
@@ -236,6 +232,32 @@
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
 
+    - name: Writeinpublic container is started - writeinpublic_email_handler
+      # TODO: Handle variables properly, make code DRY
+      # TODO: Ensure multiple emails at same time can be handled by python script
+      vars:
+        email_dir: "/home/dean/src/email"
+        email_pipe_file: "{{ email_dir }}/email-pipe"
+      tags:
+        - deployment
+        - email
+      docker_container:
+        user: "1000:1000"
+        name: writeinpublic_email_handler
+        hostname: writeinpublic_email_handler
+        state: started
+        image: openup/writeinpublic:latest
+        working_dir: /app
+        command: "bash -c 'cat {{ email_pipe_file }} | ./manage.py handleemail'"
+        restart_policy: unless-stopped
+        env:
+          BROKER_URL: "amqp://guest:guest@rabbitmq//"
+          CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
+        volumes:
+          - /home/dean/local_settings.py:/app/writeit/local_settings.py
+          - /home/dean/share:/app/share
+          - "{{ email_pipe_file }}:{{ email_pipe_file }}"
+
     - name: Writeinpublic container is started - writeinpublic_celery_worker
       tags:
         - deployment
@@ -243,7 +265,6 @@
         user: "1000:1000"
         name: writeinpublic-celery_worker
         state: started
-        recreate: yes
         image: openup/writeinpublic:latest
         working_dir: /app
         command: celery -A writeit worker
@@ -262,7 +283,6 @@
         user: "1000:1000"
         name: writeinpublic-celery_beat
         state: started
-        recreate: yes
         image: openup/writeinpublic:latest
         command: celery -A writeit beat
         restart_policy: unless-stopped
@@ -298,7 +318,6 @@
         state: started
         image: caddy/caddy:v2.0.0-beta.15-alpine
         pull: yes
-        recreate: yes
         ports:
           - 80:80
           - 443:443

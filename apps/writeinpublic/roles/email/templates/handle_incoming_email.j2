@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-cat $1 > "$(mktemp --tmpdir={{ email_inbox_dir }})"
+set -e
+
+cat $1 > "{{ email_pipe_file }}"
