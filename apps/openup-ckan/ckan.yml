@@ -1,0 +1,107 @@
+---
+- hosts:
+    - hetzner1.openup.org.za
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+
+
+  vars:
+    app_name: openup-ckan
+    app_domain: data.openup.org.za
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+    postgres_database: openup_ckan
+    postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_user: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/POSTGRES subkey=username')}}"
+    postgres_password: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/POSTGRES')}}"
+
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
+          CKAN_SQLALCHEMY_URL: 'postgres://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
+          CKAN_INI: "/app/ckan.ini"
+          CKAN_SITE_URL: "http://data.openup.org.za/"
+          CKAN___BEAKER__SESSION__SECRET: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/BEAKER_SESSION_SECRET') }}"
+          CKAN_SMTP_SERVER: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/SMTP subkey=hostname')}}"
+          CKAN_SMTP_USER: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/SMTP subkey=username')}}"
+          CKAN_SMTP_PASSWORD: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/SMTP')}}"
+          CKAN_SMTP_MAIL_FROM: "info@openup.org.za"
+          CKAN_SOLR_URL: "http://solr:8983/solr/ckan"
+          CKAN___CKANEXT__S3FILESTORE__AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/AWS subkey=ACCESS_KEY_ID')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/AWS')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_BUCKET_NAME: 'openup-ckan'
+          CKAN___CKANEXT__S3FILESTORE__HOST_NAME: 'http://s3-eu-west-1.amazonaws.com/openup-ckan'
+          CKAN___CKANEXT__S3FILESTORE__REGION_NAME: 'eu-west-1'
+          CKAN___CKANEXT__S3FILESTORE__SIGNATURE_VERSION: 's3v4'
+
+    - name: "Dokku app deploy mount docker-option set"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/openup-ckan/storage:/var/lib/ckan/default/storage"
+        state: present
+    - name: "Dokku app deploy link docker-option set"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "--link openup-ckan-solr.web.1:solr"
+        state: present
+    - name: "Dokku app run mount docker-option set"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/openup-ckan/storage:/var/lib/ckan/default/storage"
+        state: present
+    - name: "Dokku app run link docker-option set"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "--link openup-ckan-solr.web.1:solr"
+        state: present
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+          - "www.{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    # - name: HTTP cache configured
+    - name: Add nginx config directory
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+        owner: dokku
+        group: dokku
+
+    - name: Upload file size is configured
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
