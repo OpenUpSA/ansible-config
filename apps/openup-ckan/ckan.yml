@@ -42,7 +42,7 @@
           CKAN___CKANEXT__S3FILESTORE__AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/AWS subkey=ACCESS_KEY_ID')}}"
           CKAN___CKANEXT__S3FILESTORE__AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/AWS')}}"
           CKAN___CKANEXT__S3FILESTORE__AWS_BUCKET_NAME: 'openup-ckan'
-          CKAN___CKANEXT__S3FILESTORE__HOST_NAME: 'http://s3-eu-west-1.amazonaws.com/openup-ckan'
+          CKAN___CKANEXT__S3FILESTORE__HOST_NAME: 'https://s3-eu-west-1.amazonaws.com/openup-ckan'
           CKAN___CKANEXT__S3FILESTORE__REGION_NAME: 'eu-west-1'
           CKAN___CKANEXT__S3FILESTORE__SIGNATURE_VERSION: 's3v4'
 
@@ -50,7 +50,7 @@
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: deploy
-        option: "-v /var/openup-ckan/storage:/var/lib/ckan/default/storage"
+        option: "-v /var/openup-ckan:/var/lib/ckan"
         state: present
     - name: "Dokku app deploy link docker-option set"
       dokku_docker_options:
@@ -62,7 +62,7 @@
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: run
-        option: "-v /var/openup-ckan/storage:/var/lib/ckan/default/storage"
+        option: "-v /var/openup-ckan:/var/lib/ckan"
         state: present
     - name: "Dokku app run link docker-option set"
       dokku_docker_options:

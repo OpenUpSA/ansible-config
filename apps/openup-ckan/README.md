@@ -30,7 +30,7 @@ Set up CKAN
 
 3. Link CKAN to SOLR and Redis
 
-    dokku redis:link --alias=CKAN_REDIS_URL openup-ckan openup-ckan
+    dokku redis:link openup-ckan openup-ckan --alias CKAN_REDIS_URL
     dokku docker-options:add openup-ckan run,deploy --link ckan-solr.web.1:solr
 
 4. Push the Dockerfile deployment repository master branch to the dokku git remote.
