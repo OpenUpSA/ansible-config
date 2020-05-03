@@ -32,7 +32,7 @@
           DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
           CKAN_SQLALCHEMY_URL: 'postgres://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
           CKAN_INI: "/app/ckan.ini"
-          CKAN_SITE_URL: "http://data.openup.org.za/"
+          CKAN_SITE_URL: "https://data.openup.org.za/"
           CKAN___BEAKER__SESSION__SECRET: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/BEAKER_SESSION_SECRET') }}"
           CKAN_SMTP_SERVER: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/SMTP subkey=hostname')}}"
           CKAN_SMTP_USER: "{{ lookup('passwordstore', 'apps/openup-ckan/prod/SMTP subkey=username')}}"
