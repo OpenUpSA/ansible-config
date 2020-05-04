@@ -14,9 +14,6 @@
 - name: Update the virtual domain configuration
   copy: src=router_350_exim4-config_vdom_aliases dest=/etc/exim4/conf.d/router/350_exim4-config_vdom_aliases
 
-- name: Update the address pipeline configuration
-  copy: src=30_exim4-config_address_pipe dest=/etc/exim4/conf.d/transport/30_exim4-config_address_pipe
-
 - name: Run update-exim4.conf
   shell: update-exim4.conf
   notify: restart exim
@@ -40,7 +37,9 @@
   register: email_pipe
 
 - name: Create email pipe if not created already
-  command: mkfifo "{{ email_pipe_file }}" && chown dean:dean "{{ email_pipe_file }}"
+  shell:
+    cmd: mkfifo "{{ email_pipe_file }}" && chown dean:dean "{{ email_pipe_file }}"
+    warn: no
   when: email_pipe.stat.exists == False
 
 - name: Add handle_incoming_email script
