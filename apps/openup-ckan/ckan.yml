@@ -100,6 +100,15 @@
         mode: "0644"
       register: nginx
 
+    - name: Upload timeout is configured
+      copy:
+        content: "client_body_timeout 120s;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_body_timeout.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
     - name: Nginx is reloaded
       service:
         name: nginx
