@@ -305,6 +305,7 @@
     - name: Ensure only necessary containers added to network
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_network:
         name: network_one
         connected:
