@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-cat $1 | echo $(base64 -w 0) | cat > {{ email_pipe_file }}

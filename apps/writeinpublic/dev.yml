@@ -42,22 +42,6 @@
     # ansible-galaxy install geerlingguy.pip
     - role: geerlingguy.pip
 
-- name: Ensure email is configured
-  tags:
-    - email
-  hosts: writeinpublic-test
-  become: yes
-  vars:
-    update_apt_cache: yes
-    support_email_recipients:
-      - deankayton@gmail.com
-    email_dir: "/home/dean/src/email"
-    email_pipe_file: "{{ email_dir }}/email-pipe"
-    handle_incoming_email_script: "{{ email_dir }}/handle_incoming_email"
-    incoming_email_host: "{{ ansible_host }}"
-  roles:
-    - email
-
 - name: Manage Deployment
   hosts: writeinpublic-test
   become: no
@@ -77,6 +61,7 @@
     - name: Writeinpublic repo exists
       tags:
         - deployment
+        - deployment-writeinpublic
       git:
         repo: https://github.com/dnk8n/writeinpublic.git
         dest: /home/dean/src/writeinpublic
@@ -85,6 +70,7 @@
     - name: Writeinpublic image exists and is the correct version
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_image:
         build:
           path: /home/dean/src/writeinpublic
@@ -102,6 +88,7 @@
     - name: Local Settings are present and owned by 1000:1000 (container user uid:gid)
       tags:
         - deployment
+        - deployment-writeinpublic
       become: yes
       file:
         path: /home/dean/local_settings.py
@@ -132,6 +119,7 @@
     - name: Run migrations
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_container:
         user: "1000:1000"
         name: writeinpublic-migrations
@@ -149,12 +137,14 @@
     - name: Show output for migrations
       tags:
         - deployment
+        - deployment-writeinpublic
       debug:
         msg: "{{ migrations.ansible_facts.docker_container.Output }}"
 
     - name: Remove the migrations container
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_container:
         state: absent
         name: writeinpublic-migrations
@@ -162,6 +152,7 @@
     - name: Run collectstatic
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_container:
         user: "1000:1000"
         name: writeinpublic-collectstatic
@@ -179,12 +170,14 @@
     - name: Show output for collectstatic
       tags:
         - deployment
+        - deployment-writeinpublic
       debug:
         msg: "{{ collectstatic.ansible_facts.docker_container.Output }}"
 
     - name: Remove the collectstatic container
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_container:
         state: absent
         name: writeinpublic-collectstatic
@@ -216,6 +209,7 @@
     - name: Writeinpublic container is started - writeinpublic
       tags:
         - deployment
+        - deployment-writeinpublic
       docker_container:
         user: "1000:1000"
         name: writeinpublic
@@ -231,29 +225,6 @@
         volumes:
           - /home/dean/local_settings.py:/app/writeit/local_settings.py
           - /home/dean/share:/app/share
-
-    - name: Writeinpublic container is started - writeinpublic-email_handler
-      # TODO: Handle variables properly, make code DRY
-      vars:
-        email_dir: "/home/dean/src/email"
-        email_pipe_file: "{{ email_dir }}/email-pipe"
-      tags:
-        - deployment
-      docker_container:
-        user: "1000:1000"
-        name: writeinpublic-email_handler
-        state: started
-        image: openup/writeinpublic:latest
-        working_dir: /app
-        command: "bash -c 'tail -fn +1 {{ email_pipe_file }} | while read line ; do (echo $line | base64 -d | cat | ./manage.py handleemail) ; done'"
-        restart_policy: unless-stopped
-        env:
-          BROKER_URL: "amqp://guest:guest@rabbitmq//"
-          CELERY_BROKER_URL: "amqp://guest:guest@rabbitmq//"
-        volumes:
-          - /home/dean/local_settings.py:/app/writeit/local_settings.py
-          - /home/dean/share:/app/share
-          - "{{ email_pipe_file }}:{{ email_pipe_file }}"
 
     - name: Writeinpublic container is started - writeinpublic-celery_worker
       tags:
@@ -305,6 +276,7 @@
         src: Caddyfile
         dest: /home/dean/.caddy/Caddyfile
         mode: 0644
+      register: caddyfile
 
     - name: Caddy container exists
       tags:
@@ -319,6 +291,7 @@
           - 80:80
           - 443:443
         restart_policy: unless-stopped
+        restart: "{{ 'yes' if caddyfile.changed else 'no' }}"
         env:
           ACME_AGREE: "true"
           XDG_DATA_HOME: "/root/.local/share"
@@ -337,7 +310,6 @@
         connected:
           - caddy
           - writeinpublic
-          - writeinpublic-email_handler
           - writeinpublic-celery_worker
           - writeinpublic-celery_beat
           - rabbitmq
