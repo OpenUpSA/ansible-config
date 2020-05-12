@@ -13,6 +13,10 @@
     dokku_plugins:
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
+      - name: rabbitmq
+        url: https://github.com/dokku/dokku-rabbitmq.git
+    dokku_version: 0.20.4
+    sshcommand_version: 0.10.0
     postgres_database: writeinpublic
     postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
     postgres_user: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/POSTGRES subkey=username')}}"
@@ -30,6 +34,9 @@
         config:
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/DJANGO_SECRET_KEY') }}"
           DJANGO_DATABASE_URL: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
+          ELASTICSEARCH_URL: "http://elasticsearch-1:9200/"
+          ELASTICSEARCH_INDEX: "{{ app_name }}"
+          SESSION_COOKIE_DOMAIN: "{{ app_domain }}"
 
 
     - name: "Dokku app domains are configured"
@@ -42,3 +49,8 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: Rabbitmq instance exists
+      dokku_service_create:
+        name: "{{ app_name }}"
+        service: rabbitmq
