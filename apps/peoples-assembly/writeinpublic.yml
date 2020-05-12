@@ -33,10 +33,10 @@
         app: "{{ app_name }}"
         config:
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/DJANGO_SECRET_KEY') }}"
-          DJANGO_DATABASE_URL: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
+          DATABASE_URL: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
           ELASTICSEARCH_URL: "http://elasticsearch-1:9200/"
           ELASTICSEARCH_INDEX: "{{ app_name }}"
-          SESSION_COOKIE_DOMAIN: "{{ app_domain }}"
+          SESSION_COOKIE_DOMAIN: ".{{ app_domain }}"
 
 
     - name: "Dokku app domains are configured"
@@ -45,6 +45,17 @@
         domains:
           - "{{ app_domain }}"
           - ".{{ app_domain }}"
+
+    - name: "Index data mapped out to host at deploy time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/{{ app_name }}/celerybeat:/var/celerybeat/celerybeat-schedule"
+    - name: "Index data mapped out to host at run time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/{{ app_name }}/celerybeat:/var/celerybeat/celerybeat-schedule"
 
     - name: "Your dokku git remote"
       debug:

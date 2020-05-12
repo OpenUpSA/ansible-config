@@ -57,6 +57,10 @@ writeinpublic
 ansible-playbook --inventory inventory/prod.yml apps/peoples-assembly/writeinpublic.yml
 
 
+### Postgres database
+
+
+
 ### Configure rabbitmq
 
     dokku rabbitmq:link writeinpublic writeinpublic --alias CELERY_BROKER_URL
