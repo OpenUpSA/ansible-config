@@ -1,0 +1,39 @@
+---
+- hosts:
+    - peoples-assembly
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+
+  vars:
+    app_name: "elasticsearch-1"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Disable the default proxy"
+      dokku_proxy:
+        app: "{{ app_name }}"
+        state: absent
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          ES_MIN_MEM: "8g"
+          ES_MAX_MEM: "8g"
+
+    - name: "Index data mapped out to host at deploy time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/{{ app_name }}/data:/usr/share/elasticsearch/data"
+    - name: "Index data mapped out to host at run time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/{{ app_name }}/data:/usr/share/elasticsearch/data"

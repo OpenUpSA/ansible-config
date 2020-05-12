@@ -14,7 +14,7 @@
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
     postgres_database: pmg
-    postgres_hostname: postgresql94-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
     postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
     postgres_password: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES')}}"
 
