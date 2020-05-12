@@ -41,6 +41,18 @@
           EMAIL_HOST_USER: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP subkey=username') }}"
           EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP') }}"
           EMAIL_USE_TLS: "True"
+          DEFAULT_FROM_DOMAIN: "{{ app_domain }}"
+
+    - name: "Index data mapped out to host at deploy time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/{{ app_name }}/attachments:/app/attachments"
+    - name: "Index data mapped out to host at run time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/{{ app_name }}/attachments:/app/attachments"
 
     - name: "Dokku app domains are configured"
       dokku_domains:
