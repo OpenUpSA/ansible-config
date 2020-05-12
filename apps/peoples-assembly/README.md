@@ -54,12 +54,11 @@ Configure zero replicas via that shell
 writeinpublic
 -------------
 
-ansible-playbook --inventory inventory/prod.yml apps/peoples-assembly/writeinpublic.yml
+    ansible-playbook --inventory inventory/prod.yml apps/peoples-assembly/writeinpublic.yml
 
+Configure worker and beat instances to run: On the server:
 
-### Postgres database
-
-
+    dokku ps:scale writeinpublic  web=1 worker=1 beat=1
 
 ### Configure rabbitmq
 
@@ -71,3 +70,7 @@ ansible-playbook --inventory inventory/prod.yml apps/peoples-assembly/writeinpub
 Attach writeinpublic instances to the elasticsearch-1 network on creation
 
     dokku network:set writeinpublic attach-post-create elasticsearch-1
+
+Rebuild the elasticsearch index
+
+    dokku --rm run writeinpublic python manage.py rebuild_index
