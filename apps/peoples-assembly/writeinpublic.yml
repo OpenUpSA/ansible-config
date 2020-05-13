@@ -58,8 +58,15 @@
       dokku_domains:
         app: "{{ app_name }}"
         domains:
-          - "{{ app_domain }}"
           - ".{{ app_domain }}"
+        state: present
+
+    - name: "Dokku app default subdomain is removed"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_name }}.{{ inventory_hostname }}"
+        state: absent
 
     - name: "Your dokku git remote"
       debug:
