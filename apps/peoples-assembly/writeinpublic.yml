@@ -32,16 +32,17 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/DJANGO_SECRET_KEY') }}"
           DATABASE_URL: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
-          ELASTICSEARCH_URL: "http://elasticsearch-1.web.1:9200/"
-          ELASTICSEARCH_INDEX: "{{ app_name }}"
-          SESSION_COOKIE_DOMAIN: ".{{ app_domain }}"
-          EMAIL_HOST: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP subkey=hostname') }}"
-          EMAIL_HOST_USER: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP subkey=username') }}"
-          EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP') }}"
-          EMAIL_USE_TLS: "True"
           DEFAULT_FROM_DOMAIN: "{{ app_domain }}"
+          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/DJANGO_SECRET_KEY') }}"
+          ELASTICSEARCH_INDEX: "{{ app_name }}"
+          ELASTICSEARCH_URL: "http://elasticsearch-1.web.1:9200/"
+          EMAIL_HOST: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP subkey=hostname') }}"
+          EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP') }}"
+          EMAIL_HOST_USER: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP subkey=username') }}"
+          EMAIL_USE_TLS: "True"
+          SENTRY_DSN: "https://5873ba4ea49d49d39fc91d30c1f232a0@o242378.ingest.sentry.io/5239183"
+          SESSION_COOKIE_DOMAIN: ".{{ app_domain }}"
 
     - name: "Index data mapped out to host at deploy time"
       dokku_docker_options:
