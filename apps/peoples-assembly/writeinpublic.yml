@@ -35,6 +35,7 @@
           DATABASE_URL: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
           DEFAULT_FROM_DOMAIN: "{{ app_domain }}"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/DJANGO_SECRET_KEY') }}"
+          DJANGO_ADMINS: "Maintainers:peoples-assembly-maintainers@openup.org.za"
           ELASTICSEARCH_INDEX: "{{ app_name }}"
           ELASTICSEARCH_URL: "http://elasticsearch-1.web.1:9200/"
           EMAIL_HOST: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/SMTP subkey=hostname') }}"
@@ -43,6 +44,7 @@
           EMAIL_USE_TLS: "True"
           SENTRY_DSN: "https://5873ba4ea49d49d39fc91d30c1f232a0@o242378.ingest.sentry.io/5239183"
           SESSION_COOKIE_DOMAIN: ".{{ app_domain }}"
+          TIME_ZONE: "Africa/Johannesburg"
 
     - name: "Index data mapped out to host at deploy time"
       dokku_docker_options:
