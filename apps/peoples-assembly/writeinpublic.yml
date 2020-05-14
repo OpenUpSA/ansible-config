@@ -15,6 +15,8 @@
         url: https://github.com/dokku/dokku-letsencrypt.git
       - name: rabbitmq
         url: https://github.com/dokku/dokku-rabbitmq.git
+      - name: postgres
+        url: https://github.com/dokku/dokku-postgres.git
     dokku_version: 0.20.4
     sshcommand_version: 0.10.0
     postgres_database: writeinpublic
@@ -32,7 +34,6 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          DATABASE_URL: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
           DEFAULT_FROM_DOMAIN: "{{ app_domain }}"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/writeinpublic/prod/DJANGO_SECRET_KEY') }}"
           DJANGO_ADMINS: "Maintainers:peoples-assembly-maintainers@openup.org.za"
@@ -74,6 +75,17 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: Postgres instance exists
+      dokku_service_create:
+        name: "{{ app_name }}"
+        service: postgres
+
+    - name: Postgres instance is linked to the app
+      dokku_service_link:
+        app: "{{ app_name }}"
+        name: "{{ app_name }}"
+        service: postgres
 
     - name: Rabbitmq instance exists
       dokku_service_create:
