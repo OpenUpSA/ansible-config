@@ -1,0 +1,15 @@
+/var/log/aleph-prod/celery.log {
+  rotate 5
+  weekly
+  compress
+  missingok
+  notifempty
+}
+
+/var/log/aleph-beat-prod/celery.log {
+  rotate 5
+  weekly
+  compress
+  missingok
+  notifempty
+}
