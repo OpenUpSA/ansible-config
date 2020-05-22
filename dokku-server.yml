@@ -12,6 +12,26 @@
       tags:
         - dokku-ssh-keys
 
+    - name: Make sure /var/log/dokku directory exists
+      file:
+        path: /var/log/dokku
+        owner: syslog
+        group: dokku
+        mode: 0775
+        state: directory
+
+    - name: Make sure that dokku log files exist with correct ownership
+      file:
+        path: "/var/log/dokku/{{ item }}"
+        owner: syslog
+        group: dokku
+        mode: 0664
+        state: touch
+      with_items:
+        - letsencrypt.log
+        - events.log
+        - dokku-daemon.log
+
     - name: Set timezone to UTC
       timezone:
         name: UTC
