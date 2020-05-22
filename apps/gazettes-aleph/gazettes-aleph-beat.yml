@@ -58,3 +58,10 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+
+    - name: "Ensure logrotate config exists for aleph-beat"
+      template:
+        src: logrotate-aleph-beat
+        dest: /etc/logrotate.d/aleph-beat
+        mode: 0644

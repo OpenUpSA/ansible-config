@@ -57,3 +57,9 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "Ensure logrotate config exists for aleph-worker"
+      template:
+        src: logrotate-aleph-worker
+        dest: /etc/logrotate.d/aleph-worker
+        mode: 0644
