@@ -1,14 +1,11 @@
 People's Assembly
 =================
 
-1. elasticsearch
-2. rabbitmq
-3. pombola
-  a. postgres
-  b. app
-4. writeinpublic
-  a. rabbitmq
+1. [elasticsearch](#elasticsearch)
+2. writeinpublic
+  a. [rabbitmq](#link-the-app-to-rabbitmq)
   b. postgres
+  c. [elasticsearch](#finish-elasticseatch-setup)
   c. app
 
 
@@ -51,21 +48,27 @@ Configure zero replicas via that shell
     curl -XPUT localhost:9200/_settings -d '{ "index": { "number_of_replicas" : 0 } }'
 
 
+
 writeinpublic
 -------------
 
+Run the writeinpublic playbook to configure things:
+
     ansible-playbook --inventory inventory/prod.yml apps/peoples-assembly/writeinpublic.yml
 
-Configure worker and beat instances to run: On the server:
+Configure worker and beat instances to run 1 instance each. On the server:
 
     dokku ps:scale writeinpublic  web=1 worker=1 beat=1
 
-### Configure rabbitmq
+
+
+
+### Link writeinpublic to rabbitmq
 
     dokku rabbitmq:link writeinpublic writeinpublic --alias CELERY_BROKER_URL
 
 
-### Configure elasticsearch
+### Finish elasticsearch setup
 
 Attach writeinpublic instances to the elasticsearch-1 network on creation
 
@@ -74,3 +77,8 @@ Attach writeinpublic instances to the elasticsearch-1 network on creation
 Rebuild the elasticsearch index
 
     dokku --rm run writeinpublic python manage.py rebuild_index
+
+
+### Deploy the app
+
+Add the dokku git remote to your local clone and push master to it.
