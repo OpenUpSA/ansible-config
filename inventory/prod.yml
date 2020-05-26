@@ -24,6 +24,9 @@ all:
         pmg4-aws.openup.org.za:
           host_extra_admins:
             - delenamalan
+        pmg1-hetzner.openup.org.za:
+          host_extra_admins:
+            - delenamalan
         treasury1.openup.org.za:
         treasury3.openup.org.za:
           ansible_user: ubuntu
@@ -32,6 +35,10 @@ all:
           host_extra_admins:
             - zac
             - delenamalan
+
+    "peoples-assembly":
+      hosts:
+        pmg1-hetzner.openup.org.za:
 
     "vulekamali":
       hosts:
