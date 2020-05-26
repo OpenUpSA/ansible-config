@@ -2,10 +2,10 @@ People's Assembly
 =================
 
 1. [elasticsearch](#elasticsearch)
-2. writeinpublic
-  1. [rabbitmq](#link-the-app-to-rabbitmq)
-  3. [elasticsearch](#finish-elasticseatch-setup)
-  4. app
+2. [writeinpublic](#writeinpublic)
+    1. [rabbitmq](#link-the-app-to-rabbitmq)
+    3. [elasticsearch](#finish-elasticseatch-setup)
+    4. [app](#deploy-the-app)
 
 
 elasticsearch
