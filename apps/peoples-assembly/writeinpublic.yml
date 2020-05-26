@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - pmg1-hetzner.openup.org.za
+    - peoples-assembly
   become: yes
   roles:
    - dokku_bot.ansible_dokku

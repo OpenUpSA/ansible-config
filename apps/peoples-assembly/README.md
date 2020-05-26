@@ -3,10 +3,9 @@ People's Assembly
 
 1. [elasticsearch](#elasticsearch)
 2. writeinpublic
-  a. [rabbitmq](#link-the-app-to-rabbitmq)
-  b. postgres
-  c. [elasticsearch](#finish-elasticseatch-setup)
-  c. app
+  1. [rabbitmq](#link-the-app-to-rabbitmq)
+  3. [elasticsearch](#finish-elasticseatch-setup)
+  4. app
 
 
 elasticsearch
@@ -31,7 +30,7 @@ Create a docker network and configure dokku to attach elasticsearch instances to
     dokku network:create elasticsearch-1
     dokku network:set elasticsearch-1 attach-post-deploy elasticsearch-1
 
-Now you can depoy the app
+Now you can deploy the app
 
     dokku tags:deploy elasticsearch-1 latest
 
