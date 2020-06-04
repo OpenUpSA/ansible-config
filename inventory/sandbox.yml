@@ -21,8 +21,16 @@ all:
         sentry_dsn: "https://acd93673a56a48939bef31fc9ad92f2c@sentry.io/1888207"
         solr_url: "http://solr:8983/solr/budgetportal-sandbox"
         tag_manager_id: ""
-
+    munimoney:
+      hosts:
+        munimoney1-hetzner.openup.org.za:
+      vars:
+        app_domain: munimoney1-hetzner.openup.org.za
+    dokkus:
+      hosts:
+        munimoney1-hetzner.openup.org.za:
   vars:
+    env_name: sandbox
     all_hosts_admins:
       - jdb
       - adi
