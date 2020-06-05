@@ -5,7 +5,7 @@ all:
       hosts:
         munimoney1-hetzner.openup.org.za:
       vars:
-        app_domain: munimoney1-hetzner.openup.org.za
+        app_domain: staging.municipalmoney.gov.za
     dokkus:
       hosts:
         munimoney1-hetzner.openup.org.za:
