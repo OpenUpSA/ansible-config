@@ -31,12 +31,9 @@
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/AWS')}}"
           AWS_STORAGE_BUCKET_NAME: "munimoney-media"
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
-          DJANGO_DEBUG: "true"
+          DJANGO_DEBUG: "false"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/DJANGO subkey=SECRET_KEY')}}"
           DJANGO_SETTINGS_MODULE: "municipal_finance.settings"
-          ELASTICSEARCH_URL: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/ELASTICSEARCH subkey=URL')}}"
-          HAYSTACK_INDEX: "munimoney-staging"
-          HAYSTACK_URL: "docker1.code4sa.org:9200"
           SITE_ID: "2"
 
     - name: "Dokku app domains are configured"
