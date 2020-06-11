@@ -28,7 +28,6 @@
           DB_PORT: "{{ lookup('passwordstore', 'apps/salga-mobile-api/{{ env_name }}/DB subkey=PORT')}}"
           DB_USER: "{{ lookup('passwordstore', 'apps/salga-mobile-api/{{ env_name }}/DB subkey=USER')}}"
           ELASTIC_TOKEN: "{{ lookup('passwordstore', 'apps/salga-mobile-api/{{ env_name }}/ELASTIC_TOKEN')}}"
-          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           LOGSTASH_URL: "ip-172-31-33-240.eu-west-1.compute.internal"
           SALGA_DEBUG: "false"
           SALGA_KEY: "{{ lookup('passwordstore', 'apps/salga-mobile-api/{{ env_name }}/SALGA_KEY')}}"
