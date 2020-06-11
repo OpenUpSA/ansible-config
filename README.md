@@ -137,6 +137,8 @@ Add `MAILTO=webapps@openup.org.za` at the top of the `crontab -e` file as one of
 ansible-playbook --limit hetzner1.openup.org.za ssmtp.yml -e "ssmtp_AuthUser=apikey ssmtp_AuthPass=...secret-api-key..."
 ```
 
+Note: In the above command it is possible for example to use, `ssmtp_AuthPass=$(pass show services/sendgrid.net | head -n 1)` to obtain sendgrid.net credentials managed in secret-store repository
+
 Familiarising yourself with Ansible
 -----------------------------------
 
