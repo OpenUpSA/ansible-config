@@ -34,6 +34,7 @@
           DJANGO_DEBUG: "false"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/DJANGO subkey=SECRET_KEY')}}"
           DJANGO_SETTINGS_MODULE: "municipal_finance.settings"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           SITE_ID: "2"
 
     - name: "Dokku app domains are configured"

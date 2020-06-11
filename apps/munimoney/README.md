@@ -20,5 +20,4 @@ For commands below, ensure you make use of appropriate inventory flag depending 
    - For non-production, include for example: `dokku checks:disable munimoney-staging-web` (from server)
    - `git push dokku-staging master` (from development machine)
 4. Setup Letsencrypt (from server):
-   - `dokku config:set --no-restart munimoney-staging-web DOKKU_LETSENCRYPT_EMAIL=webapps@openup.org.za`
    - `dokku letsencrypt munimoney-staging-web`
