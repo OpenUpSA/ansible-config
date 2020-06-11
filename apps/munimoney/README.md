@@ -7,7 +7,7 @@ root of the [OpenUpSA/ansible-config](https://github.com/OpenUpSA/ansible-config
 For commands below, ensure you make use of appropriate inventory flag depending on environment and substitute out
 `staging` for correct `env_name` as necessary.
 
-1. Confirm the following playbooks have already been run before proceeding:
+1. Confirm the following playbooks have already been run on target host before proceeding:
   - users.yml
   - dokku-server.yml
   - ssmtp.yml
