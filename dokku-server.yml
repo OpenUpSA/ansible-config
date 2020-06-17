@@ -12,6 +12,10 @@
       tags:
         - dokku-ssh-keys
 
+    - name: Dokku is installed
+      include_role:
+        name: dokku_bot.ansible_dokku
+
     - name: Make sure /var/log/dokku directory exists
       file:
         path: /var/log/dokku
@@ -50,9 +54,6 @@
       shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
       args:
         creates: /root/.ssh/id_rsa
-
-  roles:
-   - role: dokku_bot.ansible_dokku
 
   tasks:
 

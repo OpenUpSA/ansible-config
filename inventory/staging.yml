@@ -1,0 +1,19 @@
+all:
+  hosts:
+  children:
+    munimoney:
+      hosts:
+        munimoney1-hetzner.openup.org.za:
+      vars:
+        app_domain: staging.municipalmoney.gov.za
+    dokkus:
+      hosts:
+        munimoney1-hetzner.openup.org.za:
+  vars:
+    env_name: staging
+    all_hosts_admins:
+      - jdb
+      - adi
+      - lunga
+      - dean
+    host_extra_admins: [] # Empty default - override this on specific hosts.
