@@ -1,16 +1,7 @@
 ### Steps to deploy Salga Mobile API
 ____________________________________
 
-The following steps assume that you have familiarized yourself with instructions of the README located at the
-root of the [OpenUpSA/ansible-config](https://github.com/OpenUpSA/ansible-config) repo.
-
-For commands below, ensure you make use of appropriate inventory flag depending on environment and substitute out
-`prod` for correct `env_name` as necessary.
-
-1. Confirm the following playbooks have already been run on target host before proceeding:
-  - users.yml
-  - dokku-server.yml
-  - ssmtp.yml
+Ensure the server has been set up according to standard practise documented in the root of this repository
 
 2. Deploy Dokku configuration
    - `ansible-playbook -i inventory/prod.yml apps/salga-mobile-api/salga-mobile-api-web.yml` (use `--start-at-task "Dokku app exists"` if Dokku Daemon has already been configured on target host)
