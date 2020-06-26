@@ -16,4 +16,5 @@ all:
       - adi
       - lunga
       - dean
+      - juriejan
     host_extra_admins: [] # Empty default - override this on specific hosts.

@@ -89,11 +89,11 @@ credentials, e.g. `--user root --ask-pass`
 
 Or you might need to specify an SSH key file for the initial non-root admin user:
 
-    ansible-playbook --limit dokku123-aws.openup.org.za --user=ubuntu --become --key-file ~/.ssh/Bob.pem users.yml
+    ansible-playbook --limit dokku123-aws.openup.org.za  -i inventory/staging.yml --user=ubuntu --become --key-file ~/.ssh/Bob.pem users.yml
 
 Allow them to ssh as dokku for deployments
 
-    ansible-playbook --limit pmg4-aws.openup.org.za dokku-server.yml --tags dokku-ssh-keys
+    ansible-playbook --limit dokku123-aws.openup.org.za -i inventory/staging.yml dokku-server.yml --skip-tags dokku-install
 
 
 Install dokku
