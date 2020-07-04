@@ -45,6 +45,7 @@
           CKAN___CKANEXT__S3FILESTORE__HOST_NAME: 'https://s3-eu-west-1.amazonaws.com/openup-ckan'
           CKAN___CKANEXT__S3FILESTORE__REGION_NAME: 'eu-west-1'
           CKAN___CKANEXT__S3FILESTORE__SIGNATURE_VERSION: 's3v4'
+          SENTRY_DSN: 'https://564ff65ac77346d89d99da18c5aa4d5d@o242378.ingest.sentry.io/5308305'
 
     - name: "Dokku app deploy mount docker-option set"
       dokku_docker_options:
