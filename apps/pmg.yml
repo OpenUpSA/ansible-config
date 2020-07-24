@@ -53,6 +53,7 @@
           SOUNDCLOUD_PERIOD_MINUTES: "5"
           SOUNDCLOUD_USERNAME: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD subkey=username') }}"
           SQLALCHEMY_DATABASE_URI: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
+          STATIC_HOST: 'https://static.pmg.org.za/'
 
 
     - name: "Dokku app domains are configured"
