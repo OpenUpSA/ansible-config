@@ -5,7 +5,6 @@ all:
     all_hosts_admins:
       - jdb
       - adi
-      - lunga
       - dean
       - juriejan
     host_extra_admins: [] # Empty default - override this on specific hosts.
@@ -36,6 +35,13 @@ all:
           host_extra_admins:
             - zac
             - delenamalan
+        idp1-aws.openup.org.za:
+          host_extra_admins:
+            - emre
+
+    "idp-data":
+      hosts:
+        idp1-aws.openup.org.za:
 
     "peoples-assembly":
       hosts:
