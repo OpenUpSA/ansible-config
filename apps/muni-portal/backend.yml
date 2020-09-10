@@ -1,0 +1,53 @@
+---
+- hosts:
+    - muni-portal-backend
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+
+  vars:
+    instance_name: "muni-portal-backend-{{ env_name }}"
+    app_name: "{{ instance_name }}"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Dokku app config is set"
+      vars:
+        postgres_password: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/POSTGRES')}}"
+        postgres_hostname: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/POSTGRES subkey=hostname')}}"
+        postgres_username: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/POSTGRES subkey=username')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/muni_portal_{{ env_name }}"
+          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+
+    - name: "USER_ID build-arg is set"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: build
+        option: "--build-arg USER_ID=1001"
+
+    - name: "GROUP_ID build-arg is set"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: build
+        option: "--build-arg GROUP_ID=1001"
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"

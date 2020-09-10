@@ -22,6 +22,7 @@ all:
         dokku7.code4sa.org:
         dokku8.code4sa.org:
         dokku9.code4sa.org:
+        muni-portal-aws1.openup.org.za:
         pmg4-aws.openup.org.za:
           host_extra_admins:
             - delenamalan
@@ -36,6 +37,13 @@ all:
           host_extra_admins:
             - zac
             - delenamalan
+
+    muni-portal-backend:
+      hosts:
+        muni-portal-aws1.openup.org.za:
+      vars:
+        app_domain: muni-portal-backend.openup.org.za
+        env_name: prod
 
     "peoples-assembly":
       hosts:
