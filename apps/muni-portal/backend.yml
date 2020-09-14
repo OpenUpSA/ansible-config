@@ -29,6 +29,7 @@
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/muni_portal_{{ env_name }}"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          TAG_MANAGER_ENABLED: "False"
 
     - name: "USER_ID build-arg is set"
       dokku_docker_options:
