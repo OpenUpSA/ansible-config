@@ -5,10 +5,12 @@ all:
     all_hosts_admins:
       - jdb
       - adi
-      - lunga
       - dean
       - juriejan
+    all_hosts_remove_admins:
+      - lunga
     host_extra_admins: [] # Empty default - override this on specific hosts.
+    host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
     elasticsearch:
       hosts:
