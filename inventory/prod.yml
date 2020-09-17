@@ -15,13 +15,9 @@ all:
     elasticsearch:
       hosts:
         docker1.code4sa.org:
-    discourse:
-      hosts:
-        docker2.code4sa.org:
+          ansible_user: ubuntu
     dokkus:
       hosts:
-        dokku5.code4sa.org:
-        dokku7.code4sa.org:
         dokku8.code4sa.org:
         dokku9.code4sa.org:
         muni-portal-aws1.openup.org.za:
@@ -32,13 +28,13 @@ all:
           host_extra_admins:
             - delenamalan
         treasury1.openup.org.za:
-        treasury3.openup.org.za:
           ansible_user: ubuntu
         treasury4.openup.org.za:
         hetzner1.openup.org.za:
           host_extra_admins:
-            - zac
             - delenamalan
+          host_remove_extra_admins:
+            - zac
 
     muni-portal-backend:
       hosts:
@@ -53,7 +49,6 @@ all:
 
     "vulekamali":
       hosts:
-        # treasury3.openup.org.za: Not managed by ansible
         treasury4.openup.org.za:
           gunicorn_workers_arg: "--workers 2"
       vars:
