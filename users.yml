@@ -32,3 +32,9 @@
         state: "present"
         regexp: "^%admin"
         line: "%admin ALL=(ALL) NOPASSWD: ALL"
+
+    - name: "Ex-admin users do not exist any more"
+      user:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ all_hosts_remove_admins + host_remove_extra_admins }}"

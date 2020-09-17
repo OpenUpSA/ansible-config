@@ -68,10 +68,12 @@ ansible-galaxy install dokku_bot.ansible_dokku,v2020.1.6
 ```
 
 
-Ensuring admins have access to a server
----------------------------------------
+Managing admin access to servers
+--------------------------------
 
-### Add new admins to ansible's inventory
+### New admins
+
+Add new admins to ansible's inventory
 
 1. Add their key to the `files` directory
 2. Add them to the correct user list:
@@ -94,6 +96,15 @@ Or you might need to specify an SSH key file for the initial non-root admin user
 Allow them to ssh as dokku for deployments
 
     ansible-playbook --limit dokku123-aws.openup.org.za -i inventory/staging.yml dokku-server.yml --skip-tags dokku-install
+
+
+### Removing admin access
+
+1. Move their username from `all_hosts_admins` to `all_hosts_remove_admins` in
+   all inventory files relevant
+2. Move their username from `host_extra_admins` to `host_remove_extra_admins` in
+   all inventory files relevant
+3. If they are not an admin on any server any more, remove their key from `files`
 
 
 Install dokku

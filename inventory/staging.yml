@@ -1,5 +1,15 @@
 all:
   hosts:
+  vars:
+    env_name: staging
+    all_hosts_admins:
+      - jdb
+      - adi
+      - dean
+      - juriejan
+    all_hosts_remove_admins: []
+    host_extra_admins: [] # Empty default - override this on specific hosts.
+    host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
     munimoney:
       hosts:
@@ -9,12 +19,3 @@ all:
     dokkus:
       hosts:
         munimoney1-hetzner.openup.org.za:
-  vars:
-    env_name: staging
-    all_hosts_admins:
-      - jdb
-      - adi
-      - lunga
-      - dean
-      - juriejan
-    host_extra_admins: [] # Empty default - override this on specific hosts.

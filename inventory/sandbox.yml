@@ -1,8 +1,15 @@
 all:
   hosts:
-    writeinpublic-test.pa.org.za:
-      host_extra_admins:
-        - delenamalan
+  vars:
+    env_name: sandbox
+    all_hosts_admins:
+      - jdb
+      - adi
+      - dean
+    all_hosts_remove_admins:
+      - lunga
+    host_extra_admins: [] # Empty default - override this on specific hosts.
+    host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
     "vulekamali":
       hosts:
@@ -21,11 +28,3 @@ all:
         sentry_dsn: "https://acd93673a56a48939bef31fc9ad92f2c@sentry.io/1888207"
         solr_url: "http://solr:8983/solr/budgetportal-sandbox"
         tag_manager_id: ""
-  vars:
-    env_name: sandbox
-    all_hosts_admins:
-      - jdb
-      - adi
-      - lunga
-      - dean
-    host_extra_admins: [] # Empty default - override this on specific hosts.
