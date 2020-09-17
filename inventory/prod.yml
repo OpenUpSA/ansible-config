@@ -7,6 +7,7 @@ all:
       - adi
       - dean
       - juriejan
+      - mila
     all_hosts_remove_admins:
       - lunga
     host_extra_admins: [] # Empty default - override this on specific hosts.
@@ -24,15 +25,18 @@ all:
         pmg4-aws.openup.org.za:
           host_extra_admins:
             - delenamalan
+            - kuda
         pmg1-hetzner.openup.org.za:
           host_extra_admins:
             - delenamalan
+            - kuda
         treasury1.openup.org.za:
           ansible_user: ubuntu
         treasury4.openup.org.za:
         hetzner1.openup.org.za:
           host_extra_admins:
             - delenamalan
+            - kuda
           host_remove_extra_admins:
             - zac
 
