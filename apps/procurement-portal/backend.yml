@@ -1,0 +1,57 @@
+---
+- hosts:
+    - procurement-portal-backend
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+
+  vars:
+    instance_name: "procurement-portal-backend-{{ env_name }}"
+    app_name: "{{ instance_name }}"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      vars:
+        postgres_password: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/POSTGRES')}}"
+        postgres_hostname: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/POSTGRES subkey=hostname')}}"
+        postgres_username: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/POSTGRES subkey=username')}}"
+        postgres_dbname: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/POSTGRES subkey=dbname')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_dbname }}"
+          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          TAG_MANAGER_ENABLED: "False"
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS')}}"
+          AWS_STORAGE_BUCKET_NAME: "procurement-portal-{{ env_name }}"
+          AWS_S3_CUSTOM_DOMAIN: "{{ media_hostname }}"
+          AWS_S3_REGION_NAME: "eu-west-1"
+          SENTRY_DSN: "https://82b5e59552274a42844f6cca31c7d13e@o242378.ingest.sentry.io/5435935"
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
