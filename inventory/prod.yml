@@ -39,12 +39,21 @@ all:
             - kuda
           host_remove_extra_admins:
             - zac
+        aws1.keepthereceipt.org.za:
 
     muni-portal-backend:
       hosts:
         muni-portal-aws1.openup.org.za:
       vars:
         app_domain: muni-portal-backend.openup.org.za
+        env_name: prod
+
+    procurement-portal-backend:
+      hosts:
+        aws1.keepthereceipt.org.za:
+      vars:
+        app_domain: data.keepthereceipt.org.za
+        media_hostname: media.keepthereceipt.org.za
         env_name: prod
 
     "peoples-assembly":
