@@ -17,6 +17,8 @@
     - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
+      tags:
+        - app
 
     - name: "Dokku app config is set"
       vars:
@@ -30,24 +32,40 @@
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           TAG_MANAGER_ENABLED: "False"
+          AWS_STORAGE_BUCKET_NAME: "muni-portal-backend"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/AWS')}}"
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/AWS subkey=AWS_ACCESS_KEY_ID')}}"
+          AWS_S3_REGION_NAME: "eu-west-1"
+          AWS_S3_CUSTOM_DOMAIN: "muni-portal-backend.s3.amazonaws.com"
+          MEDIA_URL: "https://muni-portal-backend.s3.amazonaws.com/"
+          DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
+          WAGTAILAPI_BASE_URL: "https://muni-portal-backend.openup.org.za"
+      tags:
+        - app
 
     - name: "USER_ID build-arg is set"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: build
         option: "--build-arg USER_ID=1001"
+      tags:
+        - app
 
     - name: "GROUP_ID build-arg is set"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: build
         option: "--build-arg GROUP_ID=1001"
+      tags:
+        - app
 
     - name: "Dokku app domains are configured"
       dokku_domains:
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
+      tags:
+        - app
 
     - name: "Your dokku git remote"
       debug:
