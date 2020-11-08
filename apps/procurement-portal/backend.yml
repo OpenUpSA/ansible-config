@@ -33,11 +33,13 @@
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           TAG_MANAGER_ENABLED: "False"
-          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS')}}"
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/procurement-portal-backend/{{ env_name }}/AWS')}}"
           AWS_STORAGE_BUCKET_NAME: "procurement-portal-{{ env_name }}"
           AWS_S3_CUSTOM_DOMAIN: "{{ media_hostname }}"
           AWS_S3_REGION_NAME: "eu-west-1"
+          MEDIA_URL: "https://{{ media_hostname }}/"
+          DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           SENTRY_DSN: "https://82b5e59552274a42844f6cca31c7d13e@o242378.ingest.sentry.io/5435935"
       tags:
         - app
@@ -47,7 +49,6 @@
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
-          - "data.keepthereceipts.org.za"
       tags:
         - app
 
