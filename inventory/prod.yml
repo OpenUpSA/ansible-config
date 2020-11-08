@@ -50,10 +50,10 @@ all:
 
     procurement-portal-backend:
       hosts:
-        aws1.keepthereceipt.org.za:
+        aws1.keepthereceipts.org.za:
       vars:
-        app_domain: data.keepthereceipt.org.za
-        media_hostname: media.keepthereceipt.org.za
+        app_domain: data.keepthereceipts.org.za
+        media_hostname: media.keepthereceipts.org.za
         env_name: prod
 
     "peoples-assembly":
