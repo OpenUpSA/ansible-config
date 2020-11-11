@@ -8,8 +8,7 @@ all:
       - dean
       - juriejan
       - mila
-    all_hosts_remove_admins:
-      - lunga
+    all_hosts_remove_admins: []
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
@@ -37,9 +36,11 @@ all:
           host_extra_admins:
             - delenamalan
             - kuda
-          host_remove_extra_admins:
-            - zac
         aws1.keepthereceipt.org.za:
+        idp1-aws.openup.org.za:
+          host_extra_admins:
+            - paulmwatson
+
 
     muni-portal-backend:
       hosts:
