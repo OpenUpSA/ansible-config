@@ -44,6 +44,7 @@
           FRONTEND_BASE_URL: "https://cape-agulhas-app.openup.org.za"
           WAGTAILAPI_BASE_URL: "https://muni-portal-backend.openup.org.za"
           VAPID_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID')}}"
+          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$"
       tags:
         - app
 
