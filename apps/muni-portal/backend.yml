@@ -41,7 +41,7 @@
           DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/SMTP')}}"
           DEFAULT_FROM_EMAIL: "no-reply@capeagulhas.gov.za"
-          FRONTEND_BASE_URL: "https://cape-agulhas-app.openup.org.za"
+          FRONTEND_BASE_URL: "https://app.capeagulhas.gov.za"
           WAGTAILAPI_BASE_URL: "https://muni-portal-backend.openup.org.za"
           VAPID_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID') }}"
           VAPID_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID subkey=public_key') }}"
