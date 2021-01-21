@@ -78,3 +78,5 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
