@@ -28,6 +28,7 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
+          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^http://127.0.0.1:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$"
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/muni_portal_{{ env_name }}"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
@@ -45,7 +46,8 @@
           WAGTAILAPI_BASE_URL: "https://muni-portal-backend.openup.org.za"
           VAPID_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID') }}"
           VAPID_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID subkey=public_key') }}"
-          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^http://127.0.0.1:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$"
+          SENTRY_DSN: "https://a5d3ce913bdd4eb594da36387b286d83@o242378.ingest.sentry.io/5496000"
+          ENVIRONMENT: "production"
       tags:
         - app
 
@@ -76,3 +78,5 @@
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
