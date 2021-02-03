@@ -1,4 +1,6 @@
-## Production example
+## bucket policy
+
+Production Example.
 
 Modify User ARN and bucket name for other environments.
 
