@@ -22,6 +22,7 @@ all:
         dokku8.code4sa.org:
         dokku9.code4sa.org:
         muni-portal-aws1.openup.org.za:
+        muni-portal-aws2.openup.org.za:
         pmg4-aws.openup.org.za:
           host_extra_admins:
             - delenamalan
