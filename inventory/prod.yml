@@ -8,6 +8,7 @@ all:
       - dean
       - juriejan
       - mila
+      - otterbotter
     all_hosts_remove_admins: []
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
@@ -44,10 +45,9 @@ all:
 
     muni-portal-backend:
       hosts:
-        muni-portal-aws1.openup.org.za:
+        muni-portal-aws2.openup.org.za:
       vars:
         app_domain: muni-portal-backend.openup.org.za
-        env_name: prod
 
     procurement-portal-backend:
       hosts:
