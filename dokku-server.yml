@@ -12,6 +12,25 @@
       tags:
         - dokku-ssh-keys
 
+    - name: Set timezone to UTC
+      timezone:
+        name: UTC
+      register: timezone
+
+    - name: Set up a unique hostname
+      hostname: name={{ inventory_hostname }}
+
+    - name: Set up unattended-upgrades
+      apt:
+        update_cache: yes
+        name: unattended-upgrades
+        state: present
+
+    - name: Generate SSH keys
+      shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+      args:
+        creates: /root/.ssh/id_rsa
+
     - name: Dokku is installed
       include_role:
         name: dokku_bot.ansible_dokku
@@ -35,25 +54,6 @@
         - letsencrypt.log
         - events.log
         - dokku-daemon.log
-
-    - name: Set timezone to UTC
-      timezone:
-        name: UTC
-      register: timezone
-
-    - name: Set up a unique hostname
-      hostname: name={{ inventory_hostname }}
-
-    - name: Set up unattended-upgrades
-      apt:
-        update_cache: yes
-        name: unattended-upgrades
-        state: present
-
-    - name: Generate SSH keys
-      shell: ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
-      args:
-        creates: /root/.ssh/id_rsa
 
   tasks:
 
