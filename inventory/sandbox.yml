@@ -1,5 +1,5 @@
 all:
-  hosts:
+ _ur hosts:
   vars:
     env_name: sandbox
     all_hosts_admins:
@@ -35,4 +35,4 @@ all:
         muni-portal-aws2.openup.org.za:
       vars:
         app_domain: sandbox.muni-portal-backend.openup.org.za
-        frontend_base_url: https://sandbox.app.capeagulhas.gov.za
+        frontend_base_url: https://sandbox.cape-agulhas-app.openup.org.za
