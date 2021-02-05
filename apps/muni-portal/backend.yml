@@ -45,7 +45,7 @@
           FRONTEND_BASE_URL: "https://app.capeagulhas.gov.za"
           WAGTAILAPI_BASE_URL: "https://muni-portal-backend.openup.org.za"
           SENTRY_DSN: "https://a5d3ce913bdd4eb594da36387b286d83@o242378.ingest.sentry.io/5496000"
-          ENVIRONMENT: "production"
+          ENVIRONMENT: "{{ env_name }}"
       tags:
         - app
 
