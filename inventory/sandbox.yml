@@ -1,5 +1,5 @@
 all:
- _ur hosts:
+  hosts:
   vars:
     env_name: sandbox
     all_hosts_admins:
