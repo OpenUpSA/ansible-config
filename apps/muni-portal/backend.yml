@@ -28,7 +28,7 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^http://127.0.0.1:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$"
+          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^http://127.0.0.1:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$,^https://{{ env_name }}.app.capeagulhas.gov.za$"
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/muni_portal_{{ env_name }}"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
@@ -41,7 +41,7 @@
           MEDIA_URL: "https://{{ instance_name }}.s3.amazonaws.com/"
           DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/SMTP')}}"
-          DEFAULT_FROM_EMAIL: "no-reply@capeagulhas.gov.za"
+          DEFAULT_FROM_EMAIL: "no-reply-{{ env_name }}@capeagulhas.gov.za"
           FRONTEND_BASE_URL: "{{ frontend_base_url }}"
           WAGTAILAPI_BASE_URL: "{{ app_domain }}"
           SENTRY_DSN: "https://a5d3ce913bdd4eb594da36387b286d83@o242378.ingest.sentry.io/5496000"
