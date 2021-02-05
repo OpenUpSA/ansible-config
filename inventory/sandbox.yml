@@ -35,3 +35,4 @@ all:
         muni-portal-aws2.openup.org.za:
       vars:
         app_domain: sandbox.muni-portal-backend.openup.org.za
+        frontend_base_url: https://sandbox.app.capeagulhas.gov.za
