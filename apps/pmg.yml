@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - pmg4-aws.openup.org.za
+    - pmg1-aws.pmg.org.za
   become: yes
   roles:
    - dokku_bot.ansible_dokku
@@ -14,7 +14,7 @@
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
     postgres_database: pmg
-    postgres_hostname: postgresql11-prod.cnc362bhpvfe.eu-west-1.rds.amazonaws.com
+    postgres_hostname: postgresql1.ctribismbyc2.eu-west-1.rds.amazonaws.com
     postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
     postgres_password: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES')}}"
 
@@ -23,6 +23,8 @@
     - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
+      tags:
+        - app
 
     - name: "Dokku app config is set"
       dokku_config:
@@ -30,8 +32,9 @@
         config:
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS subkey=ACCESS_KEY_ID') }}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS') }}"
+          S3_BUCKET: pmg-assets2
           DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
-          ES_SERVER: http://ec2-52-19-68-36.eu-west-1.compute.amazonaws.com:9200
+          ES_SERVER: http://ec2-34-244-168-80.eu-west-1.compute.amazonaws.com:9200
           FLASK_ENV: production
           FLASK_SECRET_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/FLASK_SECRET_KEY') }}"
           FRONTEND_HOST: "https://{{ app_domain }}/"
@@ -54,6 +57,8 @@
           SOUNDCLOUD_USERNAME: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD subkey=username') }}"
           SQLALCHEMY_DATABASE_URI: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
           STATIC_HOST: 'https://static.pmg.org.za/'
+      tags:
+        - app
 
 
     - name: "Dokku app domains are configured"
@@ -64,10 +69,24 @@
           - "www.{{ app_domain }}"
           - "api.{{ app_domain }}"
           - "bills.{{ app_domain }}"
+      tags:
+        - app
 
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+        owner: dokku
+        group: dokku
+      tags:
+        - app
 
     - name: Upload file size is configured
       copy:
@@ -77,9 +96,13 @@
         group: dokku
         mode: "0644"
       register: nginx
+      tags:
+        - app
 
     - name: Nginx is reloaded
       service:
         name: nginx
         state: reloaded
       when: nginx.changed
+      tags:
+        - app
