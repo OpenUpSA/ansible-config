@@ -41,6 +41,9 @@ all:
           host_extra_admins:
             - paulmwatson
 
+        pmg1-aws.pmg.org.za:
+        elasticsearch1-aws.pmg.org.za:
+
 
     muni-portal-backend:
       hosts:
