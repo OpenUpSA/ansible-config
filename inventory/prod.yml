@@ -49,6 +49,7 @@ all:
         muni-portal-aws2.openup.org.za:
       vars:
         app_domain: muni-portal-backend.openup.org.za
+        frontend_base_url: https://cape-agulhas-app.openup.org.za
 
     procurement-portal-backend:
       hosts:
