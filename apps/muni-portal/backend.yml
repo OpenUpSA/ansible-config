@@ -46,6 +46,8 @@
           WAGTAILAPI_BASE_URL: "{{ app_domain }}"
           SENTRY_DSN: "https://a5d3ce913bdd4eb594da36387b286d83@o242378.ingest.sentry.io/5496000"
           ENVIRONMENT: "{{ env_name }}"
+          VAPID_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID') }}"
+          VAPID_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/VAPID subkey=public_key') }}"
       tags:
         - app
 
