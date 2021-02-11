@@ -28,7 +28,7 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^http://127.0.0.1:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$,^https://{{ env_name }}.app.capeagulhas.gov.za$,^https://{{ env_name }}--cape-agulhas-app.netlify.app/$"
+          CORS_ALLOWED_ORIGIN_REGEXES: "^http://localhost:\\d+$,^http://127.0.0.1:\\d+$,^https://app.capeagulhas.gov.za$,^https://cape-agulhas-app.openup.org.za$,^https://deploy-preview-\\d+--cape-agulhas-app.netlify.app$,^https://{{ env_name }}.app.capeagulhas.gov.za$,^https://{{ env_name }}--cape-agulhas-app.netlify.app$"
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/muni_portal_{{ env_name }}"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
