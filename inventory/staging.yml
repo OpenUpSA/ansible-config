@@ -28,4 +28,4 @@ all:
         muni-portal-aws2.openup.org.za:
       vars:
         app_domain: staging.muni-portal-backend.openup.org.za
-        frontend_base_url: https://staging.cape-agulhas-app.openup.org.za
+        frontend_base_url: https://staging--cape-agulhas-app.netlify.app/
