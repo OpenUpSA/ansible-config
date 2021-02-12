@@ -29,3 +29,6 @@ all:
       vars:
         app_domain: staging.muni-portal-backend.openup.org.za
         frontend_base_url: https://staging--cape-agulhas-app.netlify.app/
+        aws_storage_bucket_name: muni-portal-backend-staging
+        aws_s3_custom_domain: muni-portal-backend-staging.s3.amazonaws.com
+        media_url: https://muni-portal-backend-staging.s3.amazonaws.com/

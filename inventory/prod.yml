@@ -50,6 +50,9 @@ all:
       vars:
         app_domain: muni-portal-backend.openup.org.za
         frontend_base_url: https://cape-agulhas-app.openup.org.za
+        aws_storage_bucket_name: muni-portal-backend
+        aws_s3_custom_domain: muni-portal-backend.s3.amazonaws.com
+        media_url: https://muni-portal-backend.s3.amazonaws.com/
 
     procurement-portal-backend:
       hosts:
