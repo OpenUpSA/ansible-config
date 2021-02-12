@@ -33,7 +33,7 @@
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           TAG_MANAGER_ENABLED: "False"
-          AWS_STORAGE_BUCKET_NAME: "{{ instance_name }}"
+          AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/AWS')}}"
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name }}/AWS subkey=AWS_ACCESS_KEY_ID')}}"
           AWS_S3_REGION_NAME: "eu-west-1"
