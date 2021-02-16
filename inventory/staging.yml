@@ -7,15 +7,28 @@ all:
       - adi
       - dean
       - juriejan
+      - otterbotter
     all_hosts_remove_admins: []
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
+
+    dokkus:
+      hosts:
+        munimoney1-hetzner.openup.org.za:
+
     munimoney:
       hosts:
         munimoney1-hetzner.openup.org.za:
       vars:
         app_domain: staging.municipalmoney.gov.za
-    dokkus:
+
+    muni-portal-backend:
       hosts:
-        munimoney1-hetzner.openup.org.za:
+        muni-portal-aws2.openup.org.za:
+      vars:
+        app_domain: staging.muni-portal-backend.openup.org.za
+        frontend_base_url: https://staging--cape-agulhas-app.netlify.app/
+        aws_storage_bucket_name: muni-portal-backend-staging
+        aws_s3_custom_domain: muni-portal-backend-staging.s3.amazonaws.com
+        media_url: https://muni-portal-backend-staging.s3.amazonaws.com/

@@ -8,6 +8,7 @@ all:
       - dean
       - juriejan
       - mila
+      - otterbotter
     all_hosts_remove_admins: []
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
@@ -21,6 +22,7 @@ all:
         dokku8.code4sa.org:
         dokku9.code4sa.org:
         muni-portal-aws1.openup.org.za:
+        muni-portal-aws2.openup.org.za:
         pmg4-aws.openup.org.za:
           host_extra_admins:
             - delenamalan
@@ -47,10 +49,13 @@ all:
 
     muni-portal-backend:
       hosts:
-        muni-portal-aws1.openup.org.za:
+        muni-portal-aws2.openup.org.za:
       vars:
         app_domain: muni-portal-backend.openup.org.za
-        env_name: prod
+        frontend_base_url: https://cape-agulhas-app.openup.org.za
+        aws_storage_bucket_name: muni-portal-backend
+        aws_s3_custom_domain: muni-portal-backend.s3.amazonaws.com
+        media_url: https://muni-portal-backend.s3.amazonaws.com/
 
     procurement-portal-backend:
       hosts:
