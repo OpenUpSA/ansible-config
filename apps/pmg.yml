@@ -39,7 +39,7 @@
           FLASK_SECRET_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/FLASK_SECRET_KEY') }}"
           FRONTEND_HOST: "https://{{ app_domain }}/"
           SERVER_NAME: "{{ app_domain }}"
-          MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/pmg/prod/MAIL_PASSWORD') }}"
+          MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/pmg/prod/SMTP') }}"
           MAX_SOUNDCLOUD_BATCH: "50"
           RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA') }}"
           RECAPTCHA_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA subkey=PUBLIC_KEY') }}"
