@@ -46,6 +46,9 @@
           WAGTAILAPI_BASE_URL: "https://{{ app_domain }}"
           SENTRY_DSN: "https://a5d3ce913bdd4eb594da36387b286d83@o242378.ingest.sentry.io/5496000"
           ENVIRONMENT: "{{ env_name }}"
+          COLLABORATOR_API_USERNAME: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name}}/COLLABORATOR subkey=username') }}"
+          COLLABORATOR_API_PASSWORD: "{{ lookup('passwordstore', 'apps/muni-portal-backend/{{ env_name}}/COLLABORATOR') }}"
+          COLLABORATOR_API_BASE_URL: "{{ collaborator_api_base_url }}"
       tags:
         - app
 
