@@ -23,7 +23,7 @@
     - name: "Admin users can SSH to their accounts"
       authorized_key:
         user: "{{ item }}"
-        key: "{{ lookup('file', 'files/'+ item + '.key.pub') }}"
+        key: "{{ lookup('file', 'files/ssh-keys/'+ item + '.key.pub') }}"
       with_items: "{{ all_hosts_admins + host_extra_admins }}"
 
     - name: "Admin users can use sudo without password"
