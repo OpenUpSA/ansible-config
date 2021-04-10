@@ -75,7 +75,7 @@ Managing admin access to servers
 
 Add new admins to ansible's inventory
 
-1. Add their key to the `files` directory
+1. Add their key to the `files/ssh-keys` directory
 2. Add them to the correct user list:
   - An admin that should be on all hosts should be added to `all_hosts_admins` in `users.yml` and run
   - An admin for only specific hosts should be added to the list `host_extra_admins` for the relevant hosts in `hosts.yaml`
@@ -104,7 +104,7 @@ Allow them to ssh as dokku for deployments
    all inventory files relevant
 2. Move their username from `host_extra_admins` to `host_remove_extra_admins` in
    all inventory files relevant
-3. If they are not an admin on any server any more, remove their key from `files`
+3. If they are not an admin on any server any more, remove their key from `files/ssh-keys`
 
 
 Install dokku
