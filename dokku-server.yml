@@ -7,7 +7,7 @@
   pre_tasks:
     - name: "generate dokku_users"
       set_fact:
-       dokku_users: "{{ dokku_users|default([]) + [{'name': item, 'username': item,  'ssh_key': lookup('file', 'files/'+ item + '.key.pub')}] }}"
+       dokku_users: "{{ dokku_users|default([]) + [{'name': item, 'username': item,  'ssh_key': lookup('file', 'files/ssh-keys/'+ item + '.key.pub')}] }}"
       with_items: "{{ all_hosts_admins + host_extra_admins }}"
       tags:
         - dokku-ssh-keys

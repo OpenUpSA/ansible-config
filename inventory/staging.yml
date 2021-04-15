@@ -5,10 +5,13 @@ all:
     all_hosts_admins:
       - jdb
       - adi
+      - otterbotter
+      - paulmwatson
+      - dirk
+    all_hosts_remove_admins:
       - dean
       - juriejan
-      - otterbotter
-    all_hosts_remove_admins: []
+
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
@@ -22,6 +25,8 @@ all:
         munimoney1-hetzner.openup.org.za:
       vars:
         app_domain: staging.municipalmoney.gov.za
+        host_extra_admins:
+          - michael
 
     muni-portal-backend:
       hosts:
