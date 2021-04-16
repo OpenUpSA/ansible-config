@@ -107,7 +107,13 @@ Allow them to ssh as dokku for deployments
 3. If they are not an admin on any server any more, remove their key from `files/ssh-keys`
 
 
-Install dokku
+Configuring a new server
+------------------------
+
+Run the `server.yml` playbook against it.
+
+
+Install dokku for a dokku server
 -------------
 
 After creating the server,
