@@ -28,6 +28,9 @@ all:
         host_extra_admins:
           - michael
 
+
+## App groups
+
     muni-portal-backend:
       hosts:
         muni-portal-aws2.openup.org.za:

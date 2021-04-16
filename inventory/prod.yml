@@ -28,9 +28,7 @@ all:
         dokku9.code4sa.org:
           host_extra_admins:
             - michael
-        muni-portal-aws1.openup.org.za:
         muni-portal-aws2.openup.org.za:
-        pmg4-aws.openup.org.za:
         pmg1-hetzner.openup.org.za:
         treasury1.openup.org.za:
           ansible_user: ubuntu
@@ -45,6 +43,9 @@ all:
         pmg1-aws.pmg.org.za:
         elasticsearch1-aws.pmg.org.za:
         justice1-hetzner.openup.org.za:
+
+
+## App groups
 
     muni-portal-backend:
       hosts:
