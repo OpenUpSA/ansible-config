@@ -1,6 +1,6 @@
 ---
 hosts:
-    - open-justice
+    - open-justice_aleph
   become: yes
 ​
 tasks:
