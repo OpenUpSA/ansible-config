@@ -1,19 +1,17 @@
 ---
-hosts:
+- hosts:
     - open-justice_aleph
   become: yes
-​
-tasks:
-​
-  - name: Install git
-    apt:
-      name: git
-      state: present
-      update_cache: yes
   
-  - name: clone Aleph repo
-    become: yes
-    git:
-      repo: 'https://github.com/alephdata/aleph.git'
-      dest: '/var/open-justice/aleph'
-​
+  tasks:
+    - name: "Install git"
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+    
+    - name: "clone Aleph repo"
+      become: yes
+      git:
+        repo: https://github.com/alephdata/aleph.git
+        dest: /var/open-justice/aleph
