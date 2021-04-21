@@ -1,17 +1,40 @@
 ---
 - hosts:
-    - open-justice_aleph
+    - open-justice
   become: yes
+
+  roles:
+    - ansible-role-docker
   
   tasks:
-    - name: "Install git"
+    - name: apt-get Update
+      apt:
+        update_cache: yes
+
+    - name: Install make
+      apt:
+        name: make
+        state: present
+        
+    - name: Install git
       apt:
         name: git
         state: present
-        update_cache: yes
     
-    - name: "clone Aleph repo"
+    - name: Map ElasticSearch Memory
+      become: yes
+      sysctl:
+        name: vm.max_map_count
+        value: 262144
+        state: present
+
+    - name: Clone Aleph repo
       become: yes
       git:
         repo: https://github.com/alephdata/aleph.git
+        dest: /var/open-justice/aleph
+
+    - name: Copy env file
+      ansible.builtin.copy:
+        src: aleph.env
         dest: /var/open-justice/aleph

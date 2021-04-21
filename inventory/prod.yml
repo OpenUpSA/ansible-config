@@ -97,6 +97,6 @@ all:
         hetzner1.openup.org.za:
       vars:
         app_domain: search.opengazettes.org.za
-    open-justice_aleph:
+    open-justice:
       hosts:
         justice1-hetzner.openup.org.za:
