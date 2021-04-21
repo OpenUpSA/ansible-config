@@ -8,9 +8,8 @@ all:
       - otterbotter
       - paulmwatson
       - dirk
-    all_hosts_remove_admins:
-      - dean
-      - juriejan
+      - rikusv
+    all_hosts_remove_admins: []
 
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
