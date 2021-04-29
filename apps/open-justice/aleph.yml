@@ -12,6 +12,8 @@
     postgres_username: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/POSTGRES subkey=username')}}"
     postgres_database: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/POSTGRES subkey=database')}}"
     aleph_secret_key: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/ALEPH_SECRET_KEY')}}"
+    aws_access_key_id: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/AWS subkey=AWS_ACCESS_KEY_ID')}}"
+    aws_secret_access_key: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/AWS')}}"
   
   tasks:
     - name: apt-get Update
@@ -41,19 +43,7 @@
         repo: https://github.com/alephdata/aleph.git
         dest: /var/open-justice/aleph
 
-    - name: Copy env file
-      ansible.builtin.copy:
+    - name: Set up env file
+      ansible.builtin.template:
         src: aleph.env
         dest: /var/open-justice/aleph
-    
-    - name: Add database details to env file
-      ansible.builtin.lineinfile:
-        path: /var/open-justice/aleph/aleph.env
-        regexp: "^ALEPH_DATABASE_URI="
-        line: "ALEPH_DATABASE_URI=postgresql://{{postgres_username}}:{{postgres_password}}@{{postgres_hostname}}/{{postgres_database}}"
-    
-    - name: Add ALEPH_SECRET_KEY
-      ansible.builtin.lineinfile:
-        path: /var/open-justice/aleph/aleph.env
-        regexp: "^ALEPH_SECRET_KEY="
-        line: "ALEPH_SECRET_KEY={{aleph_secret_key}}"
