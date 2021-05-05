@@ -38,7 +38,6 @@ all:
         idp1-aws.openup.org.za:
         pmg1-aws.pmg.org.za:
         elasticsearch1-aws.pmg.org.za:
-        justice1-hetzner.openup.org.za:
 
 
 ## App groups
@@ -93,3 +92,6 @@ all:
         hetzner1.openup.org.za:
       vars:
         app_domain: search.opengazettes.org.za
+    open-justice:
+      hosts:
+        openjustice.openup.org.za:

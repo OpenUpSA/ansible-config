@@ -1,0 +1,49 @@
+---
+- hosts:
+    - open-justice
+  become: yes
+
+  roles:
+    - geerlingguy.docker
+
+  vars:
+    postgres_password: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/POSTGRES')}}"
+    postgres_hostname: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/POSTGRES subkey=hostname')}}"
+    postgres_username: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/POSTGRES subkey=username')}}"
+    postgres_database: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/POSTGRES subkey=database')}}"
+    aleph_secret_key: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/ALEPH_SECRET_KEY')}}"
+    aws_access_key_id: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/AWS subkey=AWS_ACCESS_KEY_ID')}}"
+    aws_secret_access_key: "{{ lookup('passwordstore', 'apps/open-justice/{{ env_name }}/AWS')}}"
+  
+  tasks:
+    - name: apt-get Update
+      apt:
+        update_cache: yes
+
+    - name: Install make
+      apt:
+        name: make
+        state: present
+        
+    - name: Install git
+      apt:
+        name: git
+        state: present
+    
+    - name: Map ElasticSearch Memory
+      become: yes
+      sysctl:
+        name: vm.max_map_count
+        value: 262144
+        state: present
+
+    - name: Clone Aleph repo
+      become: yes
+      git:
+        repo: https://github.com/alephdata/aleph.git
+        dest: /var/open-justice/aleph
+
+    - name: Set up env file
+      ansible.builtin.template:
+        src: aleph.env
+        dest: /var/open-justice/aleph
