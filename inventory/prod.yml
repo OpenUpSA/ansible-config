@@ -83,13 +83,19 @@ all:
         sentry_dsn: "https://5999094b0e214151bdfef41a5ad513c2@sentry.io/1730285"
         solr_url: "http://solr.vulekamali.gov.za:8983/solr/budgetportal"
         tag_manager_id: "GTM-PLNL56L"
+
     salga-mobile-api:
       hosts:
         dokku9.code4sa.org:
       vars:
         app_domain: salga-mobile-api.openup.org.za
+
     gazettes_aleph:
       hosts:
         hetzner1.openup.org.za:
       vars:
         app_domain: search.opengazettes.org.za
+
+    adh-wazimap-uploaders:
+      hosts:
+        dokku9.code4sa.org:

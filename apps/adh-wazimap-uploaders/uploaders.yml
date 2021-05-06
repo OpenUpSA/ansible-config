@@ -1,0 +1,15 @@
+---
+- hosts:
+    - adh-wazimap-uploaders
+  become: yes
+
+  tasks:
+    - name: Ensure a job that runs at 18:00 and 6 exists. Uploads OWID to wazimap."
+      vars:
+        wazimap_token: "{{ lookup('passwordstore', 'apps/adh-wazimap-upoader/{{ env_name }}/TOKEN')}}"
+      ansible.builtin.cron:
+        name: "update OWID"
+        user: root
+        minute: "0"
+        hour: "18,06"
+        job: "docker run --rm -i openup/adh-wazimap-uploaders python uploaders/owid.py https://production.wazimap-ng.openup.org.za {{ wazimap_token }} 953"
