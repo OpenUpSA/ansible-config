@@ -13,6 +13,7 @@ Post playbook
 Start aleph in detached mode and set up tables
 
 ```
+cd /var/open-justice/aleph
 docker-compose up -d
 docker-compose run --rm shell upgrade
 ```
