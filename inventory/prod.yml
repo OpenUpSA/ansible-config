@@ -52,7 +52,7 @@ all:
         aws_storage_bucket_name: muni-portal-backend
         aws_s3_custom_domain: muni-portal-backend.s3.amazonaws.com
         media_url: https://muni-portal-backend.s3.amazonaws.com/
-        collaborator_api_base_url: https://consumercollab.collaboratoronline.com
+        collaborator_api_base_url: https://citizencollab.collaboratoronline.com
 
     procurement-portal-backend:
       hosts:
