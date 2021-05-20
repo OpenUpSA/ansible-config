@@ -12,6 +12,8 @@
     dokku_plugins:
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
+      - name: redis
+        url: https://github.com/dokku/dokku-redis.git redis
 
   tasks:
 
