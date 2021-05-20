@@ -94,4 +94,4 @@ all:
         app_domain: search.opengazettes.org.za
     open-justice:
       hosts:
-        openjustice.openup.org.za:
+        justice1-hetzner.openup.org.za:
