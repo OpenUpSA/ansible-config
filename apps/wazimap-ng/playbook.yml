@@ -1,0 +1,84 @@
+---
+- hosts:
+    - wazimap-ng
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+
+  vars:
+    instance_name: "wazimap-ng-{{ env_name }}"
+    app_name: "{{ instance_name }}"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Install RDS CA Cert"
+      ansible.builtin.copy:
+        src: ../../files/certs/rds-ca-2019-root.pem
+        dest: /var/
+        owner: root
+        group: root
+        mode: '0644'
+      tags:
+        - app
+
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/rds-ca-2019-root.pem:/root/.postgresql/root.crt"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      vars:
+        postgres_password: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES')}}"
+        postgres_hostname: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES subkey=hostname')}}"
+        postgres_username: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES subkey=username')}}"
+        postgres_database: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES subkey=database')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/AWS subkey=AWS_ACCESS_KEY_ID')}}"
+          AWS_S3_REGION_NAME: "eu-west-1"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/AWS')}}"
+          AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full"
+          DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
+          DJANGO_CONFIGURATION: "Production"
+          DJANGO_DEBUG: "False"
+          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+          DJANGO_SERVER_INSTANCE: "staging"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          PORT: "8000"
+          RUN_COLLECTSTATIC: "Yes"
+          RUN_GUNICORN: "Yes"
+          RUN_MIGRATIONS: "Yes"
+          RUN_QCLUSTER: "Yes"
+          SENTRY_DSN: "https://aae3ed779891437d984db424db5c9dd0@o242378.ingest.sentry.io/5257787"
+          SERVER_INSTANCE: "staging"
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app

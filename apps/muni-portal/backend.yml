@@ -12,8 +12,15 @@
     dokku_plugins:
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
-
+      - name: redis
+        url: https://github.com/dokku/dokku-redis.git redis
   tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
 
     - name: "Install RDS CA Cert"
       ansible.builtin.copy:
@@ -30,12 +37,6 @@
         app: "{{ app_name }}"
         phase: deploy
         option: "-v /var/rds-ca-2019-root.pem:/home/django/.postgresql/root.crt"
-      tags:
-        - app
-
-    - name: "Dokku app exists"
-      dokku_app:
-        app: "{{ app_name }}"
       tags:
         - app
 
