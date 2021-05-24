@@ -58,6 +58,7 @@
           DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           DJANGO_CONFIGURATION: "Production"
           DJANGO_DEBUG: "False"
+          DJANGO_DEFAULT_FILE_STORAGE:
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DJANGO_SERVER_INSTANCE: "staging"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
@@ -76,6 +77,14 @@
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: Dokku proxy ports are configured
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+            - http:80:8000
       tags:
         - app
 

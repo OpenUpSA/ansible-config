@@ -5,7 +5,7 @@ After deploying the app:
 ## Configure Letsencrypt
 
     dokku letsencrypt:enable appname
-    dokku letsencrypt:cron-job add appname
+    dokku letsencrypt:cron-job --add appname
 
 ## Configure Redis
 
