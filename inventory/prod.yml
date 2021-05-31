@@ -26,6 +26,8 @@ all:
             - michael
         muni-portal-aws2.openup.org.za:
         pmg1-hetzner.openup.org.za:
+          host_extra_admins:
+            - lungabaliwe
         treasury1.openup.org.za:
           ansible_user: ubuntu
         treasury4.openup.org.za:
@@ -34,9 +36,14 @@ all:
         hetzner1.openup.org.za:
           host_extra_admins:
             - michael
+            - lungabaliwe
+          host_remove_extra_admins:
+            - lunga
         aws1.keepthereceipt.org.za:
         idp1-aws.openup.org.za:
         pmg1-aws.pmg.org.za:
+          host_extra_admins:
+            - lungabaliwe
         elasticsearch1-aws.pmg.org.za:
         justice1-hetzner.openup.org.za:
 
