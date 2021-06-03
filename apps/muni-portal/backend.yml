@@ -25,7 +25,7 @@
       tags:
         - app
 
-    - name: "Mount RDS Certificate Authority Certificate where postgres expects it"
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it for deploy"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: deploy
@@ -33,7 +33,7 @@
       tags:
         - app
 
-    - name: "Mount RDS Certificate Authority Certificate where postgres expects it"
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it for run"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: run
