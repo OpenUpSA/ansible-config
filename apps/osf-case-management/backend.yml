@@ -1,0 +1,85 @@
+---
+- hosts:
+    - hetzner1.openup.org.za
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+
+  vars:
+    instance_name: "osf-case-management-{{ env_name }}"
+    app_name: "{{ instance_name }}"
+    app_domain: "casemanagement.openup.org.za"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+        owner: dokku
+        group: dokku
+      tags:
+        - app
+
+    - name: "Upload file size is configured"
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+      tags:
+        - app
+
+    - name: "Nginx is reloaded"
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
+      tags:
+        - app
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      vars:
+        postgres_password: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES')}}"
+        postgres_username: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES subkey=username')}}"
+        postgres_hostname: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES subkey=hostname')}}"
+        postgres_database: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES subkey=database')}}"
+        django_secret_key: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          CORS_ALLOWED_ORIGIN_REGEXES: "^https?://localhost:\\d+$,^https?://127.0.0.1:\\d+$,^https://app.casemanagement.openup.org.za$,^https://casemanagement.openup.org.za$,^https://deploy-preview-\\d+--casemanagement.netlify.app$,^https://{{ env_name }}.app.casemanagement.openup.org.za$,^https://{{ env_name }}--casemanagement.netlify.app$"
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full"
+          DJANGO_SECRET_KEY: "{{ django_secret_key }}"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          TAG_MANAGER_ENABLED: "False"
+          ENVIRONMENT: "{{ env_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
