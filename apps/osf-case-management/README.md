@@ -24,7 +24,7 @@ Add secrets to `secrets_store`:
 
 ```shell
 pass git pull
-openuppass generate --no-symbols apps/osf-case-management/prod/DJANGO_SECRET_KEY 40
+pass generate --no-symbols apps/osf-case-management/prod/DJANGO_SECRET_KEY 40
 pass insert --multiline apps/osf-case-management/prod/POSTGRES
 
 # Enter:
@@ -48,4 +48,12 @@ ansible-playbook --inventory inventory/prod.yml apps/osf-case-management/backend
 
 # Deploy app playbook changes:
 ansible-playbook --inventory inventory/prod.yml apps/osf-case-management/backend.yml --start-at-task "Dokku app exists" --tags app # --check --diff first
+```
+
+Set up domain:
+
+On [Cloudflare](https://www.cloudflare.com), add a DNS-only CNAME record 'casemanagement' for openup.org.za pointing to hetzner1.openup.org.za, then run:
+
+```shell
+ansible hetzner1.openup.org.za -a 'dokku letsencrypt osf-case-management-prod'
 ```
