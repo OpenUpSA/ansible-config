@@ -1,6 +1,6 @@
 # OSF Case Management
 
-See [TODO: add app repo link].
+See [app repo](https://github.com/OpenUpSA/case-management).
 
 ## Environment setup
 
