@@ -10,9 +10,9 @@
     app_name: "{{ instance_name }}"
     app_domain: "casemanagement.openup.org.za"
     dokku_daemon_install: false # We install this using a dedicated playbook
-    dokku_plugins:
-      - name: letsencrypt
-        url: https://github.com/dokku/dokku-letsencrypt.git
+    # dokku_plugins:
+    #   - name: letsencrypt
+    #     url: https://github.com/dokku/dokku-letsencrypt.git
 
   tasks:
 
