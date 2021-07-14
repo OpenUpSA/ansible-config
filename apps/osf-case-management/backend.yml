@@ -16,6 +16,32 @@
 
   tasks:
 
+    - name: "Install RDS CA cert"
+      ansible.builtin.copy:
+        src: ../../files/certs/rds-ca-2019-root.pem
+        dest: /var/
+        owner: root
+        group: root
+        mode: '0644'
+      tags:
+        - app
+
+    - name: "Mount RDS CA cert for deploying"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/rds-ca-2019-root.pem:/home/django/.postgresql/root.crt"
+      tags:
+        - app
+
+    - name: "Mount RDS CA cert for running"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/rds-ca-2019-root.pem:/home/django/.postgresql/root.crt"
+      tags:
+        - app
+
     - name: "App nginx directory exists"
       file:
         path: "/home/dokku/{{ app_name }}/nginx.conf.d"
@@ -62,7 +88,7 @@
         app: "{{ app_name }}"
         config:
           CORS_ALLOWED_ORIGIN_REGEXES: "^https?://localhost:\\d+$,^https?://127.0.0.1:\\d+$,^https://app.casemanagement.openup.org.za$,^https://casemanagement.openup.org.za$,^https://deploy-preview-\\d+--casemanagement.netlify.app$,^https://{{ env_name }}.app.casemanagement.openup.org.za$,^https://{{ env_name }}--casemanagement.netlify.app$"
-          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full"
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full&sslrootcert=/home/django/.postgresql/root.crt"
           DJANGO_SECRET_KEY: "{{ django_secret_key }}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           TAG_MANAGER_ENABLED: "False"
