@@ -6,11 +6,11 @@ all:
       - jdb
       - adi
       - mila
-      - otterbotter
       - paulmwatson
       - dirk
       - rikusv
-    all_hosts_remove_admins: []
+    all_hosts_remove_admins:
+      - otterbotter
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:

@@ -33,10 +33,17 @@
       tags:
         - app
 
-    - name: "Mount RDS Certificate Authority Certificate where postgres expects it"
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it - deploy phase"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: deploy
+        option: "-v /var/rds-ca-2019-root.pem:/root/.postgresql/root.crt"
+      tags:
+        - app
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it - run phase"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
         option: "-v /var/rds-ca-2019-root.pem:/root/.postgresql/root.crt"
       tags:
         - app
@@ -58,7 +65,6 @@
           DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           DJANGO_CONFIGURATION: "Production"
           DJANGO_DEBUG: "False"
-          DJANGO_DEFAULT_FILE_STORAGE:
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/DJANGO_SECRET_KEY')}}"
           DJANGO_SERVER_INSTANCE: "staging"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"

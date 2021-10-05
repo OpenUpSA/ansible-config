@@ -5,12 +5,12 @@ all:
     all_hosts_admins:
       - jdb
       - adi
-      - otterbotter
       - paulmwatson
       - dirk
       - rikusv
       - michael
-    all_hosts_remove_admins: []
+    all_hosts_remove_admins:
+      - otterbotter
 
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
@@ -20,6 +20,9 @@ all:
       hosts:
         munimoney1-hetzner.openup.org.za:
         wazimapng1-aws.openup.org.za:
+          host_extra_admins:
+            - emre
+            - gaurav
 
 
     munimoney:
