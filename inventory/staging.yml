@@ -52,4 +52,4 @@ all:
         wazimapng1-aws.openup.org.za:
       vars:
         app_domain: staging-aws-test.wazimap-ng.openup.org.za
-        aws_storage_bucket_name: wazimap-ng
+        aws_storage_bucket_name: wazimap-ng-staging
