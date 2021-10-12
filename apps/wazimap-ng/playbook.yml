@@ -62,7 +62,7 @@
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/AWS')}}"
           AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
           DATABASE_URL: "postgis://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full"
-          DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
+          DJANGO_DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           DJANGO_CONFIGURATION: "Production"
           DJANGO_DEBUG: "False"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/DJANGO_SECRET_KEY')}}"
@@ -91,6 +91,35 @@
         app: "{{ app_name }}"
         mappings:
             - http:80:8000
+      tags:
+        - app
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+        owner: dokku
+        group: dokku
+      tags:
+        - app
+
+    - name: Upload file size is configured
+      copy:
+        content: "client_max_body_size 1000M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+      tags:
+        - app
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
       tags:
         - app
 
