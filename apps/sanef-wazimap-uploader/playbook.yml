@@ -1,0 +1,28 @@
+---
+- hosts:
+    - sanef-wazimap-uploaders
+  become: yes
+  vars:
+    wazi_token: "{{ lookup('passwordstore', 'apps/sanef-election-dashboard/WAZIMAP subkey=token')}}"
+    db_hostname: "{{ lookup('passwordstore', 'apps/sanef-election-dashboard/SQL_SERVER subkey=hostname')}}"
+    db_password: "{{ lookup('passwordstore', 'apps/sanef-election-dashboard/SQL_SERVER')}}"
+    db_username: "{{ lookup('passwordstore', 'apps/sanef-election-dashboard/SQL_SERVER subkey=username')}}"
+    db_name: "{{ lookup('passwordstore', 'apps/sanef-election-dashboard/SQL_SERVER subkey=database')}}"
+    iec_token: "{{ lookup('passwordstore', 'apps/sanef-election-dashboard/IEC_TOKEN')}}"
+
+  tasks:
+    - name: Ensure cron jobs exist."
+      ansible.builtin.cron:
+        name: "update {{ item.dataset }}"
+        user: root
+        minute: "0"
+        hour: "*"
+        job: "docker run --rm -i openup/sanef-election-dashboard-etl python /app/SANEF_Uploader.py https://production.wazimap-ng.openup.org.za {{ wazi_token }} {{ item.id }} {{ iec_token }} {{ item.dataset }} {{ db_hostname }} {{ db_name }} {{ db_username }} {{ db_password }} dont-reset"
+      loop:
+        - { dataset: 'ward_votes_by_party', id: '1378' }
+        - { dataset: 'voter_turnout', id: '1386' }
+        - { dataset: 'ward_votes_by_candidate', id: '1379' }
+        - { dataset: 'ward_councillor_elected', id: '1382' }
+        - { dataset: 'pr_votes_by_party', id: '1380' }
+        - { dataset: 'seats_won', id: '1383' }
+        - { dataset: 'hung_councils', id: '1384' }
