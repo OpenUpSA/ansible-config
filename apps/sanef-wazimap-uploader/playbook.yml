@@ -15,7 +15,7 @@
       ansible.builtin.cron:
         name: "update {{ item.dataset }}"
         user: root
-        minute: "0"
+        minute: "{{ idx }}"
         hour: "*"
         job: "docker run --rm -i openup/sanef-election-dashboard-etl python /app/SANEF_Uploader.py https://production.wazimap-ng.openup.org.za {{ wazi_token }} {{ item.id }} {{ iec_token }} {{ item.dataset }} {{ db_hostname }} {{ db_name }} {{ db_username }} {{ db_password }} dont-reset"
       loop:
@@ -26,3 +26,5 @@
         - { dataset: 'pr_votes_by_party', id: '1380' }
         - { dataset: 'seats_won', id: '1383' }
         - { dataset: 'hung_councils', id: '1384' }
+      loop_control:
+        index_var: idx
