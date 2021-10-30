@@ -104,3 +104,7 @@ all:
     adh-wazimap-uploaders:
       hosts:
         dokku9.code4sa.org:
+
+    sanef-wazimap-uploaders:
+      hosts:
+        dokku9.code4sa.org:
