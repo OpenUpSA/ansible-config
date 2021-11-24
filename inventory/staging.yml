@@ -5,11 +5,12 @@ all:
     all_hosts_admins:
       - jdb
       - adi
-      - otterbotter
       - paulmwatson
       - dirk
       - rikusv
-    all_hosts_remove_admins: []
+      - michael
+    all_hosts_remove_admins:
+      - otterbotter
 
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
@@ -18,6 +19,11 @@ all:
     dokkus:
       hosts:
         munimoney1-hetzner.openup.org.za:
+        wazimapng1-aws.openup.org.za:
+          host_extra_admins:
+            - emre
+            - gaurav
+
 
     munimoney:
       hosts:
@@ -40,3 +46,10 @@ all:
         aws_s3_custom_domain: muni-portal-backend-staging.s3.amazonaws.com
         media_url: https://muni-portal-backend-staging.s3.amazonaws.com/
         collaborator_api_base_url: https://citizencollab.collaboratoronline.com
+
+    wazimap-ng:
+      hosts:
+        wazimapng1-aws.openup.org.za:
+      vars:
+        app_domain: staging-aws-test.wazimap-ng.openup.org.za
+        aws_storage_bucket_name: wazimap-ng-staging

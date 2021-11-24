@@ -15,6 +15,12 @@
 
   tasks:
 
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
     - name: "Install RDS CA Cert"
       ansible.builtin.copy:
         src: ../../files/certs/rds-ca-2019-root.pem
