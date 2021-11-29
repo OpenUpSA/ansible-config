@@ -18,6 +18,7 @@ all:
 
     dokkus:
       hosts:
+        dokku9.code4sa.org:
         munimoney1-hetzner.openup.org.za:
         wazimapng1-aws.openup.org.za:
           host_extra_admins:
@@ -27,7 +28,7 @@ all:
 
     munimoney:
       hosts:
-        munimoney1-hetzner.openup.org.za:
+        dokku9.code4sa.org:
       vars:
         app_domain: staging.municipalmoney.gov.za
         host_extra_admins:
@@ -38,7 +39,7 @@ all:
 
     muni-portal-backend:
       hosts:
-        muni-portal-aws2.openup.org.za:
+        dokku9.code4sa.org:
       vars:
         app_domain: staging.muni-portal-backend.openup.org.za
         frontend_base_url: https://staging--cape-agulhas-app.netlify.app
