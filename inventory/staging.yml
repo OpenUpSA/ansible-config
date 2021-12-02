@@ -25,16 +25,13 @@ all:
             - gaurav
 
 
+    ## App groups
+
     munimoney:
       hosts:
-        munimoney1-hetzner.openup.org.za:
+        dokku9.code4sa.org:
       vars:
         app_domain: staging.municipalmoney.gov.za
-        host_extra_admins:
-          - michael
-
-
-## App groups
 
     muni-portal-backend:
       hosts:
