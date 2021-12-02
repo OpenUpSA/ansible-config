@@ -16,5 +16,6 @@ For commands below, ensure you make use of appropriate inventory flag depending 
 3. Deploy to `web` by pushing master to dokku remote
    - For non-production, include for example: `dokku checks:disable munimoney-staging-web` (from server)
    - `git push dokku-staging master` (from development machine)
+4. Deploy the worker container with `dokku scale munimoney-staging-web worker=1`
 4. Assuming DNS is correctly setup, run Letsencrypt command (from server):
    - `dokku letsencrypt munimoney-staging-web`
