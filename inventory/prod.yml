@@ -108,3 +108,10 @@ all:
     sanef-wazimap-uploaders:
       hosts:
         dokku9.code4sa.org:
+
+    wazimap-ng:
+      hosts:
+        wazimapng1-aws.openup.org.za:
+      vars:
+        app_domain: production.wazimap-ng.openup.org.za
+        aws_storage_bucket_name: wazimap-ng

@@ -66,7 +66,7 @@
           DJANGO_CONFIGURATION: "Production"
           DJANGO_DEBUG: "False"
           DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/DJANGO_SECRET_KEY')}}"
-          DJANGO_SERVER_INSTANCE: "staging"
+          DJANGO_SERVER_INSTANCE: "{{ env_name }}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           PORT: "8000"
           RUN_COLLECTSTATIC: "Yes"
@@ -74,7 +74,7 @@
           RUN_MIGRATIONS: "Yes"
           RUN_QCLUSTER: "Yes"
           SENTRY_DSN: "https://aae3ed779891437d984db424db5c9dd0@o242378.ingest.sentry.io/5257787"
-          SERVER_INSTANCE: "staging"
+          SERVER_INSTANCE: "{{ env_name }}"
       tags:
         - app
 
@@ -83,6 +83,15 @@
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: Ensure default port mapping doesn't exist
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:5000
+        state: absent
       tags:
         - app
 
