@@ -65,6 +65,8 @@
         mode: '0755'
         owner: dokku
         group: dokku
+      tags:
+        - app
 
     - name: proxy_read_timeout is configured
       copy:
@@ -74,9 +76,13 @@
         group: dokku
         mode: "0644"
       register: nginx
+      tags:
+        - app
 
     - name: Nginx is reloaded
       service:
         name: nginx
         state: reloaded
       when: nginx.changed
+      tags:
+        - app

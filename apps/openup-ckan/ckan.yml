@@ -94,7 +94,7 @@
 
     - name: Upload file size is configured
       copy:
-        content: "client_max_body_size 100M;"
+        content: "client_max_body_size 0;"
         dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
         owner: dokku
         group: dokku
