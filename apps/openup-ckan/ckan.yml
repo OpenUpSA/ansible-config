@@ -24,6 +24,8 @@
     - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
+      tags:
+        - app
 
     - name: "Dokku app config is set"
       dokku_config:
@@ -46,6 +48,8 @@
           CKAN___CKANEXT__S3FILESTORE__REGION_NAME: 'eu-west-1'
           CKAN___CKANEXT__S3FILESTORE__SIGNATURE_VERSION: 's3v4'
           SENTRY_DSN: 'https://564ff65ac77346d89d99da18c5aa4d5d@o242378.ingest.sentry.io/5308305'
+      tags:
+        - app
 
     - name: "Dokku app deploy mount docker-option set"
       dokku_docker_options:
@@ -53,24 +57,32 @@
         phase: deploy
         option: "-v /var/openup-ckan:/var/lib/ckan"
         state: present
+      tags:
+        - app
     - name: "Dokku app deploy link docker-option set"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: deploy
         option: "--link openup-ckan-solr.web.1:solr"
         state: present
+      tags:
+        - app
     - name: "Dokku app run mount docker-option set"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: run
         option: "-v /var/openup-ckan:/var/lib/ckan"
         state: present
+      tags:
+        - app
     - name: "Dokku app run link docker-option set"
       dokku_docker_options:
         app: "{{ app_name }}"
         phase: run
         option: "--link openup-ckan-solr.web.1:solr"
         state: present
+      tags:
+        - app
 
     - name: "Dokku app domains are configured"
       dokku_domains:
@@ -78,10 +90,14 @@
         domains:
           - "{{ app_domain }}"
           - "www.{{ app_domain }}"
+      tags:
+        - app
 
     - name: "Your dokku git remote"
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
 
     # - name: HTTP cache configured
     - name: Add nginx config directory
@@ -91,6 +107,8 @@
         mode: '0755'
         owner: dokku
         group: dokku
+      tags:
+        - app
 
     - name: Upload file size is configured
       copy:
@@ -99,7 +117,9 @@
         owner: dokku
         group: dokku
         mode: "0644"
-      register: nginx
+      notify: Nginx is reloaded
+      tags:
+        - app
 
     - name: Upload timeout is configured
       copy:
@@ -108,10 +128,12 @@
         owner: dokku
         group: dokku
         mode: "0644"
-      register: nginx
+      notify: Nginx is reloaded
+      tags:
+        - app
 
+  handlers:
     - name: Nginx is reloaded
       service:
         name: nginx
         state: reloaded
-      when: nginx.changed
