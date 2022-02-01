@@ -105,6 +105,7 @@ Allow them to ssh as dokku for deployments
 2. Move their username from `host_extra_admins` to `host_remove_extra_admins` in
    all inventory files relevant
 3. If they are not an admin on any server any more, remove their key from `files/ssh-keys`
+3. Run the users.yml playbook and log the servers their account was removed from to inform the following step.
 4. Remove their SSH key from dokku for each server they could access with `sudo dokku ssh-keys:remove ...username...`
 
 
