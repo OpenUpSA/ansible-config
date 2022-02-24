@@ -75,6 +75,11 @@
           RUN_QCLUSTER: "Yes"
           SENTRY_DSN: "https://aae3ed779891437d984db424db5c9dd0@o242378.ingest.sentry.io/5257787"
           SERVER_INSTANCE: "{{ env_name }}"
+          EMAIL_HOST: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/SMTP subkey=hostname') }}"
+          EMAIL_HOST_USER: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/SMTP subkey=username') }}"
+          EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/SMTP') }}"
+          DEFAULT_FROM_EMAIL: "support@wazimap.co.za"
+          STAFF_EMAIL_ADDRESS: "support@wazimap.co.za"
       tags:
         - app
 
