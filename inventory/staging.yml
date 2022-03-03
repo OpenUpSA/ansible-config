@@ -4,13 +4,13 @@ all:
     env_name: staging
     all_hosts_admins:
       - jdb
-      - adi
       - paulmwatson
       - dirk
       - rikusv
       - michael
     all_hosts_remove_admins:
       - otterbotter
+      - adi
 
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
