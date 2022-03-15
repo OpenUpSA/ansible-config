@@ -20,6 +20,8 @@
     - name: Dokku is installed
       include_role:
         name: dokku_bot.ansible_dokku
+      tags:
+        - dokku-ssh-keys
 
     - name: Make sure /var/log/dokku directory exists
       file:

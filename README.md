@@ -95,7 +95,7 @@ Or you might need to specify an SSH key file for the initial non-root admin user
 
 Allow them to ssh as dokku for deployments
 
-    ansible-playbook --limit dokku123-aws.openup.org.za -i inventory/staging.yml dokku-server.yml --skip-tags dokku-install
+    ansible-playbook --limit dokku123-aws.openup.org.za -i inventory/staging.yml dokku-server.yml --tags dokku-ssh-keys
 
 
 ### Removing admin access
