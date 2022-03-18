@@ -69,6 +69,7 @@
           DJANGO_SERVER_INSTANCE: "{{ env_name }}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           PORT: "8000"
+          Q_CLUSTER_RECYCLE: "1"
           RUN_COLLECTSTATIC: "Yes"
           RUN_GUNICORN: "Yes"
           RUN_MIGRATIONS: "Yes"
