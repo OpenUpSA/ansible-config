@@ -70,7 +70,7 @@
 
     - name: proxy_read_timeout is configured
       copy:
-        content: "proxy_read_timeout 120s;"
+        content: "proxy_read_timeout 600s;"
         dest: "/home/dokku/{{ app_name }}/nginx.conf.d/proxy_read_timeout.conf"
         owner: dokku
         group: dokku
