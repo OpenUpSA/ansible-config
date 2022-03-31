@@ -35,7 +35,7 @@ all:
         dokku9.code4sa.org:
       vars:
         app_domain: sandbox.municipalmoney.gov.za
-        no_index: True
+        no_index: "true"
 
     muni-portal-backend:
       hosts:
