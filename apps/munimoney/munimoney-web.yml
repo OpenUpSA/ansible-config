@@ -31,7 +31,7 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          API_URL: "https://{{ env_name }}.data.municipalmoney.gov.za/api"
+          DATA_PORTAL_URL: "https://{{ env_name }}.data.municipalmoney.gov.za"
           AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/AWS')}}"
           AWS_STORAGE_BUCKET_NAME: "munimoney-media"
