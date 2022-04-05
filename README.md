@@ -138,19 +138,14 @@ ansible-playbook --limit dokku9.code4sa.org dokku-server.yml
 Installing apps
 ---------------
 
-Before installing apps, ensure your copy of the [OpenUp secret store](https://github.com/OpenUpSA/secret_store) is up to date, e.g.
+Before installing apps, ensure you are logged in to 1password:
 
-    pass git pull
+    eval $(op signin)
 
 Then run the playbook for the app you'd like to configure, with the particular
 environment inventory you'd like to be configuring:
 
     ansible-playbook --inventory inventory/staging.yml apps/pmg.yml --start-at-task "Dokku app exists"
-
-If OpenUp's secret store is not in the default location, you can specify its
-location using the environment variable `PASSWORD_STORE_DIR`. e.g.
-
-    PASSWORD_STORE_DIR=~/.pass/openup ansible-playbook foobar.yml
 
 
 Include the `app` tag on your dokku configuration tasks to be able to just run those
