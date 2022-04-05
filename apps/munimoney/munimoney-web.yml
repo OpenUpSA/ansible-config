@@ -24,20 +24,22 @@
       tags:
         - app
       vars:
-        postgres_password: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/POSTGRES')}}"
-        postgres_hostname: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/POSTGRES subkey=hostname')}}"
-        postgres_username: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/POSTGRES subkey=username')}}"
-        postgres_database: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/POSTGRES subkey=database')}}"
+        op_vault: "municipal-money-{{ env_name }}"
+        op_domain: "openup.onepassword.com"
+        postgres_password: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'POSTGRES', field='password', subdomain='{{ op_domain }}') }}"
+        postgres_hostname: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'POSTGRES', field='server', subdomain='{{ op_domain }}') }}"
+        postgres_username: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'POSTGRES', field='username', subdomain='{{ op_domain }}') }}"
+        postgres_database: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'POSTGRES', field='database', subdomain='{{ op_domain }}') }}"
       dokku_config:
         app: "{{ app_name }}"
         config:
           DATA_PORTAL_URL: "https://{{ env_name }}.data.municipalmoney.gov.za"
-          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/AWS')}}"
+          AWS_ACCESS_KEY_ID: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'AWS', field='ACCESS_KEY_ID', subdomain='{{ op_domain }}') }}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'AWS', subdomain='{{ op_domain }}') }}"
           AWS_STORAGE_BUCKET_NAME: "munimoney-media"
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
           DJANGO_DEBUG: "false"
-          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/munimoney/{{ env_name }}/DJANGO subkey=SECRET_KEY')}}"
+          DJANGO_SECRET_KEY: "{{ lookup('onepassword_openup', '{{ op_vault }}', 'DJANGO_SECRET_KEY', field='notesPlain', subdomain='{{ op_domain }}') }}"
           DJANGO_SETTINGS_MODULE: "municipal_finance.settings"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           SENTRY_DSN: "https://f86e04f9ed354e62afe30b9f3da4f2c7@o242378.ingest.sentry.io/5501712"
