@@ -63,6 +63,10 @@ See the playbook for what it does and doesn't do for you.
 Setting up your controller (probably your work laptop)
 ------------------------------------------------------
 
+Install the [bitwarden command line client](https://bitwarden.com/help/cli/) and login to your bitwarden account.
+
+Install the necessary ansible plugins
+
 ```
 ansible-galaxy install dokku_bot.ansible_dokku,v2020.1.6
 ansible-galaxy install git+https://github.com/OpenUpSA/ansible-modules-bitwarden,a5b05a9da5cb3ba05ea6a32b284621b738d8f674
