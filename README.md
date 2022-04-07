@@ -63,8 +63,13 @@ See the playbook for what it does and doesn't do for you.
 Setting up your controller (probably your work laptop)
 ------------------------------------------------------
 
+Install the [bitwarden command line client](https://bitwarden.com/help/cli/) and login to your bitwarden account.
+
+Install the necessary ansible plugins
+
 ```
 ansible-galaxy install dokku_bot.ansible_dokku,v2020.1.6
+ansible-galaxy install git+https://github.com/OpenUpSA/ansible-modules-bitwarden,a5b05a9da5cb3ba05ea6a32b284621b738d8f674
 ```
 
 
@@ -138,20 +143,15 @@ ansible-playbook --limit dokku9.code4sa.org dokku-server.yml
 Installing apps
 ---------------
 
-Before installing apps, ensure your copy of the [OpenUp secret store](https://github.com/OpenUpSA/secret_store) is up to date, e.g.
+Before deployig configuration, ensure your bitwarden session is active and your local bitwarden store is up to date, e.g.
 
-    pass git pull
+    export BW_SESSION=$(bw unlock --raw)
+    bw sync
 
 Then run the playbook for the app you'd like to configure, with the particular
 environment inventory you'd like to be configuring:
 
     ansible-playbook --inventory inventory/staging.yml apps/pmg.yml --start-at-task "Dokku app exists"
-
-If OpenUp's secret store is not in the default location, you can specify its
-location using the environment variable `PASSWORD_STORE_DIR`. e.g.
-
-    PASSWORD_STORE_DIR=~/.pass/openup ansible-playbook foobar.yml
-
 
 Include the `app` tag on your dokku configuration tasks to be able to just run those
 
