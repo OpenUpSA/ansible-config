@@ -115,3 +115,9 @@ all:
       vars:
         app_domain: production.wazimap-ng.openup.org.za
         aws_storage_bucket_name: wazimap-ng
+    
+    osf-case-management:
+      hosts:
+        casemanagement.openup.org.za
+      vars:
+        app_domain: casemanagement.openup.org.za
