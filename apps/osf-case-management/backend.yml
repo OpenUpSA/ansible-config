@@ -15,14 +15,13 @@
     #     url: https://github.com/dokku/dokku-letsencrypt.git
 
   tasks:
-
     - name: "Install RDS CA cert"
       ansible.builtin.copy:
         src: ../../files/certs/rds-ca-2019-root.pem
         dest: /var/
         owner: root
         group: root
-        mode: '0644'
+        mode: "0644"
       tags:
         - app
 
@@ -46,7 +45,7 @@
       file:
         path: "/home/dokku/{{ app_name }}/nginx.conf.d"
         state: directory
-        mode: '0755'
+        mode: "0755"
         owner: dokku
         group: dokku
       tags:
@@ -79,11 +78,11 @@
 
     - name: "Dokku app config is set"
       vars:
-        postgres_password: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES')}}"
-        postgres_username: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES subkey=username')}}"
-        postgres_hostname: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES subkey=hostname')}}"
-        postgres_database: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/POSTGRES subkey=database')}}"
-        django_secret_key: "{{ lookup('passwordstore', 'apps/osf-case-management/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.database')}}"
+        django_secret_key: "{{ lookup('bitwarden', 'DJANGO',   collection='project/osf-case-management/' ~ env_name, field='fields.secret_key')}}"
       dokku_config:
         app: "{{ app_name }}"
         config:
@@ -101,6 +100,25 @@
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: Ensure default port mapping doesn't exist
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:5000
+          - https:443:5000
+        state: absent
+      tags:
+        - app
+
+    - name: Dokku proxy ports are configured
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:5000
+          - https:443:5000
       tags:
         - app
 
