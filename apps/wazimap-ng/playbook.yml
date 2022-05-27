@@ -4,6 +4,7 @@
   become: yes
   roles:
     - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
 
   vars:
     instance_name: "wazimap-ng-{{ env_name }}"
@@ -50,22 +51,22 @@
 
     - name: "Dokku app config is set"
       vars:
-        postgres_password: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES')}}"
-        postgres_hostname: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES subkey=hostname')}}"
-        postgres_username: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES subkey=username')}}"
-        postgres_database: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/POSTGRES subkey=database')}}"
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/wazimap-ng/' ~ env_name, field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/wazimap-ng/' ~ env_name, field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/wazimap-ng/' ~ env_name, field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/wazimap-ng/' ~ env_name, field='fields.database')}}"
       dokku_config:
         app: "{{ app_name }}"
         config:
-          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/AWS subkey=AWS_ACCESS_KEY_ID')}}"
+          AWS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/wazimap-ng/' ~ env_name, field='fields.ACCESS_KEY_ID')}}"
           AWS_S3_REGION_NAME: "eu-west-1"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/AWS')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/wazimap-ng/' ~ env_name, field='fields.SECRET_ACCESS_KEY')}}"
           AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
           DATABASE_URL: "postgis://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full"
           DJANGO_DEFAULT_FILE_STORAGE: "storages.backends.s3boto3.S3Boto3Storage"
           DJANGO_CONFIGURATION: "Production"
           DJANGO_DEBUG: "False"
-          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+          DJANGO_SECRET_KEY: "{{ lookup('bitwarden', 'DJANGO', collection='project/wazimap-ng/' ~ env_name, field='fields.SECRET_KEY')}}"
           DJANGO_SERVER_INSTANCE: "{{ env_name }}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           PORT: "8000"
@@ -76,9 +77,9 @@
           RUN_QCLUSTER: "Yes"
           SENTRY_DSN: "https://aae3ed779891437d984db424db5c9dd0@o242378.ingest.sentry.io/5257787"
           SERVER_INSTANCE: "{{ env_name }}"
-          EMAIL_HOST: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/SMTP subkey=hostname') }}"
-          EMAIL_HOST_USER: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/SMTP subkey=username') }}"
-          EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/wazimap-ng/{{ env_name }}/SMTP') }}"
+          EMAIL_HOST: "{{ lookup('bitwarden', 'SMTP', collection='project/wazimap-ng/' ~ env_name, field='fields.hostname') }}"
+          EMAIL_HOST_USER: "{{ lookup('bitwarden', 'SMTP', collection='project/wazimap-ng/' ~ env_name, field='fields.username') }}"
+          EMAIL_HOST_PASSWORD: "{{ lookup('bitwarden', 'SMTP', collection='project/wazimap-ng/' ~ env_name, field='fields.password') }}"
           DEFAULT_FROM_EMAIL: "support@wazimap.co.za"
           STAFF_EMAIL_ADDRESS: "support@wazimap.co.za"
       tags:
