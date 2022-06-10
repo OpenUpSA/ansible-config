@@ -117,3 +117,9 @@ all:
         casemanagement.openup.org.za
       vars:
         app_domain: casemanagement.openup.org.za
+
+    hackdash:
+      hosts:
+        codebridge1-aws.openup.org.za
+      vars:
+        env_name: prod
