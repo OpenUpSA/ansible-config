@@ -1,0 +1,93 @@
+---
+- hosts:
+    - hackdash
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+   - ansible-modules-bitwarden
+
+
+  vars:
+    app_name: hackdash
+    app_domain: hackdash.codebridge.org.za
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: mount a path for uploaded files storage outside the container
+      dokku_storage:
+        app: "{{ app_name }}"
+        mounts:
+          - "/var/lib/dokku/data/storage/{{ app_name }}-uploads:/app/public/uploads"
+        create_host_dir: true
+        user: 1001
+        group: 1001
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          HOST: "{{ app_domain }}"
+          SESSION: "{{ lookup('bitwarden', 'SESSION_KEY', collection='project/codebridge/hackdash/' ~ env_name, field='fields.session_key') }}"
+          GITHUB_CLIENT_ID: "{{ lookup('bitwarden', 'GITHUB', collection='project/codebridge/hackdash/' ~ env_name, field='fields.client_id') }}"
+          GITHUB_SECRET_KEY: "{{ lookup('bitwarden', 'GITHUB', collection='project/codebridge/hackdash/' ~ env_name, field='fields.secret_key') }}"
+          GITHUB_CALLBACK_URL: "https://hackdash.codebridge.org.za/auth/github/callback"
+          DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
+
+      tags:
+        - app
+
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
+
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+        owner: dokku
+        group: dokku
+      tags:
+        - app
+
+    - name: Upload file size is configured
+      copy:
+        content: "client_max_body_size 2M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+      tags:
+        - app
+
+    - name: Nginx is reloaded
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
+      tags:
+        - app
