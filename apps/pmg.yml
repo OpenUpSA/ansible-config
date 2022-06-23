@@ -4,6 +4,7 @@
   become: yes
   roles:
    - dokku_bot.ansible_dokku
+   - ansible-modules-bitwarden
 
 
   vars:
@@ -15,8 +16,9 @@
         url: https://github.com/dokku/dokku-letsencrypt.git
     postgres_database: pmg
     postgres_hostname: postgresql1.ctribismbyc2.eu-west-1.rds.amazonaws.com
-    postgres_user: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES subkey=username')}}"
-    postgres_password: "{{ lookup('passwordstore', 'apps/pmg/prod/POSTGRES')}}"
+    postgres_user: "{{ lookup('bitwarden', 'POSTGRES', collection='project/pmg/' ~ env_name, field='fields.username')}}"
+    postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/pmg/' ~ env_name, ')}}"
+    # postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/municipal-money/' ~ env_name, field='fields.password')}}"
 
   tasks:
 
@@ -30,31 +32,32 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS subkey=ACCESS_KEY_ID') }}"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/AWS') }}"
+          AWS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/pmg/' ~ env_name,  field='fields.ACCESS_KEY_ID') }}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/pmg/' ~ env_name, field='fields.SECRET_ACCESS_KEY') }}"
           S3_BUCKET: pmg-assets2
           DOKKU_LETSENCRYPT_EMAIL: 'webapps@openup.org.za'
           ES_SERVER: http://ec2-34-244-168-80.eu-west-1.compute.amazonaws.com:9200
           FLASK_ENV: production
-          FLASK_SECRET_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/FLASK_SECRET_KEY') }}"
+          FLASK_SECRET_KEY: "{{ lookup('bitwarden', 'FLASK_SECRET_KEY', collection='project/pmg/' ~ env_name, field='fields.key') }}"
           FRONTEND_HOST: "https://{{ app_domain }}/"
           SERVER_NAME: "{{ app_domain }}"
-          MAIL_PASSWORD: "{{ lookup('passwordstore', 'apps/pmg/prod/SMTP') }}"
+          MAIL_SERVER: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.server') }}"
+          MAIL_USERNAME: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.username') }}"
+          MAIL_PASSWORD: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.password') }}"
+          MAIL_PORT: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.port') }}"
           MAX_SOUNDCLOUD_BATCH: "50"
-          RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA') }}"
-          RECAPTCHA_PUBLIC_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/RECAPTCHA subkey=PUBLIC_KEY') }}"
+          RECAPTCHA_PRIVATE_KEY: "{{ lookup('bitwarden', 'RECAPTCHA', collection='project/pmg/' ~ env_name, field='fields.PRIVATE_KEY') }}"
+          RECAPTCHA_PUBLIC_KEY: "{{ lookup('bitwarden', 'RECAPTCHA', collection='project/pmg/' ~ env_name,  field='fields.PUBLIC_KEY') }}"
           RUN_PERIODIC_TASKS: "true"
-          SECURITY_PASSWORD_SALT: "{{ lookup('passwordstore', 'apps/pmg/prod/SECURITY_PASSWORD_SALT') }}"
-          SENDGRID_API_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/SENDGRID_API_KEY') }}"
+          SECURITY_PASSWORD_SALT: "{{ lookup('bitwarden', 'SECURITY_PASSWORD_SALT', collection='project/pmg/' ~ env_name, field='fields.salt') }}"
+          SENDGRID_API_KEY: "{{ lookup('bitwarden', 'SENDGRID_API_KEY', collection='project/pmg/' ~ env_name, field='fields.key') }}"
           SENTRY_DSN: https://15f79f6945ff4d4f8ac103e6a9c2f26d@sentry.io/1489874
           SESSION_COOKIE_DOMAIN: "{{ app_domain }}"
-          SHARPSPRING_API_KEY: "{{ lookup('passwordstore', 'apps/pmg/prod/SHARPSPRING_API subkey=KEY') }}"
-          SHARPSPRING_API_SECRET: "{{ lookup('passwordstore', 'apps/pmg/prod/SHARPSPRING_API') }}"
-          SOUNDCLOUD_APP_KEY_ID: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD_APP_KEY subkey=ID') }}"
-          SOUNDCLOUD_APP_KEY_SECRET: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD_APP_KEY') }}"
-          SOUNDCLOUD_PASSWORD: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD') }}"
+          SOUNDCLOUD_APP_KEY_ID: "{{ lookup('bitwarden', 'SOUNDCLOUD_APP_KEY', collection='project/pmg/' ~ env_name,  field='fields.key_id') }}"
+          SOUNDCLOUD_APP_KEY_SECRET: "{{ lookup('bitwarden', 'SOUNDCLOUD_APP_KEY', collection='project/pmg/' ~ env_name, field='fields.secret') }}"
+          SOUNDCLOUD_PASSWORD: "{{ lookup('bitwarden', 'SOUNDCLOUD', collection='project/pmg/' ~ env_name, field='fields.password') }}"
           SOUNDCLOUD_PERIOD_MINUTES: "5"
-          SOUNDCLOUD_USERNAME: "{{ lookup('passwordstore', 'apps/pmg/prod/SOUNDCLOUD subkey=username') }}"
+          SOUNDCLOUD_USERNAME: "{{ lookup('bitwarden', 'SOUNDCLOUD', collection='project/pmg/' ~ env_name,  field='fields.username') }}"
           SQLALCHEMY_DATABASE_URI: 'postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}'
           STATIC_HOST: 'https://static.pmg.org.za/'
       tags:
