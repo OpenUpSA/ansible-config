@@ -17,8 +17,7 @@
     postgres_database: pmg
     postgres_hostname: postgresql1.ctribismbyc2.eu-west-1.rds.amazonaws.com
     postgres_user: "{{ lookup('bitwarden', 'POSTGRES', collection='project/pmg/' ~ env_name, field='fields.username')}}"
-    postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/pmg/' ~ env_name, ')}}"
-    # postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/municipal-money/' ~ env_name, field='fields.password')}}"
+    postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/pmg/' ~ env_name, field='fields.password')}}"
 
   tasks:
 
@@ -41,7 +40,7 @@
           FLASK_SECRET_KEY: "{{ lookup('bitwarden', 'FLASK_SECRET_KEY', collection='project/pmg/' ~ env_name, field='fields.key') }}"
           FRONTEND_HOST: "https://{{ app_domain }}/"
           SERVER_NAME: "{{ app_domain }}"
-          MAIL_SERVER: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.server') }}"
+          MAIL_SERVER: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.hostname') }}"
           MAIL_USERNAME: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.username') }}"
           MAIL_PASSWORD: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.password') }}"
           MAIL_PORT: "{{ lookup('bitwarden', 'SMTP', collection='project/pmg/' ~ env_name, field='fields.port') }}"
