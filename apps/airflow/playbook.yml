@@ -1,0 +1,85 @@
+---
+- hosts:
+    - airflow
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+   - ansible-modules-bitwarden
+
+  vars:
+    app_name: airflow
+    app_domain: airflow.openup.org.za
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+
+    - name: "Dokku app config is set"
+      tags:
+        - app
+      vars:
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/airflow/' ~ env_name, field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/airflow/' ~ env_name, field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/airflow/' ~ env_name, field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/airflow/' ~ env_name, field='fields.database')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          AIRFLOW__CORE__EXECUTOR: LocalExecutor
+          AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+          AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+          AIRFLOW__CORE__FERNET_KEY: "{{ lookup('bitwarden', 'FERNET', collection='project/airflow/' ~ env_name, field='fields.key')}}"
+          AIRFLOW__WEBSERVER__SECRET_KEY: "{{ lookup('bitwarden', 'SECRET_KEY', collection='project/airflow/' ~ env_name, field='fields.key')}}"
+          DOKKU_LETSENCRYPT_EMAIL: webapps@openup.org.za
+
+    - name: mount voulmes for dags and logs
+      dokku_storage:
+        app: "{{ app_name }}"
+        mounts:
+          - "/var/lib/dokku/data/storage/{{ app_name }}-dags:/opt/airflow/dags"
+          - "/var/lib/dokku/data/storage/{{ app_name }}-logs:/opt/airflow/logs"
+        create_host_dir: true
+        user: 50000
+        group: 50000
+      tags:
+        - app
+
+    - name: Sync DAGs with git repo every 5 minutes
+      ansible.builtin.cron:
+        name: "sync airflow DAGs"
+        user: root
+        minute: "*/5"
+        hour: "*"
+        job: "cd /var/lib/dokku/data/storage/{{ app_name }}-dags && git pull"
+      tags:
+        - app
+
+    - name: Proxy to port 8080
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:8080
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
