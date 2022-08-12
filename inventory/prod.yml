@@ -40,6 +40,7 @@ all:
         elasticsearch1-aws.pmg.org.za:
         justice1-hetzner.openup.org.za:
         codebridge1-aws.openup.org.za:
+        airflow1-hetzner.openup.org.za:
 
 
 ## App groups
