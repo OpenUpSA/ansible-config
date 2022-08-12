@@ -39,7 +39,7 @@
           AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
           AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
           AIRFLOW__CORE__FERNET_KEY: "{{ lookup('bitwarden', 'FERNET', collection='project/airflow/' ~ env_name, field='fields.key')}}"
-          AIRFLOW__WEBSERVER__WEB_SERVER_PORT: "5000"
+          AIRFLOW__WEBSERVER__SECRET_KEY: "{{ lookup('bitwarden', 'SECRET_KEY', collection='project/airflow/' ~ env_name, field='fields.key')}}"
           DOKKU_LETSENCRYPT_EMAIL: webapps@openup.org.za
 
     - name: mount voulmes for dags and logs
@@ -63,6 +63,12 @@
         job: "cd /var/lib/dokku/data/storage/{{ app_name }}-dags && git pull"
       tags:
         - app
+
+    - name: Proxy to port 8080
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:8080
 
     - name: "Dokku app domains are configured"
       dokku_domains:
