@@ -15,6 +15,12 @@
         url: https://github.com/dokku/dokku-letsencrypt.git
 
   tasks:
+    - name: "Get groups to access docker group GID"
+      getent:
+        database: group
+      register: groups
+      tags:
+        - app
 
     - name: "Dokku app exists"
       dokku_app:
@@ -51,6 +57,22 @@
         create_host_dir: true
         user: 50000
         group: 50000
+      tags:
+        - app
+
+    - name: mount docker daemon so that airflow can run docker containers
+      dokku_storage:
+        app: "{{ app_name }}"
+        mounts:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+      tags:
+        - app
+
+    - name: Pass docker group ID as an image build arg
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        option: "--build-arg DOCKER_GID={{ getent_group['docker'].1 }}"
+        phase: build
       tags:
         - app
 
