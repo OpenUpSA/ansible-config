@@ -4,14 +4,27 @@ all:
     env_name: sandbox
     all_hosts_admins:
       - jdb
+      - paulmwatson
       - dirk
       - rikusv
+      - michael
     all_hosts_remove_admins:
       - adi
       - otterbotter
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
+    "osf-case-management":
+      hosts:
+        casefile.org.za:
+      vars:
+        app_domain: "sandbox.casefile.org.za"
+        
+    dokkus:
+      hosts:
+        casefile.org.za:
+        
+        
     "vulekamali":
       hosts:
         hetzner1.openup.org.za:

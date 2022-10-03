@@ -3,6 +3,7 @@
   become: yes
 
   vars:
+    dokku_packages_state: latest
 
   pre_tasks:
     - name: "generate dokku_users"
