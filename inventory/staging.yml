@@ -15,15 +15,22 @@ all:
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
+    "osf-case-management":
+      hosts:
+        casefile.org.za:
+      vars:
+        app_domain: "staging.casefile.org.za"
+        app_url: "https://staging-app.casefile.org.za"
+        dashboard_url: "https://staging-dashboard.casefile.org.za"
 
     dokkus:
       hosts:
+        casefile.org.za:
         munimoney1-hetzner.openup.org.za:
         wazimapng1-aws.openup.org.za:
           host_extra_admins:
             - emre
             - gaurav
-
 
     ## App groups
 
