@@ -126,3 +126,5 @@ all:
         casefile.org.za:
       vars:
         app_domain: "casefile.org.za"
+        app_url: "https://app.casefile.org.za"
+        dashboard_url: "https://dashboard.casefile.org.za"

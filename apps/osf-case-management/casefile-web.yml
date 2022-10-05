@@ -76,6 +76,8 @@
           AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
           SENTRY_DSN: "{{ sentry_dsn }}"
           TAG_MANAGER_ENABLED: "False"
+          APP_URL: "{{ app_url }}"
+          DASHBOARD_URL: "{{ dashboard_url }}"
       tags:
         - app
 

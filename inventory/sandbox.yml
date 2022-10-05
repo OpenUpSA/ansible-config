@@ -19,7 +19,9 @@ all:
         casefile.org.za:
       vars:
         app_domain: "sandbox.casefile.org.za"
-        
+        app_url: "https://sandbox-app.casefile.org.za"
+        dashboard_url: "https://sandbox-dashboard.casefile.org.za"
+
     dokkus:
       hosts:
         casefile.org.za:

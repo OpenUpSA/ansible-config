@@ -20,6 +20,8 @@ all:
         casefile.org.za:
       vars:
         app_domain: "staging.casefile.org.za"
+        app_url: "https://staging-app.casefile.org.za"
+        dashboard_url: "https://staging-dashboard.casefile.org.za"
 
     dokkus:
       hosts:
