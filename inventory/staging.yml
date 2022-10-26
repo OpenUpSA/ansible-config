@@ -8,6 +8,7 @@ all:
       - dirk
       - rikusv
       - michael
+      - molotomt
     all_hosts_remove_admins:
       - otterbotter
       - adi
