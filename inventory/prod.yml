@@ -27,10 +27,10 @@ all:
         muni-portal-aws2.openup.org.za:
         pmg1-hetzner.openup.org.za:
         treasury1.openup.org.za:
-          ansible_user: ubuntu
         treasury4.openup.org.za:
           host_extra_admins:
             - michael
+        treasury5.openup.org.za:
         hetzner1.openup.org.za:
           host_extra_admins:
             - michael
@@ -85,6 +85,12 @@ all:
         sentry_dsn: "https://5999094b0e214151bdfef41a5ad513c2@sentry.io/1730285"
         solr_url: "http://solr.vulekamali.gov.za:8983/solr/budgetportal"
         tag_manager_id: "GTM-PLNL56L"
+
+    treasury-openspending:
+      hosts:
+        treasury5.openup.org.za
+      vars:
+        app_domain: openspending-temporary.vulekamali.gov.za
 
     salga-mobile-api:
       hosts:

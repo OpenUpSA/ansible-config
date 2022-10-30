@@ -1,0 +1,111 @@
+---
+- hosts:
+    - treasury-openspending
+  become: true
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  tasks:
+    - name: Create network
+      dokku_network:
+        name: "openspending-{{ env_name }}"
+      tags:
+        - app
+        - elasticsearch
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "openspending-elasticsearch-{{ env_name }}"
+      tags:
+        - elasticsearch
+
+    - name: "Disable proxy to elasticsearch"
+      dokku_proxy:
+        app: "openspending-elasticsearch-{{ env_name }}"
+        state: absent
+      tags:
+        - elasticsearch
+
+    - name: Map index out of container
+      dokku_storage:
+        app: "openspending-elasticsearch-{{ env_name }}"
+        mounts:
+          -  "/var/lib/dokku/data/storage/openspending-elasticsearch-{{ env_name }}:/bitnami/elasticsearch/data"
+        user: 1001
+        group: 1001
+        create_host_dir: true
+      tags:
+        - elasticsearch
+
+    - name: Add Elasticsearch to network
+      dokku_network_property:
+        app: "openspending-elasticsearch-{{ env_name }}"
+        property: attach-post-deploy
+        value: "openspending-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "API Dokku app exists"
+      dokku_app:
+        app: "openspending-api-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "API Dokku app config is set"
+      tags:
+        - app
+      vars:
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.database')}}"
+      dokku_config:
+        app: "openspending-api-{{ env_name }}"
+        config:
+          OS_API_ENGINE: postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}
+          ELASTICSEARCH_URL: "http://openspending-elasticsearch-{{ env_name }}.web:9200"
+
+    - name: Add API to network
+      dokku_network_property:
+        app: "openspending-api-{{ env_name }}"
+        property: attach-post-create
+        value: "openspending-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "reverse proxy dokku app exists"
+      dokku_app:
+        app: "openspending-frontend-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "reverse proxy dokku app config is set"
+      tags:
+        - app
+      dokku_config:
+        app: "openspending-frontend-{{ env_name }}"
+        config:
+          OS_API: "openspending-api-prod.web:8000"
+          OS_CONDUCTOR: "google.com:8000"
+          OS_PACKAGER: "google.com:8000"
+          OS_VIEWER: "google.com:8000"
+          OS_EXPLORER: "google.com:8000"
+          OS_ADMIN: "google.com:8000"
+          OS_FDP_ADAPTERS: "google.com:8000"
+
+    - name: Add reverse proxy to network
+      dokku_network_property:
+        app: "openspending-frontend-{{ env_name }}"
+        property: attach-post-create
+        value: "openspending-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "openspending-frontend-{{ env_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
