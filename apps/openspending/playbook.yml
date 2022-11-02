@@ -5,6 +5,11 @@
   roles:
     - dokku_bot.ansible_dokku
     - ansible-modules-bitwarden
+  vars:
+    postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.password')}}"
+    postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.hostname')}}"
+    postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.username')}}"
+    postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.database')}}"
 
   tasks:
     - name: Create network
@@ -13,6 +18,11 @@
       tags:
         - app
         - elasticsearch
+
+    #
+    # Elasticsearch
+    #
+    ##############################
 
     - name: "Dokku app exists"
       dokku_app:
@@ -46,6 +56,11 @@
       tags:
         - app
 
+    #
+    # API
+    #
+    ##############################
+
     - name: "API Dokku app exists"
       dokku_app:
         app: "openspending-api-{{ env_name }}"
@@ -55,11 +70,6 @@
     - name: "API Dokku app config is set"
       tags:
         - app
-      vars:
-        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.password')}}"
-        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.hostname')}}"
-        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.username')}}"
-        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/openspending/' ~ env_name, field='fields.database')}}"
       dokku_config:
         app: "openspending-api-{{ env_name }}"
         config:
@@ -80,18 +90,132 @@
       tags:
         - app
 
+    #
+    # Conductor
+    #
+    ##############################
+
+    - name: "Conductor Dokku app exists"
+      dokku_app:
+        app: "openspending-conductor-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "Conductor Dokku app config is set"
+      tags:
+        - app
+      dokku_config:
+        app: "openspending-conductor-{{ env_name }}"
+        config:
+          OS_BASE_URL: "https://{{ app_domain }}"
+          OS_CONDUCTOR_ENGINE: "postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          OS_ELASTICSEARCH_ADDRESS: "http://openspending-elasticsearch-{{ env_name }}.web:9200"
+          OS_S3_HOSTNAME: s3.eu-west-1.amazonaws.com
+          OS_STORAGE_BUCKET_NAME: "{{ storage_bucket_name }}"
+          OS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/vulekamali/openspending/' ~ env_name, field='fields.access_key_id')}}"
+          OS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/vulekamali/openspending/' ~ env_name, field='fields.secret_access_key')}}"
+          OS_CONDUCTOR_SECRETS_0: "{{ lookup('bitwarden', 'GOOGLE_OAUTH', collection='project/vulekamali/openspending/' ~ env_name, field='fields.secret_0')}}"
+          OS_CONDUCTOR_SECRETS_1: "{{ lookup('bitwarden', 'GOOGLE_OAUTH', collection='project/vulekamali/openspending/' ~ env_name, field='fields.secret_1')}}"
+          OS_CONDUCTOR_SECRETS_2: "{{ lookup('bitwarden', 'GOOGLE_OAUTH', collection='project/vulekamali/openspending/' ~ env_name, field='fields.secret_2')}}"
+          OS_CONDUCTOR_SECRETS_3: "{{ lookup('bitwarden', 'GOOGLE_OAUTH', collection='project/vulekamali/openspending/' ~ env_name, field='fields.secret_3')}}"
+
+    - name: Add Conductor to network
+      dokku_network_property:
+        app: "openspending-conductor-{{ env_name }}"
+        property: attach-post-create
+        value: "openspending-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "reverse proxy dokku app exists"
+      dokku_app:
+        app: "openspending-frontend-{{ env_name }}"
+      tags:
+        - app
+
+    #
+    # Admin
+    #
+    ##############################
+
+    - name: "Admin Dokku app exists"
+      dokku_app:
+        app: "openspending-admin-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "Admin Dokku app config is set"
+      tags:
+        - app
+      dokku_config:
+        app: "openspending-admin-{{ env_name }}"
+        config:
+          OS_BASE_URL: "https://{{ app_domain }}"
+
+    - name: Add Admin to network
+      dokku_network_property:
+        app: "openspending-admin-{{ env_name }}"
+        property: attach-post-create
+        value: "openspending-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "reverse proxy dokku app exists"
+      dokku_app:
+        app: "openspending-frontend-{{ env_name }}"
+      tags:
+        - app
+
+    #
+    # Packager
+    #
+    ##############################
+
+    - name: "Packager Dokku app exists"
+      dokku_app:
+        app: "openspending-packager-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "Packager Dokku app config is set"
+      tags:
+        - app
+      dokku_config:
+        app: "openspending-packager-{{ env_name }}"
+        config:
+          OS_BASE_URL: "https://{{ app_domain }}"
+
+    - name: Add Packager to network
+      dokku_network_property:
+        app: "openspending-packager-{{ env_name }}"
+        property: attach-post-create
+        value: "openspending-{{ env_name }}"
+      tags:
+        - app
+
+    - name: "reverse proxy dokku app exists"
+      dokku_app:
+        app: "openspending-frontend-{{ env_name }}"
+      tags:
+        - app
+
+    #
+    # Frontend (reverse proxy)
+    #
+    ##############################
+
     - name: "reverse proxy dokku app config is set"
       tags:
         - app
       dokku_config:
         app: "openspending-frontend-{{ env_name }}"
         config:
-          OS_API: "openspending-api-prod.web:8000"
-          OS_CONDUCTOR: "google.com:8000"
-          OS_PACKAGER: "google.com:8000"
+          OS_API: "openspending-api-{{ env_name }}.web:8000"
+          OS_CONDUCTOR: "openspending-conductor-{{ env_name }}.web:8000"
+          OS_PACKAGER: "openspending-packager-{{ env_name }}.web:8000"
           OS_VIEWER: "google.com:8000"
           OS_EXPLORER: "google.com:8000"
-          OS_ADMIN: "google.com:8000"
+          OS_ADMIN: "openspending-admin-{{ env_name }}.web:8000"
           OS_FDP_ADAPTERS: "google.com:8000"
 
     - name: Add reverse proxy to network
@@ -109,3 +233,7 @@
           - "{{ app_domain }}"
       tags:
         - app
+
+
+# viewer
+# explorer

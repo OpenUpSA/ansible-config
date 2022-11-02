@@ -91,6 +91,7 @@ all:
         treasury5.openup.org.za
       vars:
         app_domain: openspending-temporary.vulekamali.gov.za
+        storage_bucket_name: openspending-vulekamali
 
     salga-mobile-api:
       hosts:
