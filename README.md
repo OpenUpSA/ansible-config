@@ -145,6 +145,7 @@ Installing apps
 
 Before deployig configuration, ensure your bitwarden session is active and your local bitwarden store is up to date, e.g.
 
+    bw login
     export BW_SESSION=$(bw unlock --raw)
     bw sync
 
