@@ -1,13 +1,22 @@
-# install [dokku-elasticsearch](https://github.com/dokku/dokku-elasticsearch)
 
+# Configure the kernel for elasticsearch
 
-# run
+On the server
 
     echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.conf; sudo sysctl -p
-    dokku elasticsearch:create openspending-prod
 
 # run the playbook
 
-# Run
+From your ansible controller (your laptop)
 
-    dokku elasticsearch:link openspending-prod openspending-api-prod
+    --start-at-task "dokku_bot.ansible_dokku : dokku:plugin install"
+
+# Enable the letsencrypt crontab
+
+On the server:
+
+    dokku letsencrypt:cron-job --add
+
+# Restore an elasticsearch backup
+
+Restore an elasticsearch backup to `/var/lib/dokku/data/storage/openspending-elasticsearch-{{ env_name }}` such that
