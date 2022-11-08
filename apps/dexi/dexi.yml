@@ -1,0 +1,86 @@
+---
+- hosts:
+    - justice1-hetzner.openup.org.za
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  vars:
+    dokku_packages_state: latest
+    instance_name: "dexi"
+    app_name: "{{ instance_name }}"
+    app_domain: justice1-hetzner.openup.org.za
+    dokku_daemon_install: false
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: "0755"
+        owner: dokku
+        group: dokku
+      tags:
+        - app
+
+    - name: "Upload file size is configured"
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+      tags:
+        - app
+
+    - name: "Nginx is reloaded"
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
+      tags:
+        - app
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      vars:
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/dexi', field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/dexi', field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/dexi', field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/dexi', field='fields.database')}}"
+        django_secret_key: "{{ lookup('bitwarden', 'DJANGO', collection='project/dexi', field='fields.secret_key')}}"
+        aws_access_key_id: "{{ lookup('bitwarden', 'AWS', collection='project/dexi', field='fields.access_key_id')}}"
+        aws_secret_access_key: "{{ lookup('bitwarden', 'AWS', collection='project/dexi', field='fields.secret_access_key')}}"
+        aws_storage_bucket_name: "{{ lookup('bitwarden', 'AWS', collection='project/dexi', field='fields.storage_bucket_name')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          CORS_ALLOWED_ORIGIN: "https://dexi-oj.netlify.app/"
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@localhost:5432/{{ postgres_database }}"
+          DJANGO_SECRET_KEY: "{{ django_secret_key }}"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          TAG_MANAGER_ENABLED: "False"
+          AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+          AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+          AWS_STORAGE_BUCKET_NAME: "{{ aws_storage_bucket_name }}"
+          TAG_MANAGER_ENABLED: "False" 
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
