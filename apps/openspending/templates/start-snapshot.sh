@@ -4,4 +4,4 @@ ip_address=`docker inspect -f '{% raw %}{{range.NetworkSettings.Networks}}{{.IPA
 
 snapshot_name=`date +%Y-%m-%dt%H%M%S`
 
-curl --fail -XPUT $ip_address:9200/_snapshot/s3_repository/$snapshot_name | grep --quiet '"accepted":true'
+curl --silent --fail -XPUT $ip_address:9200/_snapshot/s3_repository/$snapshot_name | grep -v '"accepted":true'
