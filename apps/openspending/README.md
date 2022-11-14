@@ -38,3 +38,14 @@ Push https://github.com/vulekamali/os-nginx-frontend to `openspending-frontend-{
 With this, you should be able to log in at /packager and upload datasets.
 
 You will not be able to visit / or follow links to the viewer from Admin until viewer and explorer are deployed.
+
+curl -XPUT 172.18.0.2:9200/_snapshot/s3_repository -H 'Content-Type: application/json' -d '
+{
+  "type": "s3",
+  "settings": {
+    "bucket": "vulekamali-openspending-elasticsearch-backups-prod",
+    "region": "eu-west-1",
+    "access_key": "the access key",
+    "secret_key": "the secret key"
+  }
+}'

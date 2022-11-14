@@ -59,6 +59,16 @@
       tags:
         - app
 
+    - name: "Install script to create elasticsearch snapshots"
+      template:
+        src: ./start-snapshot.sh
+        dest: /home/dokku/create-openspending-elasticsearch-backup
+        mode: 0744
+        owner: dokku
+        group: dokku
+      tags:
+        - app
+
     ##############################
     #
     # API
