@@ -33,8 +33,26 @@ Push https://github.com/vulekamali/os-api to `openspending-api-{{ env-name }}`
 
 Push https://github.com/vulekamali/os-admin to `openspending-admin-{{ env-name }}`
 
+Push https://github.com/vulekamali/os-viewer to `openspending-viewer-{{ env_name }}`
+
+Push https://github.com/vulekamali/os-explorer to `openspending-explorer-{{ env_name }}`
+
 Push https://github.com/vulekamali/os-nginx-frontend to `openspending-frontend-{{ env_name }}`
 
 With this, you should be able to log in at /packager and upload datasets.
 
-You will not be able to visit / or follow links to the viewer from Admin until viewer and explorer are deployed.
+
+# configure a repository for backups of the elasticsearch indexes
+
+curl -XPUT 172.18.0.2:9200/_snapshot/s3_repository -H 'Content-Type: application/json' -d '
+{
+  "type": "s3",
+  "settings": {
+    "bucket": "vulekamali-openspending-elasticsearch-backups-prod",
+    "region": "eu-west-1",
+    "access_key": "the access key",
+    "secret_key": "the secret key"
+  }
+}'
+
+Monitor backup status by checking for "SUCCESS" at /elasticsearch-todays-backup
