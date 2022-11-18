@@ -69,6 +69,17 @@
       tags:
         - app
 
+
+    - name: Trigger openspending backups daily
+      ansible.builtin.cron:
+        name: "trigger openspending backup"
+        user: dokku
+        minute: "0"
+        hour: "3"
+        job: "/home/dokku/create-openspending-elasticsearch-backup {{ env_name }}"
+      tags:
+        - app
+
     ##############################
     #
     # API
@@ -273,6 +284,7 @@
           OS_EXPLORER: "openspending-explorer-{{ env_name }}.web:8000"
           OS_ADMIN: "openspending-admin-{{ env_name }}.web:8000"
           OS_FDP_ADAPTERS: "google.com:8000"
+          OS_ELASTICSEARCH: "openspending-elasticsearch-{{ env_name }}.web:9200"
           DOKKU_LETSENCRYPT_EMAIL: webapps@openup.org.za
 
     - name: Add reverse proxy to network
