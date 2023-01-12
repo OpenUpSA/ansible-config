@@ -1,3 +1,17 @@
+uct:
+  hosts:
+  vars:
+    env_name: prod
+    all_hosts_admins:
+      - t0081785
+  children:
+    dokkus:
+      hosts:
+        srvubudoc001.uct.ac.za:
+    "saldru-bps-cms":
+      hosts:
+        srvubudoc001.uct.ac.za:
+
 all:
   hosts:
   vars:
@@ -42,9 +56,7 @@ all:
         justice1-hetzner.openup.org.za:
         codebridge1-aws.openup.org.za:
         airflow1-hetzner.openup.org.za:
-
-
-## App groups
+    ## App groups
 
     muni-portal-backend:
       hosts:
@@ -88,8 +100,7 @@ all:
         tag_manager_id: "GTM-PLNL56L"
 
     treasury-openspending:
-      hosts:
-        treasury5.openup.org.za
+      hosts: treasury5.openup.org.za
       vars:
         app_domain: openspending-dedicated.vulekamali.gov.za
         storage_bucket_name: openspending-vulekamali
@@ -122,12 +133,10 @@ all:
         aws_storage_bucket_name: wazimap-ng
 
     hackdash:
-      hosts:
-        codebridge1-aws.openup.org.za
+      hosts: codebridge1-aws.openup.org.za
 
     airflow:
-      hosts:
-        airflow1-hetzner.openup.org.za
+      hosts: airflow1-hetzner.openup.org.za
 
     "osf-case-management":
       hosts:
