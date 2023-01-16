@@ -18,6 +18,7 @@ uct:
     env_name: prod
     all_hosts_admins:
       - t0081785
+      - t0081787
   children:
     dokkus:
       hosts:
