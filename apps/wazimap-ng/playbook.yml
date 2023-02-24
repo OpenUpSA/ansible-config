@@ -75,6 +75,7 @@
           ENVIRONMENT_NAME: "{{ env_name }}"
           PORT: "8000"
           Q_CLUSTER_RECYCLE: "1"
+          Q_CLUSTER_WORKERS: "1"
           SENTRY_DSN: "https://aae3ed779891437d984db424db5c9dd0@o242378.ingest.sentry.io/5257787"
           STAFF_EMAIL_ADDRESS: "support@wazimap.co.za"
       tags:
