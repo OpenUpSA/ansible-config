@@ -36,7 +36,6 @@ all:
       - paulmwatson
       - dirk
       - rikusv
-      - molotomt
     all_hosts_remove_admins:
       - adi
       - mila
