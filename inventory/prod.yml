@@ -63,7 +63,7 @@ all:
         hetzner1.openup.org.za:
           host_extra_admins:
             - michael
-        aws1.keepthereceipt.org.za:
+        data.keepthereceipt.org.za:
         idp1-aws.openup.org.za:
         pmg1-aws.pmg.org.za:
         elasticsearch1-aws.pmg.org.za:
@@ -85,7 +85,7 @@ all:
 
     procurement-portal-backend:
       hosts:
-        aws1.keepthereceipts.org.za:
+        data.keepthereceipts.org.za:
       vars:
         app_domain: data.keepthereceipts.org.za
         media_hostname: media.keepthereceipts.org.za
