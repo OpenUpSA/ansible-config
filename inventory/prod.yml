@@ -98,6 +98,11 @@ all:
     "vulekamali":
       hosts:
         treasury4.openup.org.za:
+          host_extra_admins:
+            - emre
+          host_remove_extra_admins:
+            - t0081785
+            - t0081787
           gunicorn_workers_arg: "--workers 2"
       vars:
         app_domain: vulekamali.gov.za
@@ -114,7 +119,10 @@ all:
         tag_manager_id: "GTM-PLNL56L"
 
     treasury-openspending:
-      hosts: treasury5.openup.org.za
+      hosts:
+        treasury5.openup.org.za:
+          host_extra_admins:
+            - emre
       vars:
         app_domain: openspending-dedicated.vulekamali.gov.za
         storage_bucket_name: openspending-vulekamali
