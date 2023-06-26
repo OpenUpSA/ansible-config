@@ -53,7 +53,6 @@ all:
         dokku9.code4sa.org:
           host_extra_admins:
             - michael
-        muni-portal-aws2.openup.org.za:
         pmg1-hetzner.openup.org.za:
         treasury1.openup.org.za:
         treasury4.openup.org.za:
@@ -71,18 +70,6 @@ all:
         codebridge1-aws.openup.org.za:
         airflow1-hetzner.openup.org.za:
     ## App groups
-
-    muni-portal-backend:
-      hosts:
-        muni-portal-aws2.openup.org.za:
-      vars:
-        app_domain: muni-portal-backend.openup.org.za
-        frontend_base_url: https://app.capeagulhas.gov.za
-        aws_storage_bucket_name: muni-portal-backend
-        aws_s3_custom_domain: muni-portal-backend.s3.amazonaws.com
-        media_url: https://muni-portal-backend.s3.amazonaws.com/
-        collaborator_api_base_url: https://citizencollab.collaboratoronline.com
-
     procurement-portal-backend:
       hosts:
         data.keepthereceipts.org.za:
