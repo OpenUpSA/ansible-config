@@ -5,13 +5,12 @@ all:
     all_hosts_admins:
       - jdb
       - paulmwatson
-      
-      - rikusv
       - michael
+      - dirk
     all_hosts_remove_admins:
+      - rikusv
       - otterbotter
       - adi
-      - dirk
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
