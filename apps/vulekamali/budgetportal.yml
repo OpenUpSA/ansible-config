@@ -3,7 +3,8 @@
     - vulekamali
   become: yes
   roles:
-   - dokku_bot.ansible_dokku
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
 
   vars:
     app_name: "vulekamali-budgetportal-{{ env_name }}"
@@ -11,11 +12,12 @@
     dokku_plugins:
       - name: letsencrypt
         url: https://github.com/dokku/dokku-letsencrypt.git
-    postgres_hostname: prod-db.vulekamali.gov.za
-    postgres_superuser_user: "{{ lookup('passwordstore', 'core/vulekamali/POSTGRES_SUPERUSER subkey=username')}}"
-    postgres_superuser_password: "{{ lookup('passwordstore', 'core/vulekamali/POSTGRES_SUPERUSER')}}"
-    postgres_user: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/POSTGRES subkey=username')}}"
-    postgres_password: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/POSTGRES')}}"
+    postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.hostname')}}"
+    postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
+    postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.username')}}"
+    postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.database')}}"
+    postgres_superuser_username: "{{ lookup('bitwarden', 'POSTGRES_SUPERUSER', collection='project/vulekamali', field='fields.username')}}"
+    postgres_superuser_password: "{{ lookup('bitwarden', 'POSTGRES_SUPERUSER', collection='project/vulekamali', field='fields.password')}}"
 
   tasks:
 
@@ -44,7 +46,7 @@
         login_password: "{{ postgres_superuser_password }}"
         login_host: "{{ postgres_hostname }}"
         db: "{{ postgres_database }}"
-        name: "{{ postgres_user }}"
+        name: "{{ postgres_username }}"
         password: "{{ postgres_password }}"
         priv: "ALL"
         state: present
@@ -54,54 +56,66 @@
     - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
+      tags:
+        - app
 
     - name: "Dokku app config is set"
+      tags:
+        - app
       dokku_config:
         app: "{{ app_name }}"
         config:
           ACCOUNT_LOGOUT_REDIRECT_URL: "https://{{ app_domain }}/"
-          AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS subkey=ACCESS_KEY_ID')}}"
-          AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/AWS')}}"
+          AWS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.access_key_id')}}"
+          AWS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.secret_access_key')}}"
           AWS_STORAGE_BUCKET_NAME: "{{ media_hostname }}"
           AWS_S3_CUSTOM_DOMAIN: "{{ media_hostname }}"
           AWS_S3_REGION_NAME: "eu-west-1"
-          CKAN_API_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/CKAN_USER subkey=api-key')}}"
+          CKAN_API_KEY: "{{ lookup('bitwarden', 'CKAN', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.api_key')}}"
           CKAN_SSO_URL: "https://{{ ckan_domain }}/user/login"
           CKAN_URL: "https://{{ ckan_domain }}"
           COMMENTS_ENABLED: "{{ comments_enabled }}"
-          DATABASE_URL: "postgresql://{{ postgres_user }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          DATABASE_URL: "postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
           DEFAULT_FROM_EMAIL: "{{ default_from_email }}"
           DISABLE_COLLECTSTATIC: "1"
-          DISCOURSE_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/SSO_SECRET')}}"
+          DISCOURSE_SSO_SECRET: "{{ lookup('bitwarden', 'SSO', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.secret')}}"
           DISCOURSE_SSO_URL: "{{ discourse_sso_url }}"
           DJANGO_DEBUG: "false"
-          DJANGO_SECRET_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/DJANGO_SECRET_KEY')}}"
+          DJANGO_SECRET_KEY: "{{ lookup('bitwarden', 'DJANGO', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.secret')}}"
           DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
-          EMAIL_HOST_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/SMTP')}}"
+          EMAIL_HOST_PASSWORD: "{{ lookup('bitwarden', 'SMTP', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
           GUNICORN_WORKERS_ARG: "{{ gunicorn_workers_arg }}"
-          RECAPTCHA_PRIVATE_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/budgetportal/{{ env_name }}/RECAPTCHA')}}"
+          RECAPTCHA_PRIVATE_KEY: "{{ lookup('bitwarden', 'RECAPTCHA', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.secret')}}"
           ROBOTS_DENY_ALL: "{{ robots_deny_all }}"
           SENTRY_DSN: "{{ sentry_dsn }}"
           SOLR_URL: "{{ solr_url }}"
           TAG_MANAGER_ID: "{{ tag_manager_id }}"
 
     - name: "Dokku app domains are configured"
+      tags:
+        - app
       dokku_domains:
         app: "{{ app_name }}"
         domains:
           - "{{ app_domain }}"
 
     - name: "Your dokku git remote"
+      tags:
+        - app
       debug:
         msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
 
     - name: "App nginx directory exists"
+      tags:
+        - app
       file:
         path: "/home/dokku/{{ app_name }}/nginx.conf.d"
         state: directory
         mode: '0755'
 
     - name: Upload file size is configured
+      tags:
+        - app
       copy:
         content: "client_max_body_size 100M;"
         dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
@@ -111,6 +125,8 @@
       register: nginx
 
     - name: Nginx is reloaded
+      tags:
+        - app
       service:
         name: nginx
         state: reloaded

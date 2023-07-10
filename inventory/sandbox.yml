@@ -39,7 +39,6 @@ all:
         env_name: sandbox
         gunicorn_workers_arg: ""
         media_hostname: media.sandbox.vulekamali.gov.za
-        postgres_database: budgetportal_sandbox
         robots_deny_all: "true"
         sentry_dsn: "https://acd93673a56a48939bef31fc9ad92f2c@sentry.io/1888207"
         solr_url: "http://solr:8983/solr/budgetportal-sandbox"
