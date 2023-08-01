@@ -91,8 +91,7 @@
           SOLR_URL: "{{ solr_url }}"
           TAG_MANAGER_ID: "{{ tag_manager_id }}"
           OPENSPENDING_HOST: "{{ lookup('bitwarden', 'OPENSPENDING', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.host')}}"
-          OPENSPENDING_USER_ID: "{{ lookup('bitwarden', 'OPENSPENDING', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.user_id')}}"
-          OPENSPENDING_BASE_TOKEN: "{{ lookup('bitwarden', 'OPENSPENDING', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.base_token')}}"
+          OPENSPENDING_API_KEY: "{{ lookup('bitwarden', 'OPENSPENDING', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.api_key')}}"
           OPENSPENDING_DATASET_CREATE_SUFFIX: "{{ openspending_dataset_create_suffix }}"
 
     - name: "Dokku app domains are configured"
