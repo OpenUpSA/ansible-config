@@ -1,17 +1,3 @@
-cogta:
-  hosts:
-  vars:
-    env_name: prod
-    all_hosts_admins:
-      - mscadmin
-  children:
-    dokkus:
-      hosts:
-        10.123.55.75:
-    "dcog-municipal-structures-compliance":
-      hosts:
-        10.123.55.75:
-
 uct:
   hosts:
   vars:
