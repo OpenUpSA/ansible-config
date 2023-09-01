@@ -25,14 +25,19 @@
       apt: name={{ item }} state=present
       with_items:
         - libpq-dev
-        - python3-psycopg2
+      tags:
+        - createdb
+
+    - name: Install bottle python package
+      ansible.builtin.pip:
+      name: psycopg2
       tags:
         - createdb
 
     - name: "Database exists"
       postgresql_db:
         ssl_mode: require
-        login_user: "{{ postgres_superuser_user }}"
+        login_user: "{{ postgres_superuser_username }}"
         login_password: "{{ postgres_superuser_password }}"
         login_host: "{{ postgres_hostname }}"
         name: "{{ postgres_database }}"
@@ -42,7 +47,7 @@
     - name: "Database user exists"
       postgresql_user:
         ssl_mode: require
-        login_user: "{{ postgres_superuser_user }}"
+        login_user: "{{ postgres_superuser_username }}"
         login_password: "{{ postgres_superuser_password }}"
         login_host: "{{ postgres_hostname }}"
         db: "{{ postgres_database }}"

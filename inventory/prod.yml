@@ -101,6 +101,12 @@ all:
         app_domain: openspending-dedicated.vulekamali.gov.za
         storage_bucket_name: openspending-vulekamali
 
+    vulekamali-ocds-summary:
+      hosts:
+        treasury4.openup.org.za:
+          host_extra_admins:
+            - emre
+
     salga-mobile-api:
       hosts:
         dokku9.code4sa.org:
