@@ -1,0 +1,91 @@
+---
+- hosts:
+    - nocodb
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  vars:
+    instance_name: "nocodb-{{ env_name }}"
+    app_name: "{{ instance_name }}-web"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+    
+    - name: "Dokku app config is set"
+      tags:
+        - app
+      vars:
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/nocodb/' ~ env_name, field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/nocodb/' ~ env_name, field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/nocodb/' ~ env_name, field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/nocodb/' ~ env_name, field='fields.database')}}"
+        google_client_id: "{{ lookup('bitwarden', 'GOOGLE', collection='project/nocodb/' ~ env_name, field='fields.client_id')}}"
+        google_client_secret: "{{ lookup('bitwarden', 'GOOGLE', collection='project/nocodb/' ~ env_name, field='fields.client_secret')}}"
+        smtp_password: "{{ lookup('bitwarden', 'SENDGRID', collection='project/nocodb/' ~ env_name, field='fields.api_key')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}/{{ postgres_database }}?sslmode=verify-full&ssl=true"
+          NO_INDEX: "{{ no_index }}"
+          DB_QUERY_LIMIT_DEFAULT: "200"
+          NC_GOOGLE_CLIENT_ID: "{{ google_client_id }}"
+          NC_GOOGLE_CLIENT_SECRET: "{{ google_client_secret }}"
+          NC_SMTP_FROM: webapps+nocodb@openup.org.za
+          NC_SMTP_HOST: smtp.sendgrid.net
+          NC_SMTP_PASSWORD: "{{ smtp_password }}"
+          NC_SMTP_PORT: "465"
+          NC_SMTP_SECURE: "true"
+          NC_SMTP_USERNAME: apikey
+          
+    - name: "Dokku app domains are configured"
+      tags:
+        - app
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      tags:
+        - app
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "App nginx directory exists"
+      tags:
+        - app
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        owner: dokku
+        group: dokku
+        state: directory
+        mode: '0755'
+
+    - name: Upload file size is configured
+      tags:
+        - app
+      copy:
+        content: "client_max_body_size 200M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      tags:
+        - app
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed

@@ -24,6 +24,7 @@ all:
 
     dokkus:
       hosts:
+        dokku11.openup.org.za:
         casefile.org.za:
         
         
@@ -50,4 +51,11 @@ all:
         dokku9.code4sa.org:
       vars:
         app_domain: sandbox.municipalmoney.gov.za
+        no_index: "true"
+
+    nocodb:
+      hosts:
+        dokku11.openup.org.za:
+      vars:
+        app_domain: nocodb-sandbox.openup.org.za
         no_index: "true"
