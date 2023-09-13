@@ -58,3 +58,13 @@
         group: 50000
       tags:
         - app
+
+    - name: Ensure a job that runs at 18:00 and 06:00 exists. Fetches data and updates summary."
+      ansible.builtin.cron:
+        name: "update ocds data"
+        user: dokku
+        minute: "48"
+        hour: "6"
+        job: "dokku --rm run {{ app_name }} python manage.py update"
+      tags:
+        - app
