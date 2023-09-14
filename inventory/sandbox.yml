@@ -52,6 +52,8 @@ all:
       vars:
         app_domain: sandbox.municipalmoney.gov.za
         no_index: "true"
+        data_portal_url: "https://sandbox.data.municipalmoney.gov.za/"
+        environment: "sandbox"
 
     nocodb:
       hosts:

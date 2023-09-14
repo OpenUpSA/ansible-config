@@ -154,7 +154,6 @@ all:
         dokku11.openup.org.za:
       vars:
         app_domain: municipalmoney.gov.za
-        no_index: "false"
         api_url: "https://municipaldata.treasury.gov.za/api"
         aws_s3_endpoint_url: "https://munimoney-media.s3.eu-west-1.amazonaws.com"
         bulk_download_dir: "bulk_downloads"
@@ -165,3 +164,12 @@ all:
         google_ga4_data: "G-VZ95XY6T9S"
         google_ga4_scorecard: "G-NFT1CS0QKK"
         wkhtmltopdf_cmd: "/app/bin/wkhtmltopdf"
+        data_portal_url: "https://municipaldata.treasury.gov.za/"
+        sentry_environment: "production"
+        no_index: "False"
+
+    youthexplorer:
+      hosts:
+        dokku11.openup.org.za:
+      vars:
+        app_domain: old.youthexplorer.org.za
