@@ -46,6 +46,16 @@
           ENVIRONMENT: staging
           NO_INDEX: "{{ no_index }}"
           PRELOAD_CUBES: "true"
+          API_URL: "{{ api_url | default(omit)  }}"
+          AWS_S3_ENDPOINT_URL: "{{ aws_s3_endpoint_url | default(omit) }}"
+          BULK_DOWNLOAD_DIR: "{{ bulk_download_dir | default(omit) }}"
+          DB_STMT_TIMEOUT: "{{ db_stmt_timeout | default(omit) }}"
+          DISABLE_COLLECTSTATIC: "{{ disable_collectstatic | default(omit) }}"
+          GOOGLE_ANALYTICS_DATA: "{{ google_analytics_data | default(omit) }}"
+          GOOGLE_ANALYTICS_SCORECARD: "{{ google_analytics_scorecard | default(omit) }}"
+          GOOGLE_GA4_DATA: "{{ google_ga4_data | default(omit) }}"
+          GOOGLE_GA4_SCORECARD: "{{ google_ga4_scorecard | default(omit) }}"
+          WKHTMLTOPDF_CMD: "{{ wkhtmltopdf_cmd | default(omit) }}"
 
     - name: "Dokku app domains are configured"
       tags:
@@ -69,7 +79,7 @@
         owner: dokku
         group: dokku
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Upload file size is configured
       tags:

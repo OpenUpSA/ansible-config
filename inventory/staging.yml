@@ -35,7 +35,7 @@ all:
 
     munimoney:
       hosts:
-        dokku9.code4sa.org:
+        dokku11.openup.org.za:
       vars:
         app_domain: staging.municipalmoney.gov.za
         no_index: "true"

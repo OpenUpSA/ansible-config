@@ -148,3 +148,20 @@ all:
       vars:
         app_domain: nocodb.openup.org.za
         no_index: "true"
+
+    munimoney:
+      hosts:
+        dokku11.openup.org.za:
+      vars:
+        app_domain: municipalmoney.gov.za
+        no_index: "false"
+        api_url: "https://municipaldata.treasury.gov.za/api"
+        aws_s3_endpoint_url: "https://munimoney-media.s3.eu-west-1.amazonaws.com"
+        bulk_download_dir: "bulk_downloads"
+        db_stmt_timeout: "100000"
+        disable_collectstatic: "1"
+        google_analytics_data: "UA-48399585-37"
+        google_analytics_scorecard: "UA-48399585-40"
+        google_ga4_data: "G-VZ95XY6T9S"
+        google_ga4_scorecard: "G-NFT1CS0QKK"
+        wkhtmltopdf_cmd: "/app/bin/wkhtmltopdf"

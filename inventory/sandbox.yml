@@ -48,7 +48,7 @@ all:
 
     munimoney:
       hosts:
-        dokku9.code4sa.org:
+        dokku11.openup.org.za:
       vars:
         app_domain: sandbox.municipalmoney.gov.za
         no_index: "true"
