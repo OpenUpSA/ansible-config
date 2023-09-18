@@ -26,11 +26,12 @@ all:
       hosts:
         dokku11.openup.org.za:
         casefile.org.za:
-        
-        
+
     "vulekamali":
       hosts:
         hetzner1.openup.org.za:
+          host_extra_admins:
+            - emre
       vars:
         app_domain: sandbox.vulekamali.gov.za
         ckan_domain: sandbox-data.vulekamali.gov.za

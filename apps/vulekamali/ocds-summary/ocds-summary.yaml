@@ -1,0 +1,70 @@
+---
+- hosts:
+    - vulekamali-ocds-summary
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  vars:
+    app_name: "vulekamali-ocds-summary-{{ env_name }}"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+    postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/ocds-summary/' ~ env_name, field='fields.hostname')}}"
+    postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/ocds-summary/' ~ env_name, field='fields.password')}}"
+    postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/ocds-summary/' ~ env_name, field='fields.username')}}"
+    postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/ocds-summary/' ~ env_name, field='fields.database')}}"
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      tags:
+        - app
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          DATABASE_URL: "postgresql://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          DJANGO_SECRET_KEY: "{{ lookup('bitwarden', 'DJANGO', collection='project/vulekamali/ocds-summary/' ~ env_name, field='fields.secret')}}"
+
+    - name: "Dokku app domains are configured"
+      tags:
+        - app
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "ocds-summary-backend.vulekamali.gov.za"
+
+    - name: "Your dokku git remote"
+      tags:
+        - app
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "Map out data directory for incremental crawl"
+      dokku_storage:
+        app: "{{ app_name }}"
+        mounts:
+          - "/var/lib/dokku/data/storage/{{ app_name }}-fetch-data:/app/data"
+        create_host_dir: true
+        user: 50000
+        group: 50000
+      tags:
+        - app
+
+    - name: Ensure a job that runs at 18:00 and 06:00 exists. Fetches data and updates summary."
+      ansible.builtin.cron:
+        name: "update ocds data"
+        user: ubuntu
+        minute: "00"
+        hour: "6,18"
+        job: "dokku --rm run {{ app_name }} python manage.py update"
+      tags:
+        - app
