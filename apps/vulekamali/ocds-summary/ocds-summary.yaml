@@ -63,8 +63,8 @@
       ansible.builtin.cron:
         name: "update ocds data"
         user: ubuntu
-        minute: "48"
-        hour: "6"
+        minute: "00"
+        hour: "6,18"
         job: "dokku --rm run {{ app_name }} python manage.py update"
       tags:
         - app
