@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - casefile.org.za
+    - dokku10.openup.org.za
   become: yes
   roles:
     - dokku_bot.ansible_dokku
@@ -8,7 +8,7 @@
 
   vars:
     dokku_packages_state: latest
-    instance_name: "casefile-web-{{ env_name }}"
+    instance_name: "case-file-wasafiri"
     app_name: "{{ instance_name }}"
     dokku_daemon_install: false
     dokku_plugins:
@@ -53,19 +53,19 @@
 
     - name: "Dokku app config is set"
       vars:
-        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.password')}}"
-        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.hostname')}}"
-        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.username')}}"
-        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/osf-case-management/' ~ env_name, field='fields.database')}}"
-        django_secret_key: "{{ lookup('bitwarden', 'DJANGO',   collection='project/osf-case-management/' ~ env_name, field='fields.secret_key')}}"
-        aws_access_key_id: "{{ lookup('bitwarden',        'AWS',   collection='project/osf-case-management/' ~ env_name, field='fields.access_key_id')}}"
-        aws_secret_access_key: "{{ lookup('bitwarden',    'AWS',   collection='project/osf-case-management/' ~ env_name, field='fields.secret_access_key')}}"
-        aws_storage_bucket_name: "{{ lookup('bitwarden',  'AWS',   collection='project/osf-case-management/' ~ env_name, field='fields.storage_bucket_name')}}"
-        sentry_dsn: "{{ lookup('bitwarden',  'SENTRY',   collection='project/osf-case-management/' ~ env_name, field='fields.dsn')}}"
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/case-file/wasafiri', field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/case-file/wasafiri', field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/case-file/wasafiri', field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/case-file/wasafiri', field='fields.database')}}"
+        django_secret_key: "{{ lookup('bitwarden', 'DJANGO',   collection='project/case-file/wasafiri', field='fields.secret_key')}}"
+        aws_access_key_id: "{{ lookup('bitwarden',        'AWS',   collection='project/case-file/wasafiri', field='fields.access_key_id')}}"
+        aws_secret_access_key: "{{ lookup('bitwarden',    'AWS',   collection='project/case-file/wasafiri', field='fields.secret_access_key')}}"
+        aws_storage_bucket_name: "{{ lookup('bitwarden',  'AWS',   collection='project/case-file/wasafiri', field='fields.storage_bucket_name')}}"
+        sentry_dsn: "{{ lookup('bitwarden',  'SENTRY',   collection='project/case-file/wasafiri', field='fields.dsn')}}"
       dokku_config:
         app: "{{ app_name }}"
         config:
-          CORS_ALLOWED_ORIGIN_REGEXES: "^https?://localhost:\\d+$,^https?://127.0.0.1:\\d+$,^https://app.casefile.org.za$,^https://casefile.org.za$,^https://deploy-preview-\\d+--casemanagement.netlify.app$"
+          CORS_ALLOWED_ORIGIN_REGEXES: "^https?://localhost:\\d+$,^https?://127.0.0.1:\\d+$,^https://app.wasafiri.casefile.org.za$,^https://wasafiri.casefile.org.za$,^https://deploy-preview-\\d+--casemanagement.netlify.app$"
           DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full&sslrootcert=/home/django/.postgresql/root.crt"
           DJANGO_SECRET_KEY: "{{ django_secret_key }}"
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"

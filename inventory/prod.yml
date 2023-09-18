@@ -147,3 +147,11 @@ all:
         app_domain: "casefile.org.za"
         app_url: "https://app.casefile.org.za"
         dashboard_url: "https://dashboard.casefile.org.za"
+
+    case-file-wasafiri:
+      hosts:
+        dokku10.openup.org.za:
+      vars:
+        app_domain: "wasafiri.casefile.org.za"
+        app_url: "https://app.wasafiri.casefile.org.za"
+        dashboard_url: "https://dashboard.wasafiri.casefile.org.za"
