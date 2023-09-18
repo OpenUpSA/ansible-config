@@ -24,6 +24,7 @@ all:
 
     dokkus:
       hosts:
+        dokku11.openup.org.za:
         casefile.org.za:
 
     "vulekamali":
@@ -48,7 +49,16 @@ all:
 
     munimoney:
       hosts:
-        dokku9.code4sa.org:
+        dokku11.openup.org.za:
       vars:
         app_domain: sandbox.municipalmoney.gov.za
+        no_index: "true"
+        data_portal_url: "https://sandbox.data.municipalmoney.gov.za/"
+        environment: "sandbox"
+
+    nocodb:
+      hosts:
+        dokku11.openup.org.za:
+      vars:
+        app_domain: nocodb-sandbox.openup.org.za
         no_index: "true"

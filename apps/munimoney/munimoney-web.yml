@@ -32,7 +32,8 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          DATA_PORTAL_URL: "https://{{ env_name }}.data.municipalmoney.gov.za"
+          NO_INDEX: "{{ no_index }}"
+          DATA_PORTAL_URL: "{{ data_portal_url }}"
           AWS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/municipal-money/' ~ env_name, field='fields.ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/municipal-money/' ~ env_name, field='fields.AWS_SECRET_ACCESS_KEY')}}"
           AWS_STORAGE_BUCKET_NAME: "munimoney-media"
@@ -43,9 +44,18 @@
           DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
           SENTRY_DSN: "https://f86e04f9ed354e62afe30b9f3da4f2c7@o242378.ingest.sentry.io/5501712"
           SENTRY_PERF_SAMPLE_RATE: "1.0"
-          ENVIRONMENT: staging
-          NO_INDEX: "{{ no_index }}"
+          SENTRY_ENVIRONMENT: "{{ sentry_environment }}"
           PRELOAD_CUBES: "true"
+          API_URL: "{{ api_url | default(omit)  }}"
+          AWS_S3_ENDPOINT_URL: "{{ aws_s3_endpoint_url | default(omit) }}"
+          BULK_DOWNLOAD_DIR: "{{ bulk_download_dir | default(omit) }}"
+          DB_STMT_TIMEOUT: "{{ db_stmt_timeout | default(omit) }}"
+          DISABLE_COLLECTSTATIC: "{{ disable_collectstatic | default(omit) }}"
+          GOOGLE_ANALYTICS_DATA: "{{ google_analytics_data | default(omit) }}"
+          GOOGLE_ANALYTICS_SCORECARD: "{{ google_analytics_scorecard | default(omit) }}"
+          GOOGLE_GA4_DATA: "{{ google_ga4_data | default(omit) }}"
+          GOOGLE_GA4_SCORECARD: "{{ google_ga4_scorecard | default(omit) }}"
+          WKHTMLTOPDF_CMD: "{{ wkhtmltopdf_cmd | default(omit) }}"
 
     - name: "Dokku app domains are configured"
       tags:
@@ -69,7 +79,7 @@
         owner: dokku
         group: dokku
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: Upload file size is configured
       tags:

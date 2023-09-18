@@ -1,0 +1,82 @@
+---
+- hosts:
+    - youthexplorer
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  vars:
+    instance_name: "youthexplorer-{{ env_name }}"
+    app_name: "{{ instance_name }}-web"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      tags:
+        - app
+      vars:
+        postgres_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/youth-explorer/' ~ env_name, field='fields.password')}}"
+        postgres_hostname: "{{ lookup('bitwarden', 'POSTGRES', collection='project/youth-explorer/' ~ env_name, field='fields.hostname')}}"
+        postgres_username: "{{ lookup('bitwarden', 'POSTGRES', collection='project/youth-explorer/' ~ env_name, field='fields.username')}}"
+        postgres_database: "{{ lookup('bitwarden', 'POSTGRES', collection='project/youth-explorer/' ~ env_name, field='fields.database')}}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}"
+          DJANGO_DEBUG: "false"
+          DJANGO_SECRET_KEY: "{{ lookup('bitwarden', 'DJANGO', collection='project/youth-explorer/' ~ env_name, field='fields.SECRET_KEY')}}"
+          DJANGO_SETTINGS_MODULE: "youthexplorer.settings"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          DOKKU_PROXY_PORT_MAP:     http:80:5000 https:443:5000
+    - name: "Dokku app domains are configured"
+      tags:
+        - app
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      tags:
+        - app
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "App nginx directory exists"
+      tags:
+        - app
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        owner: dokku
+        group: dokku
+        state: directory
+        mode: "0755"
+
+    - name: Upload file size is configured
+      tags:
+        - app
+      copy:
+        content: "client_max_body_size 200M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+
+    - name: Nginx is reloaded
+      tags:
+        - app
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
