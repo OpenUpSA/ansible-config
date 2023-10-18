@@ -2,27 +2,36 @@
 
 
 - hosts:
-    - hetzner1.openup.org.za
+    - treasury5.openup.org.za
   become: yes
   become_method: sudo
 
   roles:
    - dokku_bot.ansible_dokku
+   - ansible-modules-bitwarden
 
   vars:
     app_name: vulekamali-ckan-sandbox
     app_domain: sandbox-data.vulekamali.gov.za
     postgres_hostname: prod-db.vulekamali.gov.za
-    postgres_superuser_user: "{{ lookup('passwordstore', 'core/vulekamali/POSTGRES_SUPERUSER subkey=username')}}"
-    postgres_superuser_password: "{{ lookup('passwordstore', 'core/vulekamali/POSTGRES_SUPERUSER')}}"
+    #postgres_superuser_user: "{{ lookup('passwordstore', 'core/vulekamali/POSTGRES_SUPERUSER subkey=username')}}"
+    postgres_superuser_user: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.username')}}"
+    #postgres_superuser_password: "{{ lookup('passwordstore', 'core/vulekamali/POSTGRES_SUPERUSER')}}"
+    postgres_superuser_password: "{{ lookup('bitwarden', 'POSTGRES', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
     ckan_datastore_postgres_database: datastore_default_sandbox
-    ckan_datastore_postgres_read_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_READ subkey=username')}}"
-    ckan_datastore_postgres_read_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_READ')}}"
-    ckan_datastore_postgres_write_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_WRITE subkey=username')}}"
-    ckan_datastore_postgres_write_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_WRITE')}}"
+    #ckan_datastore_postgres_read_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_READ subkey=username')}}"
+    ckan_datastore_postgres_read_user: "{{ lookup('bitwarden', 'POSTGRES READ ONLY', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.username')}}"
+    #ckan_datastore_postgres_read_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_READ')}}"
+    ckan_datastore_postgres_read_password: "{{ lookup('bitwarden', 'POSTGRES READ ONLY', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
+    #ckan_datastore_postgres_write_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_WRITE subkey=username')}}"
+    ckan_datastore_postgres_write_user: "{{ lookup('bitwarden', 'POSTGRES WRITE', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.username')}}"
+    #ckan_datastore_postgres_write_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_DATASTORE_POSTGRES_WRITE')}}"
+    ckan_datastore_postgres_write_password: "{{ lookup('bitwarden', 'POSTGRES WRITE', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
     ckan_postgres_database: ckan_default_sandbox
-    ckan_postgres_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES subkey=username')}}"
-    ckan_postgres_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES')}}"
+    #ckan_postgres_user: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES subkey=username')}}"
+    ckan_postgres_user: "{{ lookup('bitwarden', 'POSTGRES CKAN', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.username')}}"
+    #ckan_postgres_password: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/CKAN_POSTGRES')}}"
+    ckan_postgres_password: "{{ lookup('bitwarden', 'POSTGRES CKAN', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
 
   tasks:
 
@@ -53,42 +62,6 @@
         login_host: "{{ postgres_hostname }}"
         name: "{{ ckan_postgres_database }}"
 
-    - name: "Database user {{ ckan_datastore_postgres_read_user }} exists"
-      postgresql_user:
-        ssl_mode: require
-        login_user: "{{ postgres_superuser_user }}"
-        login_password: "{{ postgres_superuser_password }}"
-        login_host: "{{ postgres_hostname }}"
-        db: "{{ ckan_datastore_postgres_database }}"
-        name: "{{ ckan_datastore_postgres_read_user }}"
-        password: "{{ ckan_datastore_postgres_read_password }}"
-        priv: "ALL"
-        state: present
-
-    - name: "Database user {{ ckan_datastore_postgres_write_user }} exists"
-      postgresql_user:
-        ssl_mode: require
-        login_user: "{{ postgres_superuser_user }}"
-        login_password: "{{ postgres_superuser_password }}"
-        login_host: "{{ postgres_hostname }}"
-        db: "{{ ckan_datastore_postgres_database }}"
-        name: "{{ ckan_datastore_postgres_write_user }}"
-        password: "{{ ckan_datastore_postgres_write_password }}"
-        priv: "ALL"
-        state: present
-
-    - name: "Database user {{ ckan_postgres_user }} exists"
-      postgresql_user:
-        ssl_mode: require
-        login_user: "{{ postgres_superuser_user }}"
-        login_password: "{{ postgres_superuser_password }}"
-        login_host: "{{ postgres_hostname }}"
-        db: "{{ ckan_postgres_database }}"
-        name: "{{ ckan_postgres_user }}"
-        password: "{{ ckan_postgres_password }}"
-        priv: "ALL"
-        state: present
-
     - name: "Dokku app exists"
       dokku_app:
         app: "{{ app_name }}"
@@ -97,9 +70,12 @@
       dokku_config:
         app: "{{ app_name }}"
         config:
-          CKAN___BEAKER__SESSION__SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/BEAKER_SESSION_SECRET')}}"
-          CKAN___CKANEXT__S3FILESTORE__AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS subkey=ACCESS_KEY_ID')}}"
-          CKAN___CKANEXT__S3FILESTORE__AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS')}}"
+          #CKAN___BEAKER__SESSION__SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/BEAKER_SESSION_SECRET')}}"
+          CKAN___BEAKER__SESSION__SECRET: "{{ lookup('bitwarden', 'BEAKER', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.session_secret')}}"
+          #CKAN___CKANEXT__S3FILESTORE__AWS_ACCESS_KEY_ID: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS subkey=ACCESS_KEY_ID')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.access_key_id')}}"
+          #CKAN___CKANEXT__S3FILESTORE__AWS_SECRET_ACCESS_KEY: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/AWS')}}"
+          CKAN___CKANEXT__S3FILESTORE__AWS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.secret_access_key')}}"
           CKAN___CKANEXT__S3FILESTORE__AWS_BUCKET_NAME: 'vulekamali-datastore-sandbox'
           CKAN___CKANEXT__S3FILESTORE__HOST_NAME: 'http://s3-eu-west-1.amazonaws.com/vulekamali-datastore-sandbox'
           CKAN___CKANEXT__S3FILESTORE__REGION_NAME: 'eu-west-1'
@@ -110,12 +86,16 @@
           CKAN_INI: '/ckan.ini'
           CKAN_SITE_URL: 'https://{{ app_domain }}/'
           CKAN_SMTP_MAIL_FROM: 'info@vulekamali.gov.za'
-          CKAN_SMTP_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP')}}"
-          CKAN_SMTP_SERVER: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP subkey=hostname')}}"
-          CKAN_SMTP_USER: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP subkey=username')}}"
+          #CKAN_SMTP_PASSWORD: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP')}}"
+          CKAN_SMTP_PASSWORD: "{{ lookup('bitwarden', 'SMTP', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.password')}}"
+          #CKAN_SMTP_SERVER: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP subkey=hostname')}}"
+          CKAN_SMTP_SERVER: "{{ lookup('bitwarden', 'SMTP', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.hostname')}}"
+          #CKAN_SMTP_USER: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SMTP subkey=username')}}"
+          CKAN_SMTP_USER: "{{ lookup('bitwarden', 'SMTP', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.username')}}"
           CKAN_SOLR_URL: 'http://solr:8983/solr/ckan-sandbox'
           CKAN_SSO_LOGOUT_URL: 'https://sandbox.vulekamali.gov.za/accounts/logout'
-          CKAN_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SSO_SECRET')}}"
+          #CKAN_SSO_SECRET: "{{ lookup('passwordstore', 'apps/vulekamali/ckan/sandbox/SSO_SECRET')}}"
+          CKAN_SSO_SECRET: "{{ lookup('bitwarden', 'SSO', collection='project/vulekamali/budgetportal/' ~ env_name, field='fields.secret')}}"
           CKAN_SSO_URL: 'https://sandbox.vulekamali.gov.za/ckan/sso'
           DOKKU_LETSENCRYPT_EMAIL: 'webapps+treasury@openup.org.za'
           CKAN_SATREASURY_BUILD_TRIGGER_ENABLED: "FALSE"

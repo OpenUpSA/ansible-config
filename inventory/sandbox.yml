@@ -29,7 +29,7 @@ all:
 
     "vulekamali":
       hosts:
-        hetzner1.openup.org.za:
+        treasury5.openup.org.za:
           host_extra_admins:
             - emre
       vars:
