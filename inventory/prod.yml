@@ -9,6 +9,7 @@ uct:
     dokkus:
       hosts:
         srvubudoc001.uct.ac.za:
+        wazimapng1-aws.openup.org.za:
     "saldru-bps-cms":
       hosts:
         srvubudoc001.uct.ac.za:
@@ -130,6 +131,8 @@ all:
     wazimap-ng:
       hosts:
         wazimapng1-aws.openup.org.za:
+          host_extra_admins:
+            - emre
       vars:
         app_domain: production.wazimap-ng.openup.org.za
         aws_storage_bucket_name: wazimap-ng
