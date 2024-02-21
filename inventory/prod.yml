@@ -41,6 +41,8 @@ all:
           host_extra_admins:
             - michael
         pmg1-hetzner.openup.org.za:
+          host_extra_admins:
+            - dirk
         treasury1.openup.org.za:
         treasury4.openup.org.za:
           host_extra_admins:

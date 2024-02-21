@@ -1,0 +1,61 @@
+---
+- hosts:
+    - vulekamali-ckan-datapusher
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  vars:
+    app_name: "vulekamali-ckan-datapusher-{{ env_name }}"
+    app_domain: "{{ app_name }}.vulekamali.gov.za"
+    dokku_daemon_install: false # We install this using a dedicated playbook
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+    
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      tags:
+        - app
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Your dokku git remote"
+      tags:
+        - app
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+
+    - name: "App nginx directory exists"
+      tags:
+        - app
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: '0755'
+
+    - name: Upload file size is configured
+      tags:
+        - app
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+    
+    - name: Dokku proxy ports are configured
+      command: "dokku --quiet ports:set {{ app_name }} http:8800:8800"
+      tags:
+        - app

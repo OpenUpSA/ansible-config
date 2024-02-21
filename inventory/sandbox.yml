@@ -26,10 +26,19 @@ all:
       hosts:
         dokku11.openup.org.za:
         casefile.org.za:
+        treasury6.vulekamali.gov.za:
 
-    "vulekamali":
+    "vulekamali-ckan-datapusher":
       hosts:
-        treasury5.openup.org.za:
+        treasury6.vulekamali.gov.za:
+          host_extra_admins:
+            - emre
+      vars:
+        app_domain: vulekamali.gov.za
+
+    "vulekamali-budgetportal":
+      hosts:
+        treasury6.vulekamali.gov.za:
           host_extra_admins:
             - emre
       vars:

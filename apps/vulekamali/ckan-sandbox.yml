@@ -2,7 +2,7 @@
 
 
 - hosts:
-    - treasury5.openup.org.za
+    - treasury6.vulekamali.gov.za
   become: yes
   become_method: sudo
 

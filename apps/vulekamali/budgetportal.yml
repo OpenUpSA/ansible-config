@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - vulekamali
+    - vulekamali-budgetportal
   become: yes
   roles:
     - dokku_bot.ansible_dokku
