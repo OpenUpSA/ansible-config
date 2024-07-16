@@ -1,0 +1,40 @@
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: "admin groupexists"
+      group:
+        name: admin
+        state: present
+
+    # https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user
+    - name: "docker group exists"
+      group:
+        name: docker
+        state: present
+
+    - name: "Admin users exist and are configured"
+      user:
+        name: "{{ item }}"
+        groups: "admin,www-data,docker"
+        shell: /bin/bash
+      with_items: "{{ all_hosts_admins + host_extra_admins }}"
+
+    - name: "Admin users can SSH to their accounts"
+      authorized_key:
+        user: "{{ item }}"
+        key: "{{ lookup('file', 'files/ssh-keys/'+ item + '.key.pub') }}"
+      with_items: "{{ all_hosts_admins + host_extra_admins }}"
+
+    - name: "Admin users can use sudo without password"
+      lineinfile:
+        dest: "/etc/sudoers" # path: in version 2.3
+        state: "present"
+        regexp: "^%admin"
+        line: "%admin ALL=(ALL) NOPASSWD: ALL"
+
+    - name: "Ex-admin users do not exist any more"
+      user:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ all_hosts_remove_admins + host_remove_extra_admins }}"
