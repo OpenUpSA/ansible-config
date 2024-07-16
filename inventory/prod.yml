@@ -37,6 +37,7 @@ all:
           ansible_user: ubuntu
     dokkus:
       hosts:
+        dokku13.openup.org.za:
         dokku8.code4sa.org:
         dokku9.code4sa.org:
           host_extra_admins:
@@ -182,7 +183,7 @@ all:
         dokku11.openup.org.za:
       vars:
         app_domain: old.youthexplorer.org.za
-        
+
     case-file-wasafiri:
       hosts:
         dokku10.openup.org.za:
@@ -190,3 +191,9 @@ all:
         app_domain: "wasafiri.casefile.org.za"
         app_url: "https://app.wasafiri.casefile.org.za"
         dashboard_url: "https://dashboard.wasafiri.casefile.org.za"
+
+    sanef-iec-metabase:
+      hosts:
+        dokku13.openup.org.za:
+      vars:
+        app_domain: sanef-iec-data-metabase.openup.org.za
