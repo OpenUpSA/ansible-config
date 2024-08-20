@@ -31,10 +31,6 @@ all:
     host_extra_admins: [] # Empty default - override this on specific hosts.
     host_remove_extra_admins: [] # Empty default - override this on specific hosts.
   children:
-    elasticsearch:
-      hosts:
-        docker1.code4sa.org:
-          ansible_user: ubuntu
     dokkus:
       hosts:
         dokku13.openup.org.za:
