@@ -12,4 +12,13 @@
         user: root
         minute: "0"
         hour: "18,06"
-        job: "docker run --rm -i openup/adh-wazimap-uploaders python uploaders/owid.py https://production.wazimap-ng.openup.org.za {{ wazimap_token }} 953"
+        job: >
+          docker run \
+          --rm \
+          -i \
+          openup/adh-wazimap-uploaders python upload.py
+          --endpoint https://production.wazimap-ng.openup.org.za
+          --token {{ wazimap_token }}
+          --owid-vaccindations-administered 953
+          --owid-vaccinations-received 123
+          --owid-cases-by-gender 234
