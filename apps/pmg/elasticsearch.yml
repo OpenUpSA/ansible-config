@@ -1,0 +1,58 @@
+---
+- hosts:
+    - pmg-aws5.pmg.org.za
+  become: yes
+  roles:
+   - dokku_bot.ansible_dokku
+
+  vars:
+    app_name: elasticsearch-7
+    dokku_daemon_install: false
+    dokku_plugins: []
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Disable the default proxy"
+      dokku_proxy:
+        app: "{{ app_name }}"
+        state: absent
+
+    - name: "ES_JAVA_OPTS set via docker options at deploy time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-e ES_JAVA_OPTS='-Xms1536m -Xmx1536m' -e discovery.type=single-node"
+
+    - name: "ES_JAVA_OPTS set via docker options at run time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-e ES_JAVA_OPTS='-Xms1536m -Xmx1536m' -e discovery.type=single-node"
+
+    - name: "Publish port 9200 at deploy time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-p 9200:9200"
+
+    - name: "Publish port 9200 at run time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-p 9200:9200"
+
+    - name: "Index data mapped out to host at deploy time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/{{ app_name }}/data:/usr/share/elasticsearch/data"
+
+    - name: "Index data mapped out to host at run time"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/{{ app_name }}/data:/usr/share/elasticsearch/data"

@@ -3,11 +3,9 @@ all:
   vars:
     env_name: prod
     all_hosts_admins:
-      - jdb
       - paulmwatson
       - michael
       - dirk
-      - gaurav
     all_hosts_remove_admins:
       - rikusv
       - adi
@@ -36,6 +34,7 @@ all:
         data.keepthereceipt.org.za:
         idp1-aws.openup.org.za:
         pmg1-aws.pmg.org.za:
+        pmg-aws5.pmg.org.za:
         elasticsearch1-aws.pmg.org.za:
         justice1-hetzner.openup.org.za:
         codebridge1-aws.openup.org.za:
