@@ -46,6 +46,11 @@
           SENTRY_DSN: "https://5873ba4ea49d49d39fc91d30c1f232a0@o242378.ingest.sentry.io/5239183"
           SESSION_COOKIE_DOMAIN: ".{{ app_domain }}"
           TIME_ZONE: "Africa/Johannesburg"
+          NOCODB_API_URL: "https://nocodb.openup.org.za/"
+          NOCODB_API_TOKEN: "add_key_here"
+          NOCODB_BASE_ID: "pbmq87kae0tr24f"
+          NOCODB_OFFICE_TABLE_ID: "m1hqpzsv838uxmt"
+          NOCODB_MP_TABLE_ID: "m9krkszagav1st3"
 
     - name: "Index data mapped out to host at deploy time"
       dokku_docker_options:
