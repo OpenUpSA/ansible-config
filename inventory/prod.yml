@@ -180,6 +180,12 @@ all:
         app_domain: "scat-crm.openup.org.za"
         app_url: "https://scat-crm.openup.org.za"
 
+    n8n:
+      hosts:
+        dokku10.openup.org.za:
+      vars:
+        app_domain: "n8n.ddisafund.org"
+
     sanef-iec-metabase:
       hosts:
         dokku13.openup.org.za:

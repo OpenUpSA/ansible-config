@@ -1,0 +1,3 @@
+Set up dokku app
+
+ansible-playbook --inventory inventory/prod.yml apps/n8n/n8n.yml --extra-vars "n8n_encryption_key=add_key_here"

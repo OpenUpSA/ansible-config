@@ -1,0 +1,79 @@
+---
+- hosts:
+    - n8n
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+
+  vars:
+    app_name: "n8n"
+    app_domain: "n8n.ddisafund.org"
+    dokku_daemon_install: false
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+      - name: postgres
+        url: https://github.com/dokku/dokku-postgres.git
+
+  tasks:
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+
+    - name: "Postgres service exists"
+      dokku_service_create:
+        name: "{{ app_name }}"
+        service: postgres
+
+    - name: "Postgres service is linked to app"
+      dokku_service_link:
+        app: "{{ app_name }}"
+        name: "{{ app_name }}"
+        service: postgres
+
+    - name: "Persistent storage directory exists"
+      file:
+        path: "/var/lib/dokku/data/storage/{{ app_name }}"
+        state: directory
+        owner: "1000"
+        group: "1000"
+        mode: "0755"
+
+    - name: "Persistent storage is mounted"
+      dokku_storage:
+        app: "{{ app_name }}"
+        mounts:
+          - "/var/lib/dokku/data/storage/{{ app_name }}:/home/node/.n8n"
+
+    - name: "Dokku app config is set"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          N8N_ENCRYPTION_KEY: "{{ n8n_encryption_key }}"
+          WEBHOOK_URL: "https://{{ app_domain }}"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+
+    - name: "Port mapping is configured"
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:5678
+          - https:443:5678
+
+    - name: "Letsencrypt is enabled"
+      dokku_letsencrypt:
+        app: "{{ app_name }}"
+
+    - name: "App is deployed from source"
+      command: "dokku git:sync --build {{ app_name }} https://github.com/d1ceward-on-dokku/n8n_on_dokku.git master"
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
