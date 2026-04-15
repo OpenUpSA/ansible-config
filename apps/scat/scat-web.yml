@@ -1,0 +1,134 @@
+---
+- hosts:
+    - dokku10.openup.org.za
+  become: yes
+  roles:
+    - dokku_bot.ansible_dokku
+    - ansible-modules-bitwarden
+
+  vars:
+    dokku_packages_state: latest
+    instance_name: "scat-crm"
+    app_name: "{{ instance_name }}"
+    dokku_daemon_install: false
+    dokku_plugins:
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+
+  tasks:
+    - name: "App nginx directory exists"
+      file:
+        path: "/home/dokku/{{ app_name }}/nginx.conf.d"
+        state: directory
+        mode: "0755"
+        owner: dokku
+        group: dokku
+      tags:
+        - app
+
+    - name: "Upload file size is configured"
+      copy:
+        content: "client_max_body_size 100M;"
+        dest: "/home/dokku/{{ app_name }}/nginx.conf.d/client_max_body_size.conf"
+        owner: dokku
+        group: dokku
+        mode: "0644"
+      register: nginx
+      tags:
+        - app
+
+    - name: "Nginx is reloaded"
+      service:
+        name: nginx
+        state: reloaded
+      when: nginx.changed
+      tags:
+        - app
+
+    - name: "Dokku app exists"
+      dokku_app:
+        app: "{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Dokku app config is set"
+      vars:
+        postgres_password: "{{ lookup('bitwarden', 'DOKKU-POSTGRES', collection='project/SCAT', field='fields.password') }}"
+        postgres_hostname: "{{ lookup('bitwarden', 'DOKKU-POSTGRES', collection='project/SCAT', field='fields.hostname') }}"
+        postgres_username: "{{ lookup('bitwarden', 'DOKKU-POSTGRES', collection='project/SCAT', field='fields.username') }}"
+        postgres_database: "{{ lookup('bitwarden', 'DOKKU-POSTGRES', collection='project/SCAT', field='fields.database') }}"
+      dokku_config:
+        app: "{{ app_name }}"
+        config:
+          NODE_ENV: "production"
+          DOKKU_LETSENCRYPT_EMAIL: "webapps@openup.org.za"
+          ENVIRONMENT: "{{ env_name }}"
+          NEXT_PUBLIC_APP_URL: "{{ app_url }}"
+          DATABASE_URL: "postgres://{{ postgres_username }}:{{ postgres_password }}@{{ postgres_hostname }}:5432/{{ postgres_database }}?sslmode=verify-full&sslrootcert=/app/certs/rds-ca.pem"
+      tags:
+        - app
+
+    - name: "Dokku app domains are configured"
+      dokku_domains:
+        app: "{{ app_name }}"
+        domains:
+          - "{{ app_domain }}"
+      tags:
+        - app
+
+    - name: Ensure default port mapping doesn't exist
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:3000
+          - https:443:3000
+        state: absent
+      tags:
+        - app
+
+    - name: Dokku proxy ports are configured
+      dokku_ports:
+        app: "{{ app_name }}"
+        mappings:
+          - http:80:3000
+          - https:443:3000
+      tags:
+        - app
+
+    - name: "Your dokku git remote"
+      debug:
+        msg: "dokku@{{ inventory_hostname }}:{{ app_name }}"
+      tags:
+        - app
+
+    - name: "Install RDS CA Cert"
+      ansible.builtin.copy:
+        src: ../../files/certs/rds-ca-2019-root.pem
+        dest: /var/
+        owner: root
+        group: root
+        mode: "0644"
+      tags:
+        - app
+
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it for deploy"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: deploy
+        option: "-v /var/rds-ca-2019-root.pem:/app/certs/rds-ca.pem"
+      tags:
+        - app
+
+    - name: "Mount RDS Certificate Authority Certificate where postgres expects it for run"
+      dokku_docker_options:
+        app: "{{ app_name }}"
+        phase: run
+        option: "-v /var/rds-ca-2019-root.pem:/app/certs/rds-ca.pem"
+      tags:
+        - app
+
+    - name: scale web process
+      dokku_ps_scale:
+        app: "{{ app_name }}"
+        scale:
+          web: 1

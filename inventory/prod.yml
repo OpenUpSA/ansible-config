@@ -173,6 +173,13 @@ all:
         app_url: "https://app.wasafiri.casefile.org.za"
         dashboard_url: "https://dashboard.wasafiri.casefile.org.za"
 
+    scat-crm:
+      hosts:
+        dokku10.openup.org.za:
+      vars:
+        app_domain: "scat-crm.openup.org.za"
+        app_url: "https://scat-crm.openup.org.za"
+
     sanef-iec-metabase:
       hosts:
         dokku13.openup.org.za:
