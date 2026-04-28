@@ -49,8 +49,8 @@
           NOCODB_API_URL: "https://nocodb.openup.org.za/"
           NOCODB_API_TOKEN: "add_key_here"
           NOCODB_BASE_ID: "pbmq87kae0tr24f"
-          NOCODB_OFFICE_TABLE_ID: "m1hqpzsv838uxmt"
-          NOCODB_MP_TABLE_ID: "m9krkszagav1st3"
+          NOCODB_OFFICE_TABLE_ID: "myqd5rng53xmbz8"
+          NOCODB_MP_TABLE_ID: "m7a7jwhbuhlahp2"
 
     - name: "Index data mapped out to host at deploy time"
       dokku_docker_options:
