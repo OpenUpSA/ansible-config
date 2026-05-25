@@ -34,6 +34,7 @@
         config:
           NO_INDEX: "{{ no_index }}"
           DATA_PORTAL_URL: "{{ data_portal_url }}"
+          CSRF_TRUSTED_ORIGINS: "https://{{ app_domain }}"
           AWS_ACCESS_KEY_ID: "{{ lookup('bitwarden', 'AWS', collection='project/municipal-money/' ~ env_name, field='fields.ACCESS_KEY_ID')}}"
           AWS_SECRET_ACCESS_KEY: "{{ lookup('bitwarden', 'AWS', collection='project/municipal-money/' ~ env_name, field='fields.AWS_SECRET_ACCESS_KEY')}}"
           AWS_STORAGE_BUCKET_NAME: "munimoney-media"
